@@ -1,12 +1,14 @@
-package Entities;
+package org.example.backend.Servlet.Entities;
 
 
-public class CalendarBlock {
+public class Booking {
 
   private long id;
+  private long staffId;
+  private long customerId;
   private java.sql.Timestamp startDatetime;
   private java.sql.Timestamp endDatetime;
-  private long staffId;
+  private long serviceId;
 
 
   public long getId() {
@@ -15,6 +17,24 @@ public class CalendarBlock {
 
   public void setId(long id) {
     this.id = id;
+  }
+
+
+  public long getStaffId() {
+    return staffId;
+  }
+
+  public void setStaffId(long staffId) {
+    this.staffId = staffId;
+  }
+
+
+  public long getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(long customerId) {
+    this.customerId = customerId;
   }
 
 
@@ -36,12 +56,12 @@ public class CalendarBlock {
   }
 
 
-  public long getStaffId() {
-    return staffId;
+  public long getServiceId() {
+    return serviceId;
   }
 
-  public void setStaffId(long staffId) {
-    this.staffId = staffId;
+  public void setServiceId(long serviceId) {
+    this.serviceId = serviceId;
   }
 
 }
