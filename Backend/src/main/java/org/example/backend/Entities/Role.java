@@ -1,4 +1,4 @@
-package org.example.backend.Servlet.Entities;
+package org.example.backend.Entities;
 
 
 public class Role {

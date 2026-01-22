@@ -6,7 +6,7 @@ import org.example.backend.Entities.Service;
 import java.sql.Connection;
 
 public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao<Service> {
-    protected ServiceDaoJdbc(Connection connection) {
+    public ServiceDaoJdbc(Connection connection) {
         super(connection);
     }
 }

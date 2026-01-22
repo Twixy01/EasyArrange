@@ -1,4 +1,4 @@
-package org.example.backend.Servlet.Entities;
+package org.example.backend.Entities;
 
 
 public class User {
@@ -10,6 +10,22 @@ public class User {
   private String password;
   private long roleId;
 
+  public User(long id, String name, String email, String profilePicture, String password, long roleId) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.profilePicture = profilePicture;
+    this.password = password;
+    this.roleId = roleId;
+  }
+
+  public User(String name, String email, String profilePicture, String password, long roleId) {
+    this.name = name;
+    this.email = email;
+    this.profilePicture = profilePicture;
+    this.password = password;
+    this.roleId = roleId;
+  }
 
   public long getId() {
     return id;
