@@ -23,7 +23,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
 
         if (rs.next()){
             return new User(
-                    rs.getString("Name"),
+                    rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
                     rs.getString("password"),
