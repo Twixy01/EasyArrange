@@ -6,7 +6,7 @@ import org.example.backend.Entities.Booking;
 import java.sql.Connection;
 
 public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking> {
-    protected BookingDaoJdbc(Connection connection) {
+    public BookingDaoJdbc(Connection connection) {
         super(connection);
     }
 }

@@ -6,7 +6,7 @@ import org.example.backend.Entities.Role;
 import java.sql.Connection;
 
 public class RoleDaoJdbc extends JdbcConnection implements RoleDao<Role> {
-    protected RoleDaoJdbc(Connection connection) {
+    public RoleDaoJdbc(Connection connection) {
         super(connection);
     }
 }
