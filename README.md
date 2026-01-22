@@ -2,46 +2,38 @@
 
 Database connection setup
 
-The application connects to the database using JDBC and a properties file.
-All database-related configuration is externalized to ensure flexibility and security.
----
-## 1. Loading database properties
-
-The application loads the configuration from the classpath using the context class loader:
-```java
-Properties properties = new Properties();
-
-try (InputStream inputStream = Thread.currentThread()
-        .getContextClassLoader()
-        .getResourceAsStream("db_connection.properties")) {
-
-    properties.load(inputStream);
-
-} catch (IOException e) {
-    throw new RuntimeException(e);
-}
+## 1. Tomcat setup
+```text
+Add it at the run configuration:
+Tomcat Local Server - 10.1.50 version
 ```
----
-## 2. Reading database parameters
+## 2. Add the context.xml in webapp/META-INF:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/backend">
+   <Resource name="jdbc/easyarrange"
+      auth="Container"
+      type="javax.sql.DataSource"
+      username="root"
+      password=""
+      driverClassName="org.mariadb.jdbc.Driver"
+      url="jdbc:mariadb://localhost:3306/easyarrange"
+      maxActive="8"
+      maxIdle="4"/>
+</Context>
 
-The database connection parameters are retrieved from the loaded properties:
-```java
-final String DB_CONN = properties.getProperty("db_connection");
-final String DB_USER = properties.getProperty("db_user");
-final String DB_PASSWORD = properties.getProperty("db_password");
 ```
----
-## 3. Establishing the JDBC connection
-
-A JDBC connection is created using DriverManager.
-The try-with-resources statement ensures that the connection is automatically closed.
+## 3. Code for connecting to database in Servlets:
 ```java
-try (Connection connection =
-         DriverManager.getConnection(DB_CONN, DB_USER, DB_PASSWORD)) {
+Context initCtx = null;
+Connection conn = null;
+try {
+        initCtx = new InitialContext();
+        Context envCtx = (Context) initCtx.lookup("java:comp/env");
+        DataSource ds = (DataSource)envCtx.lookup("jdbc/easyarrange");
+        conn = ds.getConnection();
 
-    // Database operations go here
-
-} catch (SQLException e) {
-    throw new RuntimeException(e);
-}
+        conn.close();
+} 
 ```
+then -> add the catch statements
