@@ -1,0 +1,48 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="text-align: center;">
+
+<header>
+
+    <a href="register.jsp">Regisztrálj! </a>
+    |
+    <a href="chooseService.jsp">Szolgáltatások </a>
+    |
+    <a href="aboutUs.jsp">
+        Rólunk </a>
+    | Ha van már fiókod akkor csak
+    <a href="${pageContext.request.contextPath}/login">
+        <input type="button" value="<c:choose><c:when test="${sessionScope.user != null}">Profilom</c:when><c:otherwise>Bejelentkezés</c:otherwise></c:choose>">
+    </a>
+
+</header>
+
+<table style="align-items: center;">
+    <h1 style="text-align: center;">
+        Appointment Webpage DEMO
+    </h1>
+
+    <tr><p>Rólunk: Itt dolgozunk jaj de jó nekünk lorem ipsum mittudomén. 3-an vagyunk,
+        3 különböző szolgáltatás ha érdekel akkor csak kattints erre a linkre! <a href="chooseService.jsp">juhu</a></p>
+    </tr>
+
+    <tr>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium quo illum animi architecto obcaecati
+            corrupti aperiam
+            commodi minima reprehenderit cupiditate voluptas, quod blanditiis dicta, accusamus alias fugiat voluptatum
+            doloribus saepe. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam, possimus, at architecto
+            harum tempore vitae cumque
+            laboriosam voluptatibus, similique dolor aperiam! Magni doloremque quia provident tenetur aperiam odio enim
+            voluptatibus.
+        </p>
+    </tr>
+</table>
+
+</body>
+</html>

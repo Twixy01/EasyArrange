@@ -12,7 +12,7 @@ public class HomePageServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println("This is the homepage.");
-        response.sendRedirect("html/web.html");
+        response.sendRedirect("html/web.jsp");
     }
     public void destroy() {
     }
