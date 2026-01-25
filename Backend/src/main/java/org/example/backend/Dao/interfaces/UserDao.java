@@ -4,4 +4,5 @@ import java.sql.SQLException;
 
 public interface UserDao<E> extends Dao<E>{
     E getUser(String email, String password) throws SQLException;
+    String getRoleName(long id) throws SQLException;
 }

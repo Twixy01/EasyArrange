@@ -32,4 +32,15 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
         }
         return null;
     }
+
+    @Override
+    public String getRoleName(long roleId) throws SQLException {
+        PreparedStatement getRoleName = connection.prepareStatement("SELECT name FROM role WHERE id = ?");
+        getRoleName.setLong(1,roleId);
+        ResultSet rs = getRoleName.executeQuery();
+        if (rs.next()){
+            return rs.getString(1);
+        }
+        return null;
+    }
 }
