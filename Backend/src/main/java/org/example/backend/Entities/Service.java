@@ -8,6 +8,12 @@ public class Service {
   private long price;
   private long duration;
 
+  public Service(long id, String name, long price, long duration) {
+    this.id = id;
+    this.name = name;
+    this.price = price;
+    this.duration = duration;
+  }
 
   public long getId() {
     return id;
