@@ -3,8 +3,11 @@ package org.example.backend.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.example.backend.Dao.interfaces.RoleDao;
 import org.example.backend.Dao.interfaces.UserDao;
+import org.example.backend.Dao.jdbc.RoleDaoJdbc;
 import org.example.backend.Dao.jdbc.UserDaoJdbc;
+import org.example.backend.Entities.Role;
 import org.example.backend.Entities.User;
 
 import javax.naming.Context;
@@ -46,12 +49,14 @@ public class LoginServlet extends HttpServlet {
             String password = request.getParameter("password");
 
             UserDao<User> userDao = new UserDaoJdbc(conn);
-            user = userDao.getUser(email,password);
+            RoleDao<Role> roleDao = new RoleDaoJdbc(conn);
+            user = userDao.findUser(email,password);
 
             if (user == null) {
                 out.println("Hibás felhasználó/jelszó");
             } else {
-                String role = userDao.getRoleName(user.getRoleId());
+
+                String role = roleDao.findRoleNameById(user.getRoleId());
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
                 session.setAttribute("role", role);

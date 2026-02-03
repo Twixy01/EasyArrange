@@ -1,13 +1,21 @@
 package org.example.backend.Entities;
 
 
+import java.time.LocalDateTime;
+
 public class CalendarBlock {
 
   private long id;
-  private java.sql.Timestamp startDatetime;
-  private java.sql.Timestamp endDatetime;
+  private LocalDateTime startDatetime;
+  private LocalDateTime endDatetime;
   private long staffId;
 
+  public CalendarBlock(long id, LocalDateTime startDatetime, LocalDateTime endDatetime, long staffId) {
+    this.id = id;
+    this.startDatetime = startDatetime;
+    this.endDatetime = endDatetime;
+    this.staffId = staffId;
+  }
 
   public long getId() {
     return id;
@@ -18,20 +26,20 @@ public class CalendarBlock {
   }
 
 
-  public java.sql.Timestamp getStartDatetime() {
+  public LocalDateTime getStartDatetime() {
     return startDatetime;
   }
 
-  public void setStartDatetime(java.sql.Timestamp startDatetime) {
+  public void setStartDatetime(LocalDateTime startDatetime) {
     this.startDatetime = startDatetime;
   }
 
 
-  public java.sql.Timestamp getEndDatetime() {
+  public LocalDateTime getEndDatetime() {
     return endDatetime;
   }
 
-  public void setEndDatetime(java.sql.Timestamp endDatetime) {
+  public void setEndDatetime(LocalDateTime endDatetime) {
     this.endDatetime = endDatetime;
   }
 

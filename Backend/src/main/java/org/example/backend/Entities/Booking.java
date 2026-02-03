@@ -1,15 +1,25 @@
 package org.example.backend.Entities;
 
 
+import java.time.LocalDateTime;
+
 public class Booking {
 
   private long id;
   private long staffId;
   private long customerId;
-  private java.sql.Timestamp startDatetime;
-  private java.sql.Timestamp endDatetime;
+  private LocalDateTime startDatetime;
+  private LocalDateTime endDatetime;
   private long serviceId;
 
+  public Booking(long id, long staffId, long customerId, LocalDateTime startDatetime, LocalDateTime endDatetime, long serviceId) {
+    this.id = id;
+    this.staffId = staffId;
+    this.customerId = customerId;
+    this.startDatetime = startDatetime;
+    this.endDatetime = endDatetime;
+    this.serviceId = serviceId;
+  }
 
   public long getId() {
     return id;
@@ -38,20 +48,20 @@ public class Booking {
   }
 
 
-  public java.sql.Timestamp getStartDatetime() {
+  public LocalDateTime getStartDatetime() {
     return startDatetime;
   }
 
-  public void setStartDatetime(java.sql.Timestamp startDatetime) {
+  public void setStartDatetime(LocalDateTime startDatetime) {
     this.startDatetime = startDatetime;
   }
 
 
-  public java.sql.Timestamp getEndDatetime() {
+  public LocalDateTime getEndDatetime() {
     return endDatetime;
   }
 
-  public void setEndDatetime(java.sql.Timestamp endDatetime) {
+  public void setEndDatetime(LocalDateTime endDatetime) {
     this.endDatetime = endDatetime;
   }
 
@@ -64,4 +74,15 @@ public class Booking {
     this.serviceId = serviceId;
   }
 
+  @Override
+  public String toString() {
+    return "Booking{" +
+            "id=" + id +
+            ", staffId=" + staffId +
+            ", customerId=" + customerId +
+            ", startDatetime=" + startDatetime +
+            ", endDatetime=" + endDatetime +
+            ", serviceId=" + serviceId +
+            '}';
+  }
 }
