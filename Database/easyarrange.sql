@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 25, 2026 at 02:22 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Gép: 127.0.0.1
+-- Létrehozás ideje: 2026. Feb 03. 13:53
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `easyarrange`
+-- Adatbázis: `easyarrange`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `booking`
+-- Tábla szerkezet ehhez a táblához `booking`
 --
 
 CREATE TABLE `booking` (
@@ -33,35 +33,49 @@ CREATE TABLE `booking` (
   `customer_id` bigint(20) NOT NULL,
   `start_datetime` datetime DEFAULT NULL,
   `end_datetime` datetime DEFAULT NULL,
-  `service_id` int(11) DEFAULT NULL
+  `service_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+
+--
+-- A tábla adatainak kiíratása `booking`
+--
+
+INSERT INTO `booking` (`id`, `staff_id`, `customer_id`, `start_datetime`, `end_datetime`, `service_id`) VALUES
+(2, 4, 3, '2026-02-03 13:00:00', '2026-02-26 12:53:18', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `calendar_block`
+-- Tábla szerkezet ehhez a táblához `calendar_block`
 --
 
 CREATE TABLE `calendar_block` (
   `id` bigint(20) NOT NULL,
   `start_datetime` datetime DEFAULT NULL,
   `end_datetime` datetime DEFAULT NULL,
-  `staff_id` bigint(11) DEFAULT NULL
+  `staff_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+
+--
+-- A tábla adatainak kiíratása `calendar_block`
+--
+
+INSERT INTO `calendar_block` (`id`, `start_datetime`, `end_datetime`, `staff_id`) VALUES
+(1, '2026-02-12 13:52:59', '2026-02-13 00:00:00', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `role`
+-- Tábla szerkezet ehhez a táblához `role`
 --
 
 CREATE TABLE `role` (
-  `id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `name` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
--- Dumping data for table `role`
+-- A tábla adatainak kiíratása `role`
 --
 
 INSERT INTO `role` (`id`, `name`) VALUES
@@ -72,20 +86,27 @@ INSERT INTO `role` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service`
+-- Tábla szerkezet ehhez a táblához `service`
 --
 
 CREATE TABLE `service` (
-  `id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `price` int(11) DEFAULT NULL,
   `duration` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
+--
+-- A tábla adatainak kiíratása `service`
+--
+
+INSERT INTO `service` (`id`, `name`, `price`, `duration`) VALUES
+(1, 'Hajvágás', 6500, 40);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Tábla szerkezet ehhez a táblához `user`
 --
 
 CREATE TABLE `user` (
@@ -94,11 +115,11 @@ CREATE TABLE `user` (
   `email` varchar(255) DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `role_id` int(11) DEFAULT NULL
+  `role_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
--- Dumping data for table `user`
+-- A tábla adatainak kiíratása `user`
 --
 
 INSERT INTO `user` (`id`, `name`, `email`, `profile_picture`, `password`, `role_id`) VALUES
@@ -106,40 +127,40 @@ INSERT INTO `user` (`id`, `name`, `email`, `profile_picture`, `password`, `role_
 (4, 'Milan', 'alma@gmail.com', 'picture_link', '4321', 3);
 
 --
--- Indexes for dumped tables
+-- Indexek a kiírt táblákhoz
 --
 
 --
--- Indexes for table `booking`
+-- A tábla indexei `booking`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_booking_staff_start` (`staff_id`,`start_datetime`),
-  ADD KEY `booking_service_service_fk` (`service_id`),
-  ADD KEY `booking_customer_user_fk` (`customer_id`);
+  ADD KEY `booking_customer_user_fk` (`customer_id`),
+  ADD KEY `booking_service_service_fk` (`service_id`);
 
 --
--- Indexes for table `calendar_block`
+-- A tábla indexei `calendar_block`
 --
 ALTER TABLE `calendar_block`
   ADD PRIMARY KEY (`id`),
   ADD KEY `staff_id_fk` (`staff_id`);
 
 --
--- Indexes for table `role`
+-- A tábla indexei `role`
 --
 ALTER TABLE `role`
   ADD PRIMARY KEY (`id`),
   ADD KEY `UNIQUE` (`name`);
 
 --
--- Indexes for table `service`
+-- A tábla indexei `service`
 --
 ALTER TABLE `service`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user`
+-- A tábla indexei `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
@@ -147,39 +168,45 @@ ALTER TABLE `user`
   ADD KEY `user_role_fk` (`role_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- A kiírt táblák AUTO_INCREMENT értéke
 --
 
 --
--- AUTO_INCREMENT for table `booking`
+-- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `calendar_block`
+-- AUTO_INCREMENT a táblához `calendar_block`
 --
 ALTER TABLE `calendar_block`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `role`
+-- AUTO_INCREMENT a táblához `role`
 --
 ALTER TABLE `role`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT a táblához `service`
+--
+ALTER TABLE `service`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Constraints for dumped tables
+-- Megkötések a kiírt táblákhoz
 --
 
 --
--- Constraints for table `booking`
+-- Megkötések a táblához `booking`
 --
 ALTER TABLE `booking`
   ADD CONSTRAINT `booking_customer_user_fk` FOREIGN KEY (`customer_id`) REFERENCES `user` (`id`),
@@ -187,13 +214,13 @@ ALTER TABLE `booking`
   ADD CONSTRAINT `booking_staff_user_fk` FOREIGN KEY (`staff_id`) REFERENCES `user` (`id`);
 
 --
--- Constraints for table `calendar_block`
+-- Megkötések a táblához `calendar_block`
 --
 ALTER TABLE `calendar_block`
   ADD CONSTRAINT `staff_id_fk` FOREIGN KEY (`staff_id`) REFERENCES `user` (`id`);
 
 --
--- Constraints for table `user`
+-- Megkötések a táblához `user`
 --
 ALTER TABLE `user`
   ADD CONSTRAINT `user_role_fk` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`);
