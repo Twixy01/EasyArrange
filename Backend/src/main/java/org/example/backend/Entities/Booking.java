@@ -1,6 +1,5 @@
 package org.example.backend.Entities;
 
-
 import java.time.LocalDateTime;
 
 public class Booking {
@@ -14,6 +13,14 @@ public class Booking {
 
   public Booking(long id, long staffId, long customerId, LocalDateTime startDatetime, LocalDateTime endDatetime, long serviceId) {
     this.id = id;
+    this.staffId = staffId;
+    this.customerId = customerId;
+    this.startDatetime = startDatetime;
+    this.endDatetime = endDatetime;
+    this.serviceId = serviceId;
+  }
+
+  public Booking(long staffId, long customerId, java.time.LocalDateTime startDatetime, java.time.LocalDateTime endDatetime, long serviceId) {
     this.staffId = staffId;
     this.customerId = customerId;
     this.startDatetime = startDatetime;
@@ -48,9 +55,11 @@ public class Booking {
   }
 
 
+
   public LocalDateTime getStartDatetime() {
     return startDatetime;
   }
+
 
   public void setStartDatetime(LocalDateTime startDatetime) {
     this.startDatetime = startDatetime;

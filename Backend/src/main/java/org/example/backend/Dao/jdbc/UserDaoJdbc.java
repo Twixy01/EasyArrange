@@ -15,11 +15,11 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
     @Override
     public User findUser(String email, String password) throws SQLException {
         PreparedStatement getUser = connection.prepareStatement("SELECT * FROM user WHERE email = ? AND password = ?");
-        getUser.setString(1,email);
-        getUser.setString(2,password);
+        getUser.setString(1, email);
+        getUser.setString(2, password);
         ResultSet rs = getUser.executeQuery();
 
-        if (rs.next()){
+        if (rs.next()) {
             return new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -36,10 +36,10 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
     public List<User> findUsersByRoleName(String roleName) throws SQLException {
         List<User> users = new ArrayList<>();
         PreparedStatement usersByRoleName = connection.prepareStatement("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like ?");
-        usersByRoleName.setString(1,roleName);
+        usersByRoleName.setString(1, roleName);
         ResultSet rs = usersByRoleName.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             users.add(new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -58,7 +58,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
         Statement findAllStaff = connection.createStatement();
         ResultSet rs = findAllStaff.executeQuery("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like 'staff'");
 
-        while (rs.next()){
+        while (rs.next()) {
             staffs.add(new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -77,7 +77,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
         Statement findAllCustomer = connection.createStatement();
         ResultSet rs = findAllCustomer.executeQuery("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like 'customer'");
 
-        while (rs.next()){
+        while (rs.next()) {
             customers.add(new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -96,7 +96,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
         Statement usersByName = connection.createStatement();
         ResultSet rs = usersByName.executeQuery("SELECT * FROM user WHERE name like ?");
 
-        while (rs.next()){
+        while (rs.next()) {
             users.add(new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -112,10 +112,10 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
     @Override
     public User findUserById(long userId) throws SQLException {
         PreparedStatement findUserById = connection.prepareStatement("SELECT * FROM user WHERE id = ?");
-        findUserById.setLong(1,userId);
+        findUserById.setLong(1, userId);
         ResultSet rs = findUserById.executeQuery();
 
-        if (rs.next()){
+        if (rs.next()) {
             return new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -129,11 +129,11 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
     }
 
     @Override
-    public List<User> findAll() throws SQLException{
+    public List<User> findAll() throws SQLException {
         List<User> users = new ArrayList<>();
         Statement findAll = connection.createStatement();
         ResultSet rs = findAll.executeQuery("SELECT * FROM user");
-        while (rs.next()){
+        while (rs.next()) {
             users.add(new User(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -142,7 +142,27 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
                     rs.getString("password"),
                     rs.getLong("role_id")
             ));
+
         }
         return users;
     }
+
+    public void createUser(User user) throws SQLException {
+        String sql = "INSERT INTO user (name, email, profile_picture, password, role_id) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getProfilePicture());
+            stmt.setString(4, user.getPassword());
+            stmt.setLong(5, user.getRoleId());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
+
+

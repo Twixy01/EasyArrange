@@ -14,11 +14,11 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
     }
 
     @Override
+
     public Booking findBookingById(long id) throws SQLException {
         PreparedStatement bookingById = connection.prepareStatement("SELECT * FROM booking WHERE id = ?");
         bookingById.setLong(1, id);
         ResultSet rs = bookingById.executeQuery();
-
         if (rs.next()) {
             return new Booking(
                     rs.getLong("id"),
@@ -28,9 +28,24 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
                     rs.getTimestamp("end_datetime").toLocalDateTime(),
                     rs.getLong("service_id")
             );
+            
         }
         return null;
     }
+
+    @Override
+    public void createBooking(Booking booking) throws SQLException {
+        String sql = "INSERT INTO users (staffId, customerId, startDatetime, endDatetime, serviceId) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, booking.getStaffId());
+            stmt.setLong(2, booking.getCustomerId());
+            stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
+            stmt.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
+            stmt.setLong(5, booking.getServiceId());
+
+        }
+    }
+
 
     @Override
     public List<Booking> findBookingsByStaffId(long staffId) throws SQLException {
@@ -78,7 +93,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
         blockByStaffId.setTimestamp(2, Timestamp.valueOf(end));
         ResultSet rs = blockByStaffId.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             bookings.add(new Booking(
                     rs.getLong("id"),
                     rs.getLong("staff_id"),
@@ -92,7 +107,8 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
     }
 
     @Override
-    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws SQLException {
+    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws
+            SQLException {
         List<Booking> bookings = new ArrayList<>();
         PreparedStatement bookingsByStaffBetween = connection.prepareStatement("SELECT * FROM booking WHERE staff_id = ? AND start_datetime >= ? AND end_datetime <= ?");
         bookingsByStaffBetween.setLong(1, staffId);
@@ -100,7 +116,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
         bookingsByStaffBetween.setTimestamp(3, Timestamp.valueOf(end));
         ResultSet rs = bookingsByStaffBetween.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             bookings.add(new Booking(
                     rs.getLong("id"),
                     rs.getLong("staff_id"),
@@ -114,7 +130,9 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
     }
 
     @Override
-    public List<Booking> findBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime end) throws SQLException {
+    public List<Booking> findBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime
+            end) throws
+            SQLException {
         List<Booking> bookings = new ArrayList<>();
         PreparedStatement bookingsByStaffBetween = connection.prepareStatement("SELECT * FROM booking WHERE customer_id = ? AND start_datetime >= ? AND end_datetime <= ?");
         bookingsByStaffBetween.setLong(1, customerId);
@@ -122,7 +140,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
         bookingsByStaffBetween.setTimestamp(3, Timestamp.valueOf(end));
         ResultSet rs = bookingsByStaffBetween.executeQuery();
 
-        while (rs.next()){
+        while (rs.next()) {
             bookings.add(new Booking(
                     rs.getLong("id"),
                     rs.getLong("staff_id"),
