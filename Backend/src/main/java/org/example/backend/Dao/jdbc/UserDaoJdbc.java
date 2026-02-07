@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
+public class UserDaoJdbc extends JdbcConnection implements UserDao {
     public UserDaoJdbc(Connection connection) {
         super(connection);
     }
@@ -129,6 +129,38 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
     }
 
     @Override
+    public void create(User user) throws SQLException {
+        String sql = "INSERT INTO user (name, email, profile_picture, password, role_id) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1, user.getName());
+        stmt.setString(2, user.getEmail());
+        stmt.setString(3, user.getProfilePicture());
+        stmt.setString(4, user.getPassword());
+        stmt.setLong(5, user.getRoleId());
+
+        stmt.executeUpdate();
+    }
+
+    @Override
+    public void update(User user) throws SQLException {
+        String sql = "UPDATE user SET name = ?, email = ?, profile_picture = ?, password = ?, role_id = ? WHERE id = ?;";
+        PreparedStatement update = connection.prepareStatement(sql);
+        update.setString(1,user.getName());
+        update.setString(2,user.getEmail());
+        update.setString(3,user.getProfilePicture());
+        update.setString(4,user.getPassword());
+        update.setLong(5,user.getRoleId());
+        update.setLong(6,user.getId());
+
+        update.executeUpdate();
+    }
+
+    @Override
+    public void remove(User object) throws SQLException {
+
+    }
+
+    @Override
     public List<User> findAll() throws SQLException {
         List<User> users = new ArrayList<>();
         Statement findAll = connection.createStatement();
@@ -145,23 +177,6 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao<User> {
 
         }
         return users;
-    }
-
-    public void createUser(User user) throws SQLException {
-        String sql = "INSERT INTO user (name, email, profile_picture, password, role_id) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getProfilePicture());
-            stmt.setString(4, user.getPassword());
-            stmt.setLong(5, user.getRoleId());
-
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
     }
 }
 

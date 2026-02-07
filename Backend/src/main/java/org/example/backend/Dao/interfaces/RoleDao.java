@@ -1,8 +1,10 @@
 package org.example.backend.Dao.interfaces;
 
+import org.example.backend.Entities.Role;
+
 import java.sql.SQLException;
 
-public interface RoleDao<E> extends Dao<E>{
+public interface RoleDao extends Dao<Role>{
     //READ
     long findRoleIdByName(String roleName) throws SQLException;
     String findRoleNameById(long id) throws SQLException;

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarBlockDaoJdbc extends JdbcConnection implements CalendarBlockDao<CalendarBlock> {
+public class CalendarBlockDaoJdbc extends JdbcConnection implements CalendarBlockDao {
     public CalendarBlockDaoJdbc(Connection connection) {
         super(connection);
     }
@@ -86,6 +86,28 @@ public class CalendarBlockDaoJdbc extends JdbcConnection implements CalendarBloc
             ));
         }
         return blocks;
+    }
+
+    @Override
+    public void create(CalendarBlock object) throws SQLException {
+
+    }
+
+    @Override
+    public void update(CalendarBlock calendarBlock) throws SQLException {
+        String sql = "UPDATE calendar_block SET start_datetime = ?, end_datetime = ?, staff_id = ? WHERE id = ?;";
+        PreparedStatement update = connection.prepareStatement(sql);
+        update.setTimestamp(1,Timestamp.valueOf(calendarBlock.getStartDatetime()));
+        update.setTimestamp(2,Timestamp.valueOf(calendarBlock.getEndDatetime()));
+        update.setLong(3, calendarBlock.getStaffId());
+        update.setLong(4, calendarBlock.getId());
+
+        update.executeUpdate();
+    }
+
+    @Override
+    public void remove(CalendarBlock object) throws SQLException {
+
     }
 
     @Override
