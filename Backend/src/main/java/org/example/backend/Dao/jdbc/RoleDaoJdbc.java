@@ -1,6 +1,7 @@
 package org.example.backend.Dao.jdbc;
 
 import org.example.backend.Dao.interfaces.RoleDao;
+import org.example.backend.Entities.CalendarBlock;
 import org.example.backend.Entities.Role;
 import org.example.backend.Entities.Service;
 import org.example.backend.Entities.User;
@@ -9,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoleDaoJdbc extends JdbcConnection implements RoleDao<Role> {
+public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
     public RoleDaoJdbc(Connection connection) {
         super(connection);
     }
@@ -35,6 +36,26 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao<Role> {
             return rs.getString(1);
         }
         return null;
+    }
+
+    @Override
+    public void create(Role object) throws SQLException {
+
+    }
+
+    @Override
+    public void update(Role role) throws SQLException {
+        String sql = "UPDATE role SET name = ? WHERE id = ?;";
+        PreparedStatement update = connection.prepareStatement(sql);
+        update.setString(1,role.getName());
+        update.setLong(2,role.getId());
+
+        update.executeUpdate();
+    }
+
+    @Override
+    public void remove(Role object) throws SQLException {
+
     }
 
     @Override

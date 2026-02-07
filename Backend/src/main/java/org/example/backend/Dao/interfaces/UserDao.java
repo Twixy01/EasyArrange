@@ -6,19 +6,17 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface UserDao<E> extends Dao<E>{
+public interface UserDao extends Dao<User>{
     //Create
-
 
     //Read
 
-    E findUser(String email, String password) throws SQLException;
-    E findUserById(long userId) throws SQLException;
-    List<E> findUsersByRoleName(String roleName) throws SQLException;
-    List<E> findAllStaff() throws SQLException;
-    List<E> findAllCustomer() throws SQLException;
-    List<E> searchUsersByName(String namePart) throws SQLException;
-    void createUser (User user) throws SQLException;
+    User findUser(String email, String password) throws SQLException;
+    User findUserById(long userId) throws SQLException;
+    List<User> findUsersByRoleName(String roleName) throws SQLException;
+    List<User> findAllStaff() throws SQLException;
+    List<User> findAllCustomer() throws SQLException;
+    List<User> searchUsersByName(String namePart) throws SQLException;
     //Update
 
     //Delete

@@ -48,8 +48,8 @@ public class LoginServlet extends HttpServlet {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
-            UserDao<User> userDao = new UserDaoJdbc(conn);
-            RoleDao<Role> roleDao = new RoleDaoJdbc(conn);
+            UserDao userDao = new UserDaoJdbc(conn);
+            RoleDao roleDao = new RoleDaoJdbc(conn);
             user = userDao.findUser(email,password);
 
             if (user == null) {

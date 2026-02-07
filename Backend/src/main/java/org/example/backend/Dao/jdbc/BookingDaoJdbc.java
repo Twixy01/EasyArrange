@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking> {
+public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
     public BookingDaoJdbc(Connection connection) {
         super(connection);
     }
@@ -28,22 +28,9 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
                     rs.getTimestamp("end_datetime").toLocalDateTime(),
                     rs.getLong("service_id")
             );
-            
+
         }
         return null;
-    }
-
-    @Override
-    public void createBooking(Booking booking) throws SQLException {
-        String sql = "INSERT INTO users (staffId, customerId, startDatetime, endDatetime, serviceId) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, booking.getStaffId());
-            stmt.setLong(2, booking.getCustomerId());
-            stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
-            stmt.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
-            stmt.setLong(5, booking.getServiceId());
-
-        }
     }
 
 
@@ -107,8 +94,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
     }
 
     @Override
-    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws
-            SQLException {
+    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws SQLException {
         List<Booking> bookings = new ArrayList<>();
         PreparedStatement bookingsByStaffBetween = connection.prepareStatement("SELECT * FROM booking WHERE staff_id = ? AND start_datetime >= ? AND end_datetime <= ?");
         bookingsByStaffBetween.setLong(1, staffId);
@@ -151,6 +137,39 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao<Booking
             ));
         }
         return bookings;
+    }
+
+    @Override
+    public void create(Booking booking) throws SQLException {
+        String sql = "INSERT INTO users (staffId, customerId, startDatetime, endDatetime, serviceId) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1, booking.getStaffId());
+        stmt.setLong(2, booking.getCustomerId());
+        stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
+        stmt.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
+        stmt.setLong(5, booking.getServiceId());
+
+        stmt.executeUpdate();
+    }
+
+    @Override
+    public void update(Booking booking) throws SQLException {
+        String sql = "UPDATE booking SET staff_id = ?, customer_id = ?, start_datetime = ?, end_datetime = ?, service_id = ? WHERE id = ?;";
+        PreparedStatement update = connection.prepareStatement(sql);
+        update.setLong(1, booking.getStaffId());
+        update.setLong(2, booking.getCustomerId());
+        update.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
+        update.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
+        update.setLong(5, booking.getServiceId());
+        update.setLong(6, booking.getId());
+
+        update.executeUpdate();
+
+    }
+
+    @Override
+    public void remove(Booking object) throws SQLException {
+
     }
 
     @Override

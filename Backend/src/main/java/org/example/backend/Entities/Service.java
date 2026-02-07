@@ -5,10 +5,10 @@ public class Service {
 
   private long id;
   private String name;
-  private long price;
-  private long duration;
+  private int price;
+  private int duration;
 
-  public Service(long id, String name, long price, long duration) {
+  public Service(long id, String name, int price, int duration) {
     this.id = id;
     this.name = name;
     this.price = price;
@@ -33,20 +33,20 @@ public class Service {
   }
 
 
-  public long getPrice() {
+  public int getPrice() {
     return price;
   }
 
-  public void setPrice(long price) {
+  public void setPrice(int price) {
     this.price = price;
   }
 
 
-  public long getDuration() {
+  public int getDuration() {
     return duration;
   }
 
-  public void setDuration(long duration) {
+  public void setDuration(int duration) {
     this.duration = duration;
   }
 

@@ -1,9 +1,11 @@
 package org.example.backend.Dao.interfaces;
 
+import org.example.backend.Entities.Service;
+
 import java.sql.SQLException;
 import java.util.List;
 
-public interface ServiceDao<E> extends Dao<E>{
+public interface ServiceDao extends Dao<Service>{
     //READ
-    E findServiceById(long serviceId) throws SQLException;
+    Service findServiceById(long serviceId) throws SQLException;
 }

@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao<Service> {
+public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     public ServiceDaoJdbc(Connection connection) {
         super(connection);
     }
@@ -22,11 +22,32 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao<Service
             return new Service(
                     rs.getLong("id"),
                     rs.getString("name"),
-                    rs.getLong("price"),
-                    rs.getLong("duration")
+                    rs.getInt("price"),
+                    rs.getInt("duration")
             );
         }
         return null;
+    }
+
+    @Override
+    public void create(Service object) throws SQLException {
+
+    }
+
+    @Override
+    public void update(Service service) throws SQLException {
+        String sql = "UPDATE service SET name = ?, price = ?, duration = ? WHERE id = ?;";
+        PreparedStatement update = connection.prepareStatement(sql);
+        update.setString(1,service.getName());
+        update.setInt(2,service.getPrice());
+        update.setLong(3,service.getId());
+
+        update.executeUpdate();
+    }
+
+    @Override
+    public void remove(Service object) throws SQLException {
+
     }
 
     @Override
@@ -38,8 +59,8 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao<Service
             services.add(new Service(
                     rs.getLong("id"),
                     rs.getString("name"),
-                    rs.getLong("price"),
-                    rs.getLong("duration")
+                    rs.getInt("price"),
+                    rs.getInt("duration")
             ));
         }
         return services;
