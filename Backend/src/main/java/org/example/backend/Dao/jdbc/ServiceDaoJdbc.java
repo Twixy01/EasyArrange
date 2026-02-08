@@ -31,7 +31,13 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
 
     @Override
     public void create(Service object) throws SQLException {
+        String sql = "INSERT INTO service (name, price, duration) VALUES (?, ?, ?);";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1,object.getName());
+        stmt.setInt(2,object.getPrice());
+        stmt.setInt(3,object.getDuration());
 
+        stmt.executeUpdate();
     }
 
     @Override
@@ -47,6 +53,11 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
 
     @Override
     public void remove(Service object) throws SQLException {
+        String sql = "DELETE FROM service WHERE id = ?;";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1,object.getId());
+
+        stmt.executeUpdate();
 
     }
 

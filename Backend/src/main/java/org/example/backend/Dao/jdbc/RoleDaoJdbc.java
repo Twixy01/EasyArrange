@@ -40,7 +40,11 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
 
     @Override
     public void create(Role object) throws SQLException {
+        String sql = "INSERT INTO role (name) VALUES (?);";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1,object.getName());
 
+        stmt.executeUpdate();
     }
 
     @Override
@@ -55,7 +59,11 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
 
     @Override
     public void remove(Role object) throws SQLException {
+        String sql = "DELETE FROM role WHERE id = ?;";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1,object.getId());
 
+        stmt.executeUpdate();
     }
 
     @Override
