@@ -157,7 +157,11 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
 
     @Override
     public void remove(User object) throws SQLException {
+        String sql = "DELETE FROM user WHERE id = ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1, object.getId());
 
+        stmt.executeUpdate();
     }
 
     @Override

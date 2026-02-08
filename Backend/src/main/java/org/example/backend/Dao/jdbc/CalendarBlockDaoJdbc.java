@@ -90,7 +90,17 @@ public class CalendarBlockDaoJdbc extends JdbcConnection implements CalendarBloc
 
     @Override
     public void create(CalendarBlock object) throws SQLException {
+        String sql = "INSERT INTO calendar_block (start_datetime, end_datetime, staff_id) VALUES (?, ?, ?);";
+        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        stmt.setTimestamp(1, Timestamp.valueOf(object.getStartDatetime()));
+        stmt.setTimestamp(2, Timestamp.valueOf(object.getEndDatetime()));
+        stmt.setLong(3, object.getStaffId());
 
+        stmt.executeUpdate();
+        ResultSet rs = stmt.getGeneratedKeys();
+        if (rs.next()) {
+            object.setId(rs.getLong(1));
+        }
     }
 
     @Override
@@ -107,6 +117,10 @@ public class CalendarBlockDaoJdbc extends JdbcConnection implements CalendarBloc
 
     @Override
     public void remove(CalendarBlock object) throws SQLException {
+        String sql = "DELETE FROM calendar_block WHERE id = ?;";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1, object.getId());
+        stmt.executeUpdate();
 
     }
 

@@ -169,7 +169,11 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
     @Override
     public void remove(Booking object) throws SQLException {
+        String sql = "DELETE FROM booking WHERE id = ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setLong(1, object.getId());
 
+        stmt.executeUpdate();
     }
 
     @Override
