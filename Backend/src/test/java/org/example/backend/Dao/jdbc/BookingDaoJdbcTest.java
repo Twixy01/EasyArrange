@@ -65,12 +65,13 @@ class BookingDaoJdbcTest {
             assertEquals(booking.getEndDatetime(), created.getEndDatetime());
             assertEquals(booking.getServiceId(), created.getServiceId());
 
-        } finally{
+        } finally {
             if (created != null) model.remove(created);
         }
         created = model.findBookingById(booking.getId());
         assertNull(created);
     }
+
     @Test
     void createMethod_ThrowException_for_ExistingBooking_Or_SameStaffWithSamePeriod() throws SQLException {
         Booking original = new Booking(
@@ -81,7 +82,7 @@ class BookingDaoJdbcTest {
                 1
         );
         Booking created = null;
-        try{
+        try {
             model.create(original);
             created = model.findBookingById(original.getId());
 
@@ -90,12 +91,13 @@ class BookingDaoJdbcTest {
                     () -> model.create(original)
             );
             assertEquals("Datetime collision, when trying to create a booking.", thrownException.getMessage());
-        } finally{
+        } finally {
             if (created != null) model.remove(created);
         }
         created = model.findBookingById(original.getId());
         assertNull(created);
     }
+
     @Test
     void createMethod_ThrowException_for_BookingsCollisionFromRight() throws SQLException {
         Booking original = new Booking(
@@ -106,7 +108,7 @@ class BookingDaoJdbcTest {
                 1
         );
         Booking created = null;
-        try{
+        try {
             model.create(original);
             created = model.findBookingById(original.getId());
             Booking booking2 = new Booking(
@@ -121,7 +123,7 @@ class BookingDaoJdbcTest {
                     () -> model.create(booking2)
             );
             assertEquals("Datetime collision, when trying to create a booking.", thrownException.getMessage());
-        } finally{
+        } finally {
             if (created != null) model.remove(created);
         }
         created = model.findBookingById(original.getId());
@@ -138,7 +140,7 @@ class BookingDaoJdbcTest {
                 1
         );
         Booking created = null;
-        try{
+        try {
             model.create(original);
             created = model.findBookingById(original.getId());
             Booking booking2 = new Booking(
@@ -153,11 +155,13 @@ class BookingDaoJdbcTest {
                     () -> model.create(booking2)
             );
             assertEquals("Datetime collision, when trying to create a booking.", thrownException.getMessage());
-        } finally{
+        } finally {
             if (created != null) model.remove(created);
         }
         created = model.findBookingById(original.getId());
         assertNull(created);
+    }
+
     @Test
     void remove_worksAsIntended() throws SQLException {
 
