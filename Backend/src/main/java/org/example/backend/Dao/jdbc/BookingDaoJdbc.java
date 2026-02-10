@@ -141,8 +141,8 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
     @Override
     public void create(Booking booking) throws SQLException {
-        String sql = "INSERT INTO users (staffId, customerId, startDatetime, endDatetime, serviceId) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        String sql = "INSERT INTO booking (staff_id, customer_id, start_datetime, end_datetime, service_id) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         stmt.setLong(1, booking.getStaffId());
         stmt.setLong(2, booking.getCustomerId());
         stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
@@ -150,6 +150,11 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         stmt.setLong(5, booking.getServiceId());
 
         stmt.executeUpdate();
+
+        ResultSet keys = stmt.getGeneratedKeys();
+        if (keys.next()) {
+            booking.setId(keys.getLong(1));
+        }
     }
 
     @Override
