@@ -49,6 +49,43 @@ class ServiceDaoJdbcTest {
     }
 
     @Test
+    void successfullyCreatedService() throws SQLException {
+        Service service = new Service("Test Service", 100, 60);
+        Service created = null;
+        try {
+            model.create(service);
+            created = model.findServiceById(service.getId());
+            assertNotNull(created, "Service should be created and found in the database");
+
+            assertEquals(service.getId(), created.getId());
+            assertEquals(service.getName(), created.getName());
+            assertEquals(service.getPrice(), created.getPrice());
+            assertEquals(service.getDuration(), created.getDuration());
+        } finally {
+            if (created != null) model.remove(created);
+        }
+        created = model.findServiceById(service.getId());
+        assertNull(created);
+    }
+    @Test
+    void throwsExceptionWhenCreatingDuplicateService() throws SQLException {
+        Service service = new Service("Test Service", 100, 60);
+        Service created = null;
+        try {
+            model.create(service);
+            created = model.findServiceById(service.getId());
+            IllegalArgumentException thrownException = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> model.create(service)
+            );
+
+            assertEquals("Service already exists.", thrownException.getMessage());
+        } finally {
+            if (created != null) model.remove(created);
+        }
+        created = model.findServiceById(service.getId());
+        assertNull(created);
+    @Test
     void remove_worksAsIntended() throws SQLException {
         Service service = new Service("Manikűr", 6500, 45);
         ServiceDao serviceDao = new ServiceDaoJdbc(conn);

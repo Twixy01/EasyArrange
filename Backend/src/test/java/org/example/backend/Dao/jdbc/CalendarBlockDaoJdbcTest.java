@@ -2,6 +2,7 @@ package org.example.backend.Dao.jdbc;
 
 import org.example.backend.Dao.interfaces.CalendarBlockDao;
 import org.example.backend.Dao.interfaces.UserDao;
+import org.example.backend.Entities.Booking;
 import org.example.backend.Entities.CalendarBlock;
 import org.example.backend.Entities.User;
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +43,29 @@ class CalendarBlockDaoJdbcTest {
         }
     }
 
+    @Test
+    void successfullyCreatedBlock() throws SQLException {
+        CalendarBlock block = new CalendarBlock(
+                LocalDateTime.of(2026, 5, 10, 11, 0, 0),
+                LocalDateTime.of(2026, 5, 10, 11, 40, 0),
+                4
+        );
+        CalendarBlock created = null;
+        try {
+            model.create(block);
+            created = model.findCalendarBlockById(block.getId());
+            assertNotNull(created, "CalendarBlock should be created and found in the database");
+
+            assertEquals(block.getId(), created.getId());
+            assertEquals(block.getStartDatetime(), created.getStartDatetime());
+            assertEquals(block.getEndDatetime(), created.getEndDatetime());
+            assertEquals(block.getStaffId(), created.getStaffId());
+
+        } finally{
+            if (created != null) model.remove(created);
+        }
+        created = model.findCalendarBlockById(block.getId());
+        assertNull(created);
     @Test
     void remove_worksAsIntended() throws SQLException {
 
