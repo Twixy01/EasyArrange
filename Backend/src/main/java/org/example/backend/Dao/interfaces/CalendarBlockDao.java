@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CalendarBlockDao extends Dao<CalendarBlock>{
-    //READ
     CalendarBlock findCalendarBlockById(long id) throws SQLException;
     List<CalendarBlock> findCalendarBlocksByStaffId(long staffId) throws SQLException;
     List<CalendarBlock> findCalendarBlocksBetween(LocalDateTime start, LocalDateTime end) throws SQLException;

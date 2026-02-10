@@ -7,17 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserDao extends Dao<User>{
-    //Create
-
-    //Read
-
     User findUser(String email, String password) throws SQLException;
     User findUserById(long userId) throws SQLException;
     List<User> findUsersByRoleName(String roleName) throws SQLException;
     List<User> findAllStaff() throws SQLException;
     List<User> findAllCustomer() throws SQLException;
     List<User> searchUsersByName(String namePart) throws SQLException;
-    //Update
-
-    //Delete
+    boolean emailExists(String email) throws SQLException;
 }

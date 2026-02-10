@@ -129,16 +129,36 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
     }
 
     @Override
+    public boolean emailExists(String email) throws SQLException {
+        if (email == null) {
+            return false;
+        }
+
+        PreparedStatement findEmail = connection.prepareStatement("SELECT email FROM user WHERE email = ? LIMIT 1");
+        findEmail.setString(1, email);
+        ResultSet rs = findEmail.executeQuery();
+
+        return rs.next();
+    }
+
+    @Override
     public void create(User user) throws SQLException {
+        if (emailExists(user.getEmail())){
+            throw new IllegalArgumentException("This user already exists");
+        }
         String sql = "INSERT INTO user (name, email, profile_picture, password, role_id) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, user.getName());
         stmt.setString(2, user.getEmail());
         stmt.setString(3, user.getProfilePicture());
         stmt.setString(4, user.getPassword());
         stmt.setLong(5, user.getRoleId());
-
         stmt.executeUpdate();
+
+        ResultSet keys = stmt.getGeneratedKeys();
+        if (keys.next()) {
+            user.setId(keys.getLong(1));
+        }
     }
 
     @Override
