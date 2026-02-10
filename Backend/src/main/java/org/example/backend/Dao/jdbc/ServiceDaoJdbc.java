@@ -15,10 +15,10 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     @Override
     public Service findServiceById(long serviceId) throws SQLException {
         PreparedStatement serviceById = connection.prepareStatement("SELECT * FROM service WHERE id = ?");
-        serviceById.setLong(1,serviceId);
+        serviceById.setLong(1, serviceId);
         ResultSet rs = serviceById.executeQuery();
 
-        if (rs.next()){
+        if (rs.next()) {
             return new Service(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -30,7 +30,22 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     }
 
     @Override
+    public boolean serviceExists(String service) throws SQLException {
+        if (service == null || service.trim().isEmpty()) {
+            return false;
+        }
+        PreparedStatement findServiceName = connection.prepareStatement("SELECT name FROM service WHERE name = ? LIMIT 1");
+        findServiceName.setString(1, service);
+        ResultSet rs = findServiceName.executeQuery();
+
+        return rs.next();
+    }
+
+    @Override
     public void create(Service service) throws SQLException {
+        if (serviceExists(service.getName())){
+            throw new IllegalArgumentException("Service already exists.");
+        }
         String sql = "INSERT INTO service (name, price, duration) VALUES (?, ?, ?)";
         PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -63,18 +78,18 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     public void remove(Service object) throws SQLException {
         String sql = "DELETE FROM service WHERE id = ?;";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1,object.getId());
+        stmt.setLong(1, object.getId());
 
         stmt.executeUpdate();
 
     }
 
     @Override
-    public List<Service> findAll() throws SQLException{
+    public List<Service> findAll() throws SQLException {
         List<Service> services = new ArrayList<>();
         Statement findAll = connection.createStatement();
         ResultSet rs = findAll.executeQuery("SELECT * FROM service");
-        while (rs.next()){
+        while (rs.next()) {
             services.add(new Service(
                     rs.getLong("id"),
                     rs.getString("name"),

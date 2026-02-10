@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingDao extends Dao<Booking>{
-
-    //READ
     Booking findBookingById(long id) throws SQLException;
     List<Booking> findBookingsByStaffId(long staffId) throws SQLException;
     List<Booking> findBookingsByCustomerId(long customerId) throws SQLException;

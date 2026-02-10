@@ -17,6 +17,12 @@ public class CalendarBlock {
     this.staffId = staffId;
   }
 
+  public CalendarBlock(LocalDateTime startDatetime, LocalDateTime endDatetime, long staffId) {
+    this.startDatetime = startDatetime;
+    this.endDatetime = endDatetime;
+    this.staffId = staffId;
+  }
+
   public long getId() {
     return id;
   }

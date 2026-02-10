@@ -10,7 +10,7 @@
 <h1>Bejelentkezési felület DEMO</h1>
 <form method="POST" action="${pageContext.request.contextPath}/login">
     <p><label for="email">Email: <input id="email" name="email"></label></p>
-    <p>Jelszó: <input id="jelszo_id" name="password"></p>
+    <p>Jelszó: <input type="password" id="jelszo_id" name="password"></p>
 
     <input type="submit" value="Bejelentkezés"> <br>
 </form>
