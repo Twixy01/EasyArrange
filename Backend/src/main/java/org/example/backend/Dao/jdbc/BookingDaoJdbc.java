@@ -3,6 +3,7 @@ package org.example.backend.Dao.jdbc;
 import org.example.backend.Dao.interfaces.BookingDao;
 import org.example.backend.Entities.Booking;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
     }
 
     @Override
-
     public Booking findBookingById(long id) throws SQLException {
         PreparedStatement bookingById = connection.prepareStatement("SELECT * FROM booking WHERE id = ?");
         bookingById.setLong(1, id);
@@ -32,7 +32,6 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         }
         return null;
     }
-
 
     @Override
     public List<Booking> findBookingsByStaffId(long staffId) throws SQLException {
@@ -139,10 +138,24 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         return bookings;
     }
 
+    public boolean hasBookingConflict(Booking booking) throws SQLException {
+        String sql = "SELECT * FROM booking WHERE staff_id = ? AND end_datetime > ? AND start_datetime < ? LIMIT 1";
+        PreparedStatement conflict = connection.prepareStatement(sql);
+        conflict.setLong(1, booking.getStaffId());
+        conflict.setTimestamp(2, Timestamp.valueOf(booking.getStartDatetime()));
+        conflict.setTimestamp(3, Timestamp.valueOf(booking.getEndDatetime()));
+        ResultSet rs = conflict.executeQuery();
+
+        return rs.next();
+    }
+
     @Override
     public void create(Booking booking) throws SQLException {
-        String sql = "INSERT INTO users (staffId, customerId, startDatetime, endDatetime, serviceId) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        if (hasBookingConflict(booking)) {
+            throw new IllegalArgumentException("Datetime collision, when trying to create a booking.");
+        }
+        String sql = "INSERT INTO booking (staff_id, customer_id, start_datetime, end_datetime, service_id) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         stmt.setLong(1, booking.getStaffId());
         stmt.setLong(2, booking.getCustomerId());
         stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
@@ -150,6 +163,12 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         stmt.setLong(5, booking.getServiceId());
 
         stmt.executeUpdate();
+
+        ResultSet keys = stmt.getGeneratedKeys();
+        if (keys.next()){
+            booking.setId(keys.getLong(1));
+        }
+
     }
 
     @Override

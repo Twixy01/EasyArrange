@@ -15,6 +15,12 @@ public class Service {
     this.duration = duration;
   }
 
+  public Service(String name, int price, int duration) {
+    this.name = name;
+    this.price = price;
+    this.duration = duration;
+  }
+
   public long getId() {
     return id;
   }
