@@ -165,10 +165,9 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         stmt.executeUpdate();
 
         ResultSet keys = stmt.getGeneratedKeys();
-        if (keys.next()){
+        if (keys.next()) {
             booking.setId(keys.getLong(1));
         }
-
     }
 
     @Override

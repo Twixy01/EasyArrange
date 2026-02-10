@@ -61,13 +61,15 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
         }
     }
 
+
     @Override
     public void update(Service service) throws SQLException {
         String sql = "UPDATE service SET name = ?, price = ?, duration = ? WHERE id = ?;";
         PreparedStatement update = connection.prepareStatement(sql);
-        update.setString(1, service.getName());
-        update.setInt(2, service.getPrice());
-        update.setLong(3, service.getId());
+        update.setString(1,service.getName());
+        update.setInt(2,service.getPrice());
+        update.setInt(3, service.getDuration());
+        update.setLong(4, service.getId());
 
         update.executeUpdate();
     }
@@ -96,5 +98,22 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
             ));
         }
         return services;
+    }
+
+    @Override
+    public Service readServiceByName(String serviceName) throws SQLException {
+        PreparedStatement serviceByName = connection.prepareStatement("SELECT * FROM service WHERE name = ?");
+        serviceByName.setString(1,serviceName);
+        ResultSet rs = serviceByName.executeQuery();
+
+        if (rs.next()){
+            return new Service(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getInt("price"),
+                    rs.getInt("duration")
+            );
+        }
+        return null;
     }
 }
