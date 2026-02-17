@@ -45,17 +45,17 @@ class ServiceDaoJdbcTest {
         Service created = null;
         try {
             model.create(service);
-            created = model.findServiceById(service.getId());
+            created = model.findServiceById(service.getService_id());
             assertNotNull(created, "Service should be created and found in the database");
 
-            assertEquals(service.getId(), created.getId());
+            assertEquals(service.getService_id(), created.getService_id());
             assertEquals(service.getName(), created.getName());
             assertEquals(service.getPrice(), created.getPrice());
             assertEquals(service.getDuration(), created.getDuration());
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findServiceById(service.getId());
+        created = model.findServiceById(service.getService_id());
         assertNull(created);
     }
 
@@ -65,7 +65,7 @@ class ServiceDaoJdbcTest {
         Service created = null;
         try {
             model.create(service);
-            created = model.findServiceById(service.getId());
+            created = model.findServiceById(service.getService_id());
             IllegalArgumentException thrownException = assertThrows(
                     IllegalArgumentException.class,
                     () -> model.create(service)
@@ -75,7 +75,7 @@ class ServiceDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findServiceById(service.getId());
+        created = model.findServiceById(service.getService_id());
         assertNull(created);
     }
 
@@ -86,7 +86,7 @@ class ServiceDaoJdbcTest {
 
         serviceDao.create(service);
 
-        Service createdService = serviceDao.findServiceById(service.getId());
+        Service createdService = serviceDao.findServiceById(service.getService_id());
         assertNotNull(createdService, "Service should exist before removal");
 
         serviceDao.remove(createdService);
@@ -102,14 +102,14 @@ class ServiceDaoJdbcTest {
 
         serviceDao.create(service);
 
-        Service createdService = serviceDao.findServiceById(service.getId());
+        Service createdService = serviceDao.findServiceById(service.getService_id());
         assertNotNull(createdService, "Service should exist before update");
 
         createdService.setPrice(8500);
         createdService.setDuration(75);
         serviceDao.update(createdService);
 
-        Service updatedService = serviceDao.findServiceById(service.getId());
+        Service updatedService = serviceDao.findServiceById(service.getService_id());
         assertNotNull(updatedService, "Updated service should still exist");
         assertEquals(8500, updatedService.getPrice(), "Price should be updated to 8500");
         assertEquals(75, updatedService.getDuration(), "Duration should be updated to 75 minutes");
@@ -123,7 +123,7 @@ class ServiceDaoJdbcTest {
 
         serviceDao.create(service);
 
-        Service foundService = serviceDao.findServiceById(service.getId());
+        Service foundService = serviceDao.findServiceById(service.getService_id());
         assertNotNull(foundService, "Service should be found by ID");
         assertEquals("Szempilla lifting", foundService.getName(), "Service name should match");
         assertEquals(12000, foundService.getPrice(), "Service price should match");

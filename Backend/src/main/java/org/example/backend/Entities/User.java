@@ -3,15 +3,15 @@ package org.example.backend.Entities;
 
 public class User {
 
-  private long id;
+  private long user_id;
   private String name;
   private String email;
   private String profilePicture;
   private String password;
   private long roleId;
 
-  public User(long id, String name, String email, String profilePicture, String password, long roleId) {
-    this.id = id;
+  public User(long user_id, String name, String email, String profilePicture, String password, long roleId) {
+    this.user_id = user_id;
     this.name = name;
     this.email = email;
     this.profilePicture = profilePicture;
@@ -27,12 +27,12 @@ public class User {
     this.roleId = roleId;
   }
 
-  public long getId() {
-    return id;
+  public long getUser_id() {
+    return user_id;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setUser_id(long user_id) {
+    this.user_id = user_id;
   }
 
 
@@ -83,7 +83,7 @@ public class User {
   @Override
   public String toString() {
     return "User{" +
-            "id=" + id +
+            "id=" + user_id +
             ", name='" + name + '\'' +
             ", email='" + email + '\'' +
             ", profilePicture='" + profilePicture + '\'' +

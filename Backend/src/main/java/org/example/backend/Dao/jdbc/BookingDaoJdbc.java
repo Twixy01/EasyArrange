@@ -15,13 +15,13 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
     }
 
     @Override
-    public Booking findBookingById(long id) throws SQLException {
-        PreparedStatement bookingById = connection.prepareStatement("SELECT * FROM booking WHERE id = ?");
-        bookingById.setLong(1, id);
+    public Booking findBookingById(long booking_id) throws SQLException {
+        PreparedStatement bookingById = connection.prepareStatement("SELECT * FROM booking WHERE booking_id = ?");
+        bookingById.setLong(1, booking_id);
         ResultSet rs = bookingById.executeQuery();
         if (rs.next()) {
             return new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),
@@ -41,7 +41,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         ResultSet rs = bookingsByStaffId.executeQuery();
         while (rs.next()) {
             bookings.add(new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),
@@ -81,7 +81,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
         while (rs.next()) {
             bookings.add(new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),
@@ -103,7 +103,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
         while (rs.next()) {
             bookings.add(new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),
@@ -127,7 +127,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
         while (rs.next()) {
             bookings.add(new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),
@@ -166,7 +166,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
 
         ResultSet keys = stmt.getGeneratedKeys();
         if (keys.next()) {
-            booking.setId(keys.getLong(1));
+            booking.setBooking_id(keys.getLong(1));
         }
     }
 
@@ -179,7 +179,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         update.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
         update.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
         update.setLong(5, booking.getServiceId());
-        update.setLong(6, booking.getId());
+        update.setLong(6, booking.getBooking_id());
 
         update.executeUpdate();
 
@@ -189,7 +189,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
     public void remove(Booking object) throws SQLException {
         String sql = "DELETE FROM booking WHERE id = ?";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1, object.getId());
+        stmt.setLong(1, object.getBooking_id());
 
         stmt.executeUpdate();
     }
@@ -201,7 +201,7 @@ public class BookingDaoJdbc extends JdbcConnection implements BookingDao {
         ResultSet rs = findAll.executeQuery("SELECT * FROM booking");
         while (rs.next()) {
             bookings.add(new Booking(
-                    rs.getLong("id"),
+                    rs.getLong("booking_id"),
                     rs.getLong("staff_id"),
                     rs.getLong("customer_id"),
                     rs.getTimestamp("start_datetime").toLocalDateTime(),

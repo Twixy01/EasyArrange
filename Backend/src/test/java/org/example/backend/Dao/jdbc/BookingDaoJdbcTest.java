@@ -55,10 +55,10 @@ class BookingDaoJdbcTest {
         Booking created = null;
         try {
             model.create(booking);
-            created = model.findBookingById(booking.getId());
+            created = model.findBookingById(booking.getBooking_id());
             assertNotNull(created, "Booking should be created and found in the database");
 
-            assertEquals(booking.getId(), created.getId());
+            assertEquals(booking.getBooking_id(), created.getBooking_id());
             assertEquals(booking.getStaffId(), created.getStaffId());
             assertEquals(booking.getCustomerId(), created.getCustomerId());
             assertEquals(booking.getStartDatetime(), created.getStartDatetime());
@@ -68,7 +68,7 @@ class BookingDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findBookingById(booking.getId());
+        created = model.findBookingById(booking.getBooking_id());
         assertNull(created);
     }
 
@@ -84,7 +84,7 @@ class BookingDaoJdbcTest {
         Booking created = null;
         try {
             model.create(original);
-            created = model.findBookingById(original.getId());
+            created = model.findBookingById(original.getBooking_id());
 
             IllegalArgumentException thrownException = assertThrows(
                     IllegalArgumentException.class,
@@ -94,7 +94,7 @@ class BookingDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findBookingById(original.getId());
+        created = model.findBookingById(original.getBooking_id());
         assertNull(created);
     }
 
@@ -110,7 +110,7 @@ class BookingDaoJdbcTest {
         Booking created = null;
         try {
             model.create(original);
-            created = model.findBookingById(original.getId());
+            created = model.findBookingById(original.getBooking_id());
             Booking booking2 = new Booking(
                     3,
                     10,
@@ -126,7 +126,7 @@ class BookingDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findBookingById(original.getId());
+        created = model.findBookingById(original.getBooking_id());
         assertNull(created);
     }
 
@@ -142,7 +142,7 @@ class BookingDaoJdbcTest {
         Booking created = null;
         try {
             model.create(original);
-            created = model.findBookingById(original.getId());
+            created = model.findBookingById(original.getBooking_id());
             Booking booking2 = new Booking(
                     3,
                     10,
@@ -158,7 +158,7 @@ class BookingDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findBookingById(original.getId());
+        created = model.findBookingById(original.getBooking_id());
         assertNull(created);
     }
 
@@ -180,16 +180,16 @@ class BookingDaoJdbcTest {
         Service createdService = serviceDao.readServiceByName(service.getName());
 
 
-        Booking booking = new Booking(createdStaff.getId(), createdCustomer.getId(), LocalDateTime.now(), LocalDateTime.now().plusHours(1), createdService.getId());
+        Booking booking = new Booking(createdStaff.getUser_id(), createdCustomer.getUser_id(), LocalDateTime.now(), LocalDateTime.now().plusHours(1), createdService.getService_id());
         model.create(booking);
 
-        Booking createdBooking = model.findBookingById(booking.getId());
+        Booking createdBooking = model.findBookingById(booking.getBooking_id());
         assertNotNull(createdBooking, "Booking should exist before removal");
 
 
         model.remove(createdBooking);
 
-        assertNull(model.findBookingById(booking.getId()), "Booking should be removed from DB");
+        assertNull(model.findBookingById(booking.getBooking_id()), "Booking should be removed from DB");
 
 
         serviceDao.remove(createdService);

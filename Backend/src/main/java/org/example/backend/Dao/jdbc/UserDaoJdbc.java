@@ -21,7 +21,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
 
         if (rs.next()) {
             return new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -35,13 +35,13 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
     @Override
     public List<User> findUsersByRoleName(String roleName) throws SQLException {
         List<User> users = new ArrayList<>();
-        PreparedStatement usersByRoleName = connection.prepareStatement("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like ?");
+        PreparedStatement usersByRoleName = connection.prepareStatement("SELECT * FROM user JOIN role ON role.role_id = user.role_id WHERE role.name like ?");
         usersByRoleName.setString(1, roleName);
         ResultSet rs = usersByRoleName.executeQuery();
 
         while (rs.next()) {
             users.add(new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -56,11 +56,11 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
     public List<User> findAllStaff() throws SQLException {
         List<User> staffs = new ArrayList<>();
         Statement findAllStaff = connection.createStatement();
-        ResultSet rs = findAllStaff.executeQuery("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like 'staff'");
+        ResultSet rs = findAllStaff.executeQuery("SELECT * FROM user JOIN role ON role.role_id = user.role_id WHERE role.name like 'staff'");
 
         while (rs.next()) {
             staffs.add(new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -75,11 +75,11 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
     public List<User> findAllCustomer() throws SQLException {
         List<User> customers = new ArrayList<>();
         Statement findAllCustomer = connection.createStatement();
-        ResultSet rs = findAllCustomer.executeQuery("SELECT * FROM user JOIN role ON role.id = user.role_id WHERE role.name like 'customer'");
+        ResultSet rs = findAllCustomer.executeQuery("SELECT * FROM user JOIN role ON role.role_id = user.role_id WHERE role.name like 'customer'");
 
         while (rs.next()) {
             customers.add(new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -98,7 +98,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
 
         while (rs.next()) {
             users.add(new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -110,14 +110,14 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
     }
 
     @Override
-    public User findUserById(long userId) throws SQLException {
-        PreparedStatement findUserById = connection.prepareStatement("SELECT * FROM user WHERE id = ?");
-        findUserById.setLong(1, userId);
+    public User findUserById(long user_id) throws SQLException {
+        PreparedStatement findUserById = connection.prepareStatement("SELECT * FROM user WHERE user_id = ?");
+        findUserById.setLong(1, user_id);
         ResultSet rs = findUserById.executeQuery();
 
         if (rs.next()) {
             return new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),
@@ -157,29 +157,29 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
 
         ResultSet keys = stmt.getGeneratedKeys();
         if (keys.next()) {
-            user.setId(keys.getLong(1));
+            user.setUser_id(keys.getLong(1));
         }
     }
 
     @Override
     public void update(User user) throws SQLException {
-        String sql = "UPDATE user SET name = ?, email = ?, profile_picture = ?, password = ?, role_id = ? WHERE id = ?;";
+        String sql = "UPDATE user SET name = ?, email = ?, profile_picture = ?, password = ?, role_id = ? WHERE user_id = ?;";
         PreparedStatement update = connection.prepareStatement(sql);
         update.setString(1,user.getName());
         update.setString(2,user.getEmail());
         update.setString(3,user.getProfilePicture());
         update.setString(4,user.getPassword());
         update.setLong(5,user.getRoleId());
-        update.setLong(6,user.getId());
+        update.setLong(6,user.getUser_id());
 
         update.executeUpdate();
     }
 
     @Override
     public void remove(User object) throws SQLException {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM user WHERE user_id = ?";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1, object.getId());
+        stmt.setLong(1, object.getUser_id());
 
         stmt.executeUpdate();
     }
@@ -191,7 +191,7 @@ public class UserDaoJdbc extends JdbcConnection implements UserDao {
         ResultSet rs = findAll.executeQuery("SELECT * FROM user");
         while (rs.next()) {
             users.add(new User(
-                    rs.getLong("id"),
+                    rs.getLong("user_id"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("profile_picture"),

@@ -3,13 +3,13 @@ package org.example.backend.Entities;
 
 public class Service {
 
-  private long id;
+  private long service_id;
   private String name;
   private int price;
   private int duration;
 
-  public Service(long id, String name, int price, int duration) {
-    this.id = id;
+  public Service(long service_id, String name, int price, int duration) {
+    this.service_id = service_id;
     this.name = name;
     this.price = price;
     this.duration = duration;
@@ -21,12 +21,12 @@ public class Service {
     this.duration = duration;
   }
 
-  public long getId() {
-    return id;
+  public long getService_id() {
+    return service_id;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setService_id(long service_id) {
+    this.service_id = service_id;
   }
 
 

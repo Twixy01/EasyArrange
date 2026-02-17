@@ -4,15 +4,15 @@ import java.time.LocalDateTime;
 
 public class Booking {
 
-  private long id;
+  private long booking_id;
   private long staffId;
   private long customerId;
   private LocalDateTime startDatetime;
   private LocalDateTime endDatetime;
   private long serviceId;
 
-  public Booking(long id, long staffId, long customerId, LocalDateTime startDatetime, LocalDateTime endDatetime, long serviceId) {
-    this.id = id;
+  public Booking(long booking_id, long staffId, long customerId, LocalDateTime startDatetime, LocalDateTime endDatetime, long serviceId) {
+    this.booking_id = booking_id;
     this.staffId = staffId;
     this.customerId = customerId;
     this.startDatetime = startDatetime;
@@ -28,14 +28,13 @@ public class Booking {
     this.serviceId = serviceId;
   }
 
-  public long getId() {
-    return id;
+  public long getBooking_id() {
+    return booking_id;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setBooking_id(long booking_id) {
+    this.booking_id = booking_id;
   }
-
 
   public long getStaffId() {
     return staffId;
@@ -86,7 +85,7 @@ public class Booking {
   @Override
   public String toString() {
     return "Booking{" +
-            "id=" + id +
+            "id=" + booking_id +
             ", staffId=" + staffId +
             ", customerId=" + customerId +
             ", startDatetime=" + startDatetime +
