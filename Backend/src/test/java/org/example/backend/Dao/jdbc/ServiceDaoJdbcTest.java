@@ -1,21 +1,12 @@
 package org.example.backend.Dao.jdbc;
 
 
-import jakarta.servlet.http.HttpSession;
-import org.example.backend.Dao.interfaces.RoleDao;
 import org.example.backend.Dao.interfaces.ServiceDao;
-import org.example.backend.Dao.interfaces.UserDao;
 import org.example.backend.Entities.Service;
-import org.example.backend.Entities.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,8 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ServiceDaoJdbcTest {
 
     Connection conn;
-    UserDao model;
-
+    ServiceDao model;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -38,7 +28,8 @@ class ServiceDaoJdbcTest {
         conn = DriverManager.getConnection(
                 "jdbc:mariadb://localhost:3306/test_easyarrange", "root", ""
         );
-        model = new UserDaoJdbc(conn);
+        model = new ServiceDaoJdbc(conn) {
+        };
     }
 
     @AfterEach
@@ -67,6 +58,7 @@ class ServiceDaoJdbcTest {
         created = model.findServiceById(service.getId());
         assertNull(created);
     }
+
     @Test
     void throwsExceptionWhenCreatingDuplicateService() throws SQLException {
         Service service = new Service("Test Service", 100, 60);
@@ -85,6 +77,8 @@ class ServiceDaoJdbcTest {
         }
         created = model.findServiceById(service.getId());
         assertNull(created);
+    }
+
     @Test
     void remove_worksAsIntended() throws SQLException {
         Service service = new Service("Manikűr", 6500, 45);
@@ -122,7 +116,7 @@ class ServiceDaoJdbcTest {
         serviceDao.remove(service);
     }
 
-   @Test
+    @Test
     void readServiceById_worksAsIntended() throws SQLException {
         Service service = new Service("Szempilla lifting", 12000, 90);
         ServiceDao serviceDao = new ServiceDaoJdbc(conn);

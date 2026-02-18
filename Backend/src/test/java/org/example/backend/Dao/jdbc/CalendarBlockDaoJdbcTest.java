@@ -2,7 +2,6 @@ package org.example.backend.Dao.jdbc;
 
 import org.example.backend.Dao.interfaces.CalendarBlockDao;
 import org.example.backend.Dao.interfaces.UserDao;
-import org.example.backend.Entities.Booking;
 import org.example.backend.Entities.CalendarBlock;
 import org.example.backend.Entities.User;
 import org.junit.jupiter.api.AfterEach;
@@ -61,11 +60,13 @@ class CalendarBlockDaoJdbcTest {
             assertEquals(block.getEndDatetime(), created.getEndDatetime());
             assertEquals(block.getStaffId(), created.getStaffId());
 
-        } finally{
+        } finally {
             if (created != null) model.remove(created);
         }
         created = model.findCalendarBlockById(block.getId());
         assertNull(created);
+    }
+
     @Test
     void remove_worksAsIntended() throws SQLException {
 
