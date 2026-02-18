@@ -13,14 +13,14 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     }
 
     @Override
-    public Service findServiceById(long serviceId) throws SQLException {
-        PreparedStatement serviceById = connection.prepareStatement("SELECT * FROM service WHERE id = ?");
-        serviceById.setLong(1, serviceId);
+    public Service findServiceById(long service_id) throws SQLException {
+        PreparedStatement serviceById = connection.prepareStatement("SELECT * FROM service WHERE service_id = ?");
+        serviceById.setLong(1, service_id);
         ResultSet rs = serviceById.executeQuery();
 
         if (rs.next()) {
             return new Service(
-                    rs.getLong("id"),
+                    rs.getLong("service_id"),
                     rs.getString("name"),
                     rs.getInt("price"),
                     rs.getInt("duration")
@@ -46,6 +46,7 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
         if (serviceExists(service.getName())){
             throw new IllegalArgumentException("Service already exists.");
         }
+        
         String sql = "INSERT INTO service (name, price, duration) VALUES (?, ?, ?)";
         PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -57,19 +58,19 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
 
         ResultSet keys = stmt.getGeneratedKeys();
         if (keys.next()) {
-            service.setId(keys.getLong(1));
+            service.setService_id(keys.getLong(1));
         }
     }
 
 
     @Override
     public void update(Service service) throws SQLException {
-        String sql = "UPDATE service SET name = ?, price = ?, duration = ? WHERE id = ?;";
+        String sql = "UPDATE service SET name = ?, price = ?, duration = ? WHERE service_id = ?;";
         PreparedStatement update = connection.prepareStatement(sql);
         update.setString(1,service.getName());
         update.setInt(2,service.getPrice());
         update.setInt(3, service.getDuration());
-        update.setLong(4, service.getId());
+        update.setLong(4, service.getService_id());
 
         update.executeUpdate();
     }
@@ -78,7 +79,7 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
     public void remove(Service object) throws SQLException {
         String sql = "DELETE FROM service WHERE id = ?;";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1, object.getId());
+        stmt.setLong(1, object.getService_id());
 
         stmt.executeUpdate();
 
@@ -91,7 +92,7 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
         ResultSet rs = findAll.executeQuery("SELECT * FROM service");
         while (rs.next()) {
             services.add(new Service(
-                    rs.getLong("id"),
+                    rs.getLong("service_id"),
                     rs.getString("name"),
                     rs.getInt("price"),
                     rs.getInt("duration")
@@ -108,7 +109,7 @@ public class ServiceDaoJdbc extends JdbcConnection implements ServiceDao {
 
         if (rs.next()){
             return new Service(
-                    rs.getLong("id"),
+                    rs.getLong("service_id"),
                     rs.getString("name"),
                     rs.getInt("price"),
                     rs.getInt("duration")

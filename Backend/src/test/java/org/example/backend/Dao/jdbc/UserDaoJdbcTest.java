@@ -45,10 +45,10 @@ class UserDaoJdbcTest {
         User created = null;
         try {
             model.create(user);
-            created = model.findUserById(user.getId());
+            created = model.findUserById(user.getUser_id());
             assertNotNull(created, "User should be created and found in the database");
 
-            assertEquals(user.getId(), created.getId());
+            assertEquals(user.getUser_id(), created.getUser_id());
             assertEquals(user.getEmail(), created.getEmail());
             assertEquals(user.getName(), created.getName());
             assertEquals(user.getProfilePicture(), created.getProfilePicture());
@@ -56,7 +56,7 @@ class UserDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findUserById(user.getId());
+        created = model.findUserById(user.getUser_id());
         assertNull(created);
     }
 
@@ -67,7 +67,7 @@ class UserDaoJdbcTest {
         User created = null;
         try {
             model.create(user);
-            created = model.findUserById(user.getId());
+            created = model.findUserById(user.getUser_id());
             IllegalArgumentException thrownException = assertThrows(
                     IllegalArgumentException.class,
                     () -> model.create(user)
@@ -77,7 +77,7 @@ class UserDaoJdbcTest {
         } finally {
             if (created != null) model.remove(created);
         }
-        created = model.findUserById(user.getId());
+        created = model.findUserById(user.getUser_id());
         assertNull(created);
     }
     @Test
@@ -87,12 +87,12 @@ class UserDaoJdbcTest {
 
         userDao.create(user);
 
-        User createdUser = userDao.findUserById(user.getId());
+        User createdUser = userDao.findUserById(user.getUser_id());
         assertNotNull(createdUser, "User should exist before removal");
 
         userDao.remove(createdUser);
 
-        assertNull(userDao.findUserById(createdUser.getId()), "User should be removed from DB");
+        assertNull(userDao.findUserById(createdUser.getUser_id()), "User should be removed from DB");
     }
 
     @Test
@@ -102,13 +102,13 @@ class UserDaoJdbcTest {
 
         userDao.create(user);
 
-        User createdUser = userDao.findUserById(user.getId());
+        User createdUser = userDao.findUserById(user.getUser_id());
         assertNotNull(createdUser, "User should exist before update");
 
         createdUser.setName("Updated Milan");
         userDao.update(createdUser);
 
-        User updatedUser = userDao.findUserById(createdUser.getId());
+        User updatedUser = userDao.findUserById(createdUser.getUser_id());
         assertNotNull(updatedUser, "Updated user should still exist");
         assertEquals("Updated Milan", updatedUser.getName(), "User name should be updated");
         userDao.remove(user);
@@ -121,7 +121,7 @@ class UserDaoJdbcTest {
 
         userDao.create(user);
 
-        User createdUser = userDao.findUserById(user.getId());
+        User createdUser = userDao.findUserById(user.getUser_id());
         assertNotNull(createdUser, "User should exist after creation");
         assertEquals("Milan", createdUser.getName(), "User name should match");
         assertEquals("almagmail.com", createdUser.getEmail(), "User email should match");

@@ -79,11 +79,11 @@ class CalendarBlockDaoJdbcTest {
 
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = start.plusHours(2);
-        CalendarBlock block = new CalendarBlock(0, start, end, createdStaff.getId());
+        CalendarBlock block = new CalendarBlock(0, start, end, createdStaff.getUser_id());
         model.create(block);
 
 
-        List<CalendarBlock> blocks = model.findCalendarBlocksByStaffId(createdStaff.getId());
+        List<CalendarBlock> blocks = model.findCalendarBlocksByStaffId(createdStaff.getUser_id());
         assertFalse(blocks.isEmpty(), "CalendarBlock should be created.");
         CalendarBlock createdBlock = blocks.get(0);
         assertNotNull(model.findCalendarBlockById(createdBlock.getId()), "CalendarBlock should exist before removal");

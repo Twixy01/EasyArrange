@@ -17,7 +17,7 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
 
     @Override
     public long findRoleIdByName(String roleName) throws SQLException {
-        PreparedStatement roleIdByName = connection.prepareStatement("SELECT id FROM role WHERE name = ?");
+        PreparedStatement roleIdByName = connection.prepareStatement("SELECT role_id FROM role WHERE name = ?");
         roleIdByName.setString(1,roleName);
         ResultSet rs = roleIdByName.executeQuery();
 
@@ -29,7 +29,7 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
 
     @Override
     public String findRoleNameById(long roleId) throws SQLException {
-        PreparedStatement getRoleName = connection.prepareStatement("SELECT name FROM role WHERE id = ?");
+        PreparedStatement getRoleName = connection.prepareStatement("SELECT name FROM role WHERE role_id = ?");
         getRoleName.setLong(1,roleId);
         ResultSet rs = getRoleName.executeQuery();
         if (rs.next()){
@@ -37,7 +37,7 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
         }
         return null;
     }
-
+    
     @Override
     public void create(Role role) throws SQLException {
         String sql = "INSERT INTO role (name) VALUES (?);";
@@ -48,25 +48,25 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
 
         ResultSet keys = stmt.getGeneratedKeys();
         if (keys.next()) {
-            role.setId(keys.getLong(1));
+            role.setRole_id(keys.getLong(1));
         }
     }
 
     @Override
     public void update(Role role) throws SQLException {
-        String sql = "UPDATE role SET name = ? WHERE id = ?;";
+        String sql = "UPDATE role SET name = ? WHERE role_id = ?;";
         PreparedStatement update = connection.prepareStatement(sql);
         update.setString(1,role.getName());
-        update.setLong(2,role.getId());
+        update.setLong(2,role.getRole_id());
 
         update.executeUpdate();
     }
 
     @Override
     public void remove(Role object) throws SQLException {
-        String sql = "DELETE FROM role WHERE id = ?;";
+        String sql = "DELETE FROM role WHERE role_id = ?;";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1,object.getId());
+        stmt.setLong(1,object.getRole_id());
 
         stmt.executeUpdate();
     }
@@ -78,7 +78,7 @@ public class RoleDaoJdbc extends JdbcConnection implements RoleDao {
         ResultSet rs = findAll.executeQuery("SELECT * FROM role");
         while (rs.next()){
             roles.add(new Role(
-                    rs.getLong("id"),
+                    rs.getLong("role_id"),
                     rs.getString("name")
             ));
         }
