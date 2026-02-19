@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.datasource">java:comp/env/jdbc/easyarrange</property>
+        <mapping class="org.example.backend.Model.Booking"/>
+        <mapping class="org.example.backend.Model.CalendarBlock"/>
+        <mapping class="org.example.backend.Model.Role"/>
+        <mapping class="org.example.backend.Model.Service"/>
+        <mapping class="org.example.backend.Model.User"/>
+        <mapping class="org.example.backend.Model.entity.Booking"/>
+        <mapping class="org.example.backend.Model.entity.CalendarBlock"/>
+        <mapping class="org.example.backend.Model.entity.Role"/>
+        <mapping class="org.example.backend.Model.entity.Service"/>
+        <mapping class="org.example.backend.Model.entity.User"/>
+        <mapping class="org.example.backend.Model.entity.Staff"/>
+        <mapping class="org.example.backend.Model.entity.StaffService"/>
+    </session-factory>
+</hibernate-configuration>
