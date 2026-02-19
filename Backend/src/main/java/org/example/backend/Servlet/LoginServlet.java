@@ -3,12 +3,10 @@ package org.example.backend.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import org.example.backend.Dao.interfaces.RoleDao;
-import org.example.backend.Dao.interfaces.UserDao;
-import org.example.backend.Dao.jdbc.RoleDaoJdbc;
-import org.example.backend.Dao.jdbc.UserDaoJdbc;
-import org.example.backend.Entities.Role;
-import org.example.backend.Entities.User;
+import org.example.backend.Dao.RoleDao;
+import org.example.backend.Dao.UserDao;
+import org.example.backend.Dao.jpa.RoleDaoJPA;
+import org.example.backend.Dao.jpa.UserDaoJPA;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -48,8 +46,8 @@ public class LoginServlet extends HttpServlet {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
-            UserDao userDao = new UserDaoJdbc(conn);
-            RoleDao roleDao = new RoleDaoJdbc(conn);
+            UserDao userDao = new UserDaoJPA(conn);
+            RoleDao roleDao = new RoleDaoJPA(conn);
             user = userDao.findUser(email,password);
 
             if (user == null) {
