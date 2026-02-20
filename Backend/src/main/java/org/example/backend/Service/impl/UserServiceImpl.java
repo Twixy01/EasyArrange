@@ -1,6 +1,7 @@
 package org.example.backend.Service.impl;
 
 import org.example.backend.Dao.UserDao;
+import org.example.backend.Model.entity.User;
 import org.example.backend.Service.UserService;
 
 
@@ -37,4 +38,10 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(long id) {
 
     }
+
+    @Override
+    public void checkLogin() {
+
+    }
+
 }

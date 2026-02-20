@@ -1,5 +1,7 @@
 package org.example.backend.Dao;
 
+import org.example.backend.Model.entity.User;
+
 import java.sql.SQLException;
 import java.util.List;
 
