@@ -7,6 +7,12 @@ import org.example.backend.Dao.RoleDao;
 import org.example.backend.Dao.UserDao;
 import org.example.backend.Dao.jpa.RoleDaoJPA;
 import org.example.backend.Dao.jpa.UserDaoJPA;
+import org.example.backend.Model.entity.User;
+import org.example.backend.Service.RoleService;
+import org.example.backend.Service.UserService;
+import org.example.backend.Service.impl.RoleServiceImpl;
+import org.example.backend.Service.impl.UserServiceImpl;
+import org.hibernate.SessionFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -21,10 +27,10 @@ import java.sql.SQLException;
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getSession().getAttribute("user")!=null){
+        if (request.getSession().getAttribute("user") != null) {
             response.sendRedirect("profile");
-        }else{
-            request.getRequestDispatcher("/html/login.jsp").forward(request,response);
+        } else {
+            request.getRequestDispatcher("/html/login.jsp").forward(request, response);
         }
     }
 
@@ -33,40 +39,23 @@ public class LoginServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");
 
-        User user;
-        Context initCtx = null;
-        Connection conn = null;
-        PrintWriter out = response.getWriter();
-        try {
-            initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            DataSource ds = (DataSource)envCtx.lookup("jdbc/easyarrange");
-            conn = ds.getConnection();
+        SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("sessionFactory");
 
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+        UserDao userDao = new UserDaoJPA(sessionFactory);
+        UserService userService = new UserServiceImpl(userDao);
 
-            UserDao userDao = new UserDaoJPA(conn);
-            RoleDao roleDao = new RoleDaoJPA(conn);
-            user = userDao.findUser(email,password);
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        User user = userService.getLoginUser(email,password);
 
-            if (user == null) {
-                out.println("Hibás felhasználó/jelszó");
-            } else {
+        RoleDao roleDao = new RoleDaoJPA(sessionFactory);
+        RoleService roleService = new RoleServiceImpl(roleDao);
 
-                String role = roleDao.findRoleNameById(user.getRoleId());
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                session.setAttribute("role", role);
-                response.sendRedirect("profile");
-            }
+        String role = roleService.getRoleById(user.getId());
 
-            conn.close();
-
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+        session.setAttribute("role", role);
+        response.sendRedirect("profile");
     }
 }
