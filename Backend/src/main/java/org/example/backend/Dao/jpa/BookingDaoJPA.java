@@ -2,8 +2,11 @@ package org.example.backend.Dao.jpa;
 
 import org.example.backend.Dao.BookingDao;
 import org.example.backend.Model.entity.Booking;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
+import java.awt.print.Book;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,202 +19,117 @@ public class BookingDaoJPA implements BookingDao {
         this.sessionFactory = sessionFactory;
     }
 
-//
-//    @Override
-//    public Booking findBookingById(long booking_id) throws SQLException {
-//        PreparedStatement bookingById = connection.prepareStatement("SELECT * FROM booking WHERE booking_id = ?");
-//        bookingById.setLong(1, booking_id);
-//        ResultSet rs = bookingById.executeQuery();
-//        if (rs.next()) {
-//            return new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            );
-//
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public List<Booking> findBookingsByStaffId(long staffId) throws SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        PreparedStatement bookingsByStaffId = connection.prepareStatement("SELECT * FROM booking WHERE staff_id = ?");
-//        bookingsByStaffId.setLong(1, staffId);
-//        ResultSet rs = bookingsByStaffId.executeQuery();
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
-//
-//    @Override
-//    public List<Booking> findBookingsByCustomerId(long customerId) throws SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        PreparedStatement bookingsByCustomerId = connection.prepareStatement("SELECT * FROM booking WHERE customer_id = ?");
-//        bookingsByCustomerId.setLong(1, customerId);
-//        ResultSet rs = bookingsByCustomerId.executeQuery();
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
-//
-//    @Override
-//    public List<Booking> findBookingsBetween(LocalDateTime start, LocalDateTime end) throws SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        PreparedStatement blockByStaffId = connection.prepareStatement("SELECT * FROM booking WHERE start_datetime >= ? AND end_datetime <= ?");
-//        blockByStaffId.setTimestamp(1, Timestamp.valueOf(start));
-//        blockByStaffId.setTimestamp(2, Timestamp.valueOf(end));
-//        ResultSet rs = blockByStaffId.executeQuery();
-//
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
-//
-//    @Override
-//    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        PreparedStatement bookingsByStaffBetween = connection.prepareStatement("SELECT * FROM booking WHERE staff_id = ? AND start_datetime >= ? AND end_datetime <= ?");
-//        bookingsByStaffBetween.setLong(1, staffId);
-//        bookingsByStaffBetween.setTimestamp(2, Timestamp.valueOf(start));
-//        bookingsByStaffBetween.setTimestamp(3, Timestamp.valueOf(end));
-//        ResultSet rs = bookingsByStaffBetween.executeQuery();
-//
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
-//
-//    @Override
-//    public List<Booking> findBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime
-//            end) throws
-//            SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        PreparedStatement bookingsByStaffBetween = connection.prepareStatement("SELECT * FROM booking WHERE customer_id = ? AND start_datetime >= ? AND end_datetime <= ?");
-//        bookingsByStaffBetween.setLong(1, customerId);
-//        bookingsByStaffBetween.setTimestamp(2, Timestamp.valueOf(start));
-//        bookingsByStaffBetween.setTimestamp(3, Timestamp.valueOf(end));
-//        ResultSet rs = bookingsByStaffBetween.executeQuery();
-//
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
-//
-//    public boolean hasBookingConflict(Booking booking) throws SQLException {
-//        String sql = "SELECT * FROM booking WHERE staff_id = ? AND end_datetime > ? AND start_datetime < ? LIMIT 1";
-//        PreparedStatement conflict = connection.prepareStatement(sql);
-//        conflict.setLong(1, booking.getStaffId());
-//        conflict.setTimestamp(2, Timestamp.valueOf(booking.getStartDatetime()));
-//        conflict.setTimestamp(3, Timestamp.valueOf(booking.getEndDatetime()));
-//        ResultSet rs = conflict.executeQuery();
-//
-//        return rs.next();
-//    }
-//
-//    @Override
-//    public void create(Booking booking) throws SQLException {
-//        if (hasBookingConflict(booking)) {
-//            throw new IllegalArgumentException("Datetime collision, when trying to create a booking.");
-//        }
-//        String sql = "INSERT INTO booking (staff_id, customer_id, start_datetime, end_datetime, service_id) VALUES (?, ?, ?, ?, ?)";
-//        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//        stmt.setLong(1, booking.getStaffId());
-//        stmt.setLong(2, booking.getCustomerId());
-//        stmt.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
-//        stmt.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
-//        stmt.setLong(5, booking.getServiceId());
-//
-//        stmt.executeUpdate();
-//
-//        ResultSet keys = stmt.getGeneratedKeys();
-//        if (keys.next()) {
-//            booking.setBooking_id(keys.getLong(1));
-//        }
-//    }
-//
-//    @Override
-//    public void update(Booking booking) throws SQLException {
-//        String sql = "UPDATE booking SET staff_id = ?, customer_id = ?, start_datetime = ?, end_datetime = ?, service_id = ? WHERE id = ?;";
-//        PreparedStatement update = connection.prepareStatement(sql);
-//        update.setLong(1, booking.getStaffId());
-//        update.setLong(2, booking.getCustomerId());
-//        update.setTimestamp(3, Timestamp.valueOf(booking.getStartDatetime()));
-//        update.setTimestamp(4, Timestamp.valueOf(booking.getEndDatetime()));
-//        update.setLong(5, booking.getServiceId());
-//        update.setLong(6, booking.getBooking_id());
-//
-//        update.executeUpdate();
-//
-//    }
-//
-//    @Override
-//    public void remove(Booking object) throws SQLException {
-//        String sql = "DELETE FROM booking WHERE id = ?";
-//        PreparedStatement stmt = connection.prepareStatement(sql);
-//        stmt.setLong(1, object.getBooking_id());
-//
-//        stmt.executeUpdate();
-//    }
-//
-//    @Override
-//    public List<Booking> findAll() throws SQLException {
-//        List<Booking> bookings = new ArrayList<>();
-//        Statement findAll = connection.createStatement();
-//        ResultSet rs = findAll.executeQuery("SELECT * FROM booking");
-//        while (rs.next()) {
-//            bookings.add(new Booking(
-//                    rs.getLong("booking_id"),
-//                    rs.getLong("staff_id"),
-//                    rs.getLong("customer_id"),
-//                    rs.getTimestamp("start_datetime").toLocalDateTime(),
-//                    rs.getTimestamp("end_datetime").toLocalDateTime(),
-//                    rs.getLong("service_id")
-//            ));
-//        }
-//        return bookings;
-//    }
+
+    @Override
+    public Booking findBookingById(long booking_id) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE booking_id = :booking_id", Booking.class);
+            q.setParameter("booking_id", booking_id);
+            return q.uniqueResult();
+        }
+
+    }
+
+    @Override
+    public List<Booking> findBookingsByStaffId(long staffId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id = :staffId", Booking.class);
+            q.setParameter("staffId", staffId);
+            return q.list();
+        }
+
+    }
+
+    @Override
+    public List<Booking> findBookingsByCustomerId(long customerId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE customer_id =: customerId", Booking.class);
+            q.setParameter("customerId", customerId);
+            return q.list();
+        }
+    }
+
+    @Override
+    public List<Booking> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE start_datetime >=: start " +
+                    "AND end_datetime <=: end", Booking.class);
+            q.setParameter("start", start);
+            q.setParameter("end", end);
+            return q.list();
+        }
+    }
+
+    @Override
+    public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id =: staffId " +)
+            "AND start_datetime >=: start AND end_datetime <=: end", Booking.class);
+            q.setParameter("staffId", staffId);
+            q.setParameter("start", start);
+            q.setParameter("end", end);
+            return q.list();
+        }
+    }
+
+    @Override
+    public List<Booking> findBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime end) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE customrer_id =: customerId " +
+                    "AND start_datetime >=: start AND end_datetime <=: end", Booking.class);
+            q.setParameter("customerId", customerId);
+            q.setParameter("start", start);
+            q.setParameter("end", end);
+            return q.list();
+        }
+    }
+
+
+    //Még nem fog működni mert nincs implementálva a StaffDaoJPA
+    public boolean hasBookingConflict(Booking booking) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id =: staffId " +
+                    "AND ((start_datetime < :end AND end_datetime > :start))", Booking.class);
+            q.setParameter("staffId", booking.getStaffId());
+            q.setParameter("start", booking.getStartDatetime());
+            q.setParameter("end", booking.getEndDatetime());
+            return !q.list().isEmpty();
+        }
+    }
+
+    @Override
+    public void create(Booking booking) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(booking);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void update(Booking booking) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(booking);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void remove(Booking object) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(object);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public List<Booking> findAll() {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Booking> q = session.createQuery("FROM Booking", Booking.class);
+            return q.list();
+        }
+    }
+
 }
