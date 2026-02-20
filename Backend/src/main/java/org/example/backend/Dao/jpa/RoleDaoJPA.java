@@ -43,8 +43,7 @@ public class RoleDaoJPA implements RoleDao {
     public void create(Role role) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long id = (Long) session.save(role);
-            role.setId(id);
+            session.save(role);
             session.getTransaction().commit();
         }
     }

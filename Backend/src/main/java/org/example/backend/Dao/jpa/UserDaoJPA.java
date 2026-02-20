@@ -86,8 +86,7 @@ public class UserDaoJPA implements UserDao {
     public void create(User user) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long id = (Long) session.save(user);
-            user.setId(id);
+            session.save(user);
             session.getTransaction().commit();
         }
     }
