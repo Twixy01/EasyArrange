@@ -1,6 +1,7 @@
 package org.example.backend.Service.impl;
 
 import org.example.backend.Dao.BookingDao;
+import org.example.backend.Model.entity.Booking;
 import org.example.backend.Service.BookingService;
 
 import java.time.LocalDateTime;

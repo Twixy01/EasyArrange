@@ -1,5 +1,7 @@
 package org.example.backend.Service;
 
+import org.example.backend.Model.entity.User;
+
 import java.util.List;
 
 public interface UserService {
@@ -13,5 +15,5 @@ public interface UserService {
     User updateUser(long id, User user);
 
     void deleteUser(long id);
-
+    User getLoginUser(String email, String password);
 }

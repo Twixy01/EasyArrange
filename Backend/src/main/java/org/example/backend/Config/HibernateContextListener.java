@@ -29,6 +29,5 @@ public class HibernateContextListener implements ServletContextListener {
             System.out.println("Hibernate SessionFactory lezárva.");
         }
 
-
     }
 }
