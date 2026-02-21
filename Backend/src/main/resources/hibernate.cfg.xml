@@ -5,11 +5,6 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.datasource">java:comp/env/jdbc/easyarrange</property>
-        <mapping class="org.example.backend.Model.Booking"/>
-        <mapping class="org.example.backend.Model.CalendarBlock"/>
-        <mapping class="org.example.backend.Model.Role"/>
-        <mapping class="org.example.backend.Model.Service"/>
-        <mapping class="org.example.backend.Model.User"/>
         <mapping class="org.example.backend.Model.entity.Booking"/>
         <mapping class="org.example.backend.Model.entity.CalendarBlock"/>
         <mapping class="org.example.backend.Model.entity.Role"/>
