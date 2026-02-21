@@ -21,29 +21,27 @@ public class BookingDaoJPA implements BookingDao {
 
 
     @Override
-    public Booking findBookingById(long booking_id) {
+    public Booking findBookingById(long bookingId) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE booking_id = :booking_id", Booking.class);
-            q.setParameter("booking_id", booking_id);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE id = :bookingId", Booking.class);
+            q.setParameter("bookingId", bookingId);
             return q.uniqueResult();
         }
-
     }
 
     @Override
     public List<Booking> findBookingsByStaffId(long staffId) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id = :staffId", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff.id = :staffId", Booking.class);
             q.setParameter("staffId", staffId);
             return q.list();
         }
-
     }
 
     @Override
     public List<Booking> findBookingsByCustomerId(long customerId) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE customer_id =: customerId", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE customer.id =: customerId", Booking.class);
             q.setParameter("customerId", customerId);
             return q.list();
         }
@@ -52,8 +50,8 @@ public class BookingDaoJPA implements BookingDao {
     @Override
     public List<Booking> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE start_datetime >=: start " +
-                    "AND end_datetime <=: end", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE startDatetime >=: start " +
+                    "AND endDatetime <=: end", Booking.class);
             q.setParameter("start", start);
             q.setParameter("end", end);
             return q.list();
@@ -63,8 +61,8 @@ public class BookingDaoJPA implements BookingDao {
     @Override
     public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id =: staffId " +)
-            "AND start_datetime >=: start AND end_datetime <=: end", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff.id =: staffId " +
+            "AND startDatetime >=: start AND endDatetime <=: end", Booking.class);
             q.setParameter("staffId", staffId);
             q.setParameter("start", start);
             q.setParameter("end", end);
@@ -75,8 +73,8 @@ public class BookingDaoJPA implements BookingDao {
     @Override
     public List<Booking> findBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime end) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE customrer_id =: customerId " +
-                    "AND start_datetime >=: start AND end_datetime <=: end", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE customer.id =: customerId " +
+                    "AND startDatetime >=: start AND endDatetime <=: end", Booking.class);
             q.setParameter("customerId", customerId);
             q.setParameter("start", start);
             q.setParameter("end", end);
@@ -88,8 +86,8 @@ public class BookingDaoJPA implements BookingDao {
     //Még nem fog működni mert nincs implementálva a StaffDaoJPA
     public boolean hasBookingConflict(Booking booking) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Booking> q = session.createQuery("FROM Booking WHERE staff_id =: staffId " +
-                    "AND ((start_datetime < :end AND end_datetime > :start))", Booking.class);
+            Query<Booking> q = session.createQuery("FROM Booking WHERE staff.id =: staffId " +
+                    "AND ((startDatetime < :end AND endDatetime > :start))", Booking.class);
             q.setParameter("staffId", booking.getStaffId());
             q.setParameter("start", booking.getStartDatetime());
             q.setParameter("end", booking.getEndDatetime());
