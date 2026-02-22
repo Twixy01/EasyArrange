@@ -17,7 +17,7 @@ public class CalendarBlockDaoJPA implements CalendarBlockDao {
 
 //
 //    @Override
-//    public CalendarBlock findCalendarBlockById(long id) throws SQLException {
+//    public CalendarBlock findById(long id) throws SQLException {
 //        PreparedStatement calendarBlockById = connection.prepareStatement("SELECT * FROM calendar_block WHERE id = ?");
 //        calendarBlockById.setLong(1,id);
 //        ResultSet rs = calendarBlockById.executeQuery();

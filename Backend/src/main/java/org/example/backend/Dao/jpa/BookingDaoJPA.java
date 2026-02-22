@@ -19,9 +19,8 @@ public class BookingDaoJPA implements BookingDao {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
-    public Booking findBookingById(long bookingId) {
+    public Booking findById(long bookingId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Booking> q = session.createQuery("FROM Booking WHERE id = :bookingId", Booking.class);
             q.setParameter("bookingId", bookingId);
@@ -82,13 +81,11 @@ public class BookingDaoJPA implements BookingDao {
         }
     }
 
-
-    //Még nem fog működni mert nincs implementálva a StaffDaoJPA
     public boolean hasBookingConflict(Booking booking) {
         try (Session session = sessionFactory.openSession()) {
             Query<Booking> q = session.createQuery("FROM Booking WHERE staff.id =: staffId " +
                     "AND ((startDatetime < :end AND endDatetime > :start))", Booking.class);
-            q.setParameter("staffId", booking.getStaffId());
+            q.setParameter("staffId", booking.getStaff().getId());
             q.setParameter("start", booking.getStartDatetime());
             q.setParameter("end", booking.getEndDatetime());
             return !q.list().isEmpty();
@@ -129,5 +126,4 @@ public class BookingDaoJPA implements BookingDao {
             return q.list();
         }
     }
-
 }

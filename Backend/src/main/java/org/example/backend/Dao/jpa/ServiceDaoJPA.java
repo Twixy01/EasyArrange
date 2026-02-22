@@ -19,7 +19,7 @@ public class ServiceDaoJPA implements ServiceDao {
 
 
     @Override
-    public Service findServiceById(long service_id) {
+    public Service findById(long service_id) {
         try (Session session = sessionFactory.openSession()) {
             Query<Service> q = session.createQuery("FROM Service WHERE id =: service_id", Service.class);
             q.setParameter("service_id", service_id);

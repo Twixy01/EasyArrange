@@ -29,13 +29,10 @@ public class RoleDaoJPA implements RoleDao {
     }
 
     @Override
-    public String findRoleNameById(long roleId) {
-        String roleName = null;
+    public Role findById(long roleId) {
         try (Session session = sessionFactory.openSession()) {
-            Role role = session.get(Role.class, roleId);
-            roleName = role.getName();
+            return session.get(Role.class, roleId);
         }
-        return roleName;
     }
 
     //

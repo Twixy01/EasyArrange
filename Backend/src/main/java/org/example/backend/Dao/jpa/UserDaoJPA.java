@@ -28,9 +28,19 @@ public class UserDaoJPA implements UserDao {
     }
 
     @Override
+    public User findById(long userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> q = session.createQuery("FROM User WHERE id =: userId", User.class);
+            q.setParameter("userId", "%" + userId + "%");
+            return q.uniqueResult();
+
+        }
+    }
+
+    @Override
     public List<User> findUsersByRoleName(String roleName) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> q = session.createQuery("FROM User WHERE User.role.name like :roleName", User.class);
+            Query<User> q = session.createQuery("FROM User u WHERE u.role.name like :roleName", User.class);
             q.setParameter("roleName", roleName);
             return q.getResultList();
         }
@@ -39,7 +49,8 @@ public class UserDaoJPA implements UserDao {
     @Override
     public List<User> findAllStaff() {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> q = session.createQuery("FROM User WHERE User.role =: admin", User.class);
+            Query<User> q = session.createQuery("FROM User u WHERE u.role.name =: staffRole", User.class);
+            q.setParameter("staffRole", "staff");
             return q.getResultList();
         }
     }
@@ -47,7 +58,8 @@ public class UserDaoJPA implements UserDao {
     @Override
     public List<User> findAllCustomer() {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> q = session.createQuery("FROM User WHERE User.role =: customer", User.class);
+            Query<User> q = session.createQuery("FROM User u WHERE u.role.name =: customerRole", User.class);
+            q.setParameter("customerRole", "customer");
             return q.getResultList();
 
         }
@@ -62,16 +74,6 @@ public class UserDaoJPA implements UserDao {
         }
     }
 
-
-    @Override
-    public User findUserById(long user_id) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> q = session.createQuery("FROM User WHERE id =: user_id", User.class);
-            q.setParameter("user_id", "%" + user_id + "%");
-            return q.uniqueResult();
-
-        }
-    }
 
     @Override
     public boolean emailExists(String email) {
