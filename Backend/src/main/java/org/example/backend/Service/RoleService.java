@@ -1,5 +1,7 @@
 package org.example.backend.Service;
 
+import org.example.backend.Model.entity.Role;
+
 public interface RoleService {
-    String getRoleById(long id);
+    Role getRoleById(long id);
 }
