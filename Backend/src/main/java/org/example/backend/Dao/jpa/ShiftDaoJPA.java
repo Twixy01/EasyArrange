@@ -16,7 +16,6 @@ public class ShiftDaoJPA implements ShiftDao {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
     public List<Shift> findAllShiftsByStaffId(long staffId) {
         try (Session session = sessionFactory.openSession()) {

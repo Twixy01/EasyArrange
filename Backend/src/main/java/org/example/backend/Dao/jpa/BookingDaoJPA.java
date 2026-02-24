@@ -61,7 +61,7 @@ public class BookingDaoJPA implements BookingDao {
     public List<Booking> findBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) {
         try (Session session = sessionFactory.openSession()) {
             Query<Booking> q = session.createQuery("FROM Booking WHERE staff.id =: staffId " +
-            "AND startDatetime >=: start AND endDatetime <=: end", Booking.class);
+                    "AND startDatetime >=: start AND endDatetime <=: end", Booking.class);
             q.setParameter("staffId", staffId);
             q.setParameter("start", start);
             q.setParameter("end", end);
