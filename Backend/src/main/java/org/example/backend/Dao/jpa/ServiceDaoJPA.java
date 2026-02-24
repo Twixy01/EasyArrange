@@ -7,7 +7,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDaoJPA implements ServiceDao {
@@ -16,7 +15,6 @@ public class ServiceDaoJPA implements ServiceDao {
     public ServiceDaoJPA(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
 
     @Override
     public Service findById(long service_id) {
@@ -61,11 +59,10 @@ public class ServiceDaoJPA implements ServiceDao {
             session.remove(object);
             session.getTransaction().commit();
         }
-
     }
 
     @Override
-    public List<Service> findAll(){
+    public List<Service> findAll() {
         try (Session session = sessionFactory.openSession()) {
             Query<Service> q = session.createQuery("FROM Service", Service.class);
             return q.list();
@@ -74,11 +71,11 @@ public class ServiceDaoJPA implements ServiceDao {
 
     @Override
     public Service readServiceByName(String serviceName) {
-       try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             Query<Service> q = session.createQuery("FROM Service WHERE name =: serviceName", Service.class);
             q.setParameter("serviceName", serviceName);
             return q.uniqueResult();
-       }
+        }
     }
 
 }

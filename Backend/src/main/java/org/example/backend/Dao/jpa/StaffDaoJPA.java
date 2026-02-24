@@ -17,14 +17,14 @@ public class StaffDaoJPA implements StaffDao {
 
     @Override
     public Staff findById(long id) {
-        try(Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             return session.get(Staff.class, id);
         }
     }
 
     @Override
     public void create(Staff staff) {
-        try(Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(staff);
             session.getTransaction().commit();
@@ -33,7 +33,7 @@ public class StaffDaoJPA implements StaffDao {
 
     @Override
     public void update(Staff staff) {
-        try(Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(staff);
             session.getTransaction().commit();
@@ -42,7 +42,7 @@ public class StaffDaoJPA implements StaffDao {
 
     @Override
     public void remove(Staff staff) {
-        try(Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(staff);
             session.getTransaction().commit();
@@ -51,8 +51,26 @@ public class StaffDaoJPA implements StaffDao {
 
     @Override
     public List<Staff> findAll() {
-        try(Session session = sessionFactory.openSession()){
-            return session.createQuery("FROM Staff",Staff.class).list();
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Staff", Staff.class).list();
+        }
+    }
+
+    @Override
+    public Staff findByUserId(long userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Staff> query = session.createQuery("FROM Staff s WHERE s.user.id = :userId", Staff.class);
+            query.setParameter("userId", userId);
+            return query.uniqueResult();
+        }
+    }
+
+    @Override
+    public Staff findByShiftId(long shiftId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Staff> query = session.createQuery("FROM Staff s WHERE s.shift.id = :shiftId", Staff.class);
+            query.setParameter("shiftId", shiftId);
+            return query.uniqueResult();
         }
     }
 }

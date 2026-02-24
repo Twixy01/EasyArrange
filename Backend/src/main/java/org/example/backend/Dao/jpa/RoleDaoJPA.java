@@ -20,9 +20,9 @@ public class RoleDaoJPA implements RoleDao {
         try (Session session = sessionFactory.openSession()) {
             Role role = (Role) session.createQuery("FROM Role WHERE name = :name")
                     .setParameter("name", roleName).getSingleResult();
-            if (role != null){
+            if (role != null) {
                 return role.getId();
-            } else{
+            } else {
                 throw new IllegalArgumentException("Role id is not found by name");
             }
         }
