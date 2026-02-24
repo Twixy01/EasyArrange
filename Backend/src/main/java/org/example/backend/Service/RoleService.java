@@ -1,5 +1,7 @@
 package org.example.backend.Service;
 
+import javax.management.relation.Role;
+
 public interface RoleService {
-    String getRoleById(long id);
+    Role getRoleById(long id);
 }

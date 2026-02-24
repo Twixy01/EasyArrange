@@ -7,21 +7,10 @@ import java.util.List;
 
 public interface BookingService {
 
-    List<Booking> getAllBookings() throws Exception;
-
-    Booking getBookingById(long id) throws Exception;
-
-    List<Booking> getBookingsByStaffId(long staffId) throws Exception;
-
-    List<Booking> getBookingsByCustomerId(long customerId) throws Exception;
-
-    List<Booking> getBookingsBetween(
-            LocalDateTime start, LocalDateTime end) throws Exception;
-
-    List<Booking> getBookingsByStaffBetween(
-            long staffId, LocalDateTime start, LocalDateTime end) throws Exception;
-
-    List<Booking> getBookingsByCustomerBetween(
-            long customerId, LocalDateTime start, LocalDateTime end) throws Exception;
+    List<Booking> getBookingsByStaffId(int staff_id);
+    List<Booking> getBookingsByCustomerId(int customer_id);
+    List<Booking> getBookingsBetween(LocalDateTime startTime, LocalDateTime endTime);
+    List<Booking> getBookingsByStaffBetween(int staff_id, LocalDateTime startTime, LocalDateTime endTime);
+    List<Booking> getBookingsByCustomerBetween(int customer_id, LocalDateTime startTime, LocalDateTime endTime);
 
 }
