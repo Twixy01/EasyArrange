@@ -69,4 +69,14 @@ public class Shift {
         this.endShift = endShift;
     }
 
+    @Override
+    public String toString() {
+        return "Shift{" +
+                "id=" + id +
+                ", staff=" + staff.getId() +
+                ", day='" + day + '\'' +
+                ", startShift=" + startShift +
+                ", endShift=" + endShift +
+                '}';
+    }
 }

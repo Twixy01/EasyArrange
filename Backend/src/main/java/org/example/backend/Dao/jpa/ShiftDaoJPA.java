@@ -2,17 +2,11 @@ package org.example.backend.Dao.jpa;
 
 import org.example.backend.Dao.ShiftDao;
 import org.example.backend.Model.entity.Shift;
-import org.example.backend.Model.entity.Booking;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.awt.print.Book;
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.time.LocalTime;
 import java.util.List;
 
 public class ShiftDaoJPA implements ShiftDao {
@@ -24,28 +18,30 @@ public class ShiftDaoJPA implements ShiftDao {
 
 
     @Override
-    public List<Shift> getAllShiftsByStaffId(int staff_id) {
+    public List<Shift> getAllShiftsByStaffId(int staffId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Shift> q = session.createQuery("FROM Shift WHERE staff.id = :staffId", Shift.class);
-            q.setParameter("staffId", staff_id);
+            q.setParameter("staffId", staffId);
             return q.getResultList();
         }
     }
 
     @Override
-    public List<Shift> getAllShiftsByDate(String date) {
+    public List<Shift> getAllShiftsByTime(LocalTime time) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Shift> q = session.createQuery("FROM Shift WHERE DATE(startShift) = :date", Shift.class);
-            q.setParameter("date", date);
+            Query<Shift> q = session.createQuery(
+                    "FROM Shift WHERE startShift <= :time AND endShift >= :time", Shift.class
+            );
+            q.setParameter("time", time);
             return q.getResultList();
         }
     }
 
     @Override
-    public List<Shift> findShiftsBetweenDates(String startDate, String endDate) {
+    public List<Shift> findShiftsBetweenTime(LocalTime startTime, LocalTime endDate) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Shift> q = session.createQuery("FROM Shift WHERE startShift >= :startDate AND endShift <= :endDate", Shift.class);
-            q.setParameter("startDate", startDate);
+            Query<Shift> q = session.createQuery("FROM Shift WHERE startShift >= :startTime AND endShift <= :endDate", Shift.class);
+            q.setParameter("startTime", startTime);
             q.setParameter("endDate", endDate);
             return q.getResultList();
         }
