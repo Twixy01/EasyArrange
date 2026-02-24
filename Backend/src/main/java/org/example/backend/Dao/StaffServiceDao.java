@@ -1,4 +1,6 @@
 package org.example.backend.Dao;
 
-public interface StaffServiceDao {
+import org.example.backend.Model.entity.StaffService;
+
+public interface StaffServiceDao extends Dao<StaffService>{
 }

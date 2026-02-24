@@ -1,7 +1,10 @@
 package org.example.backend.Dao.jpa;
 
 import org.example.backend.Dao.ServiceDao;
+import org.example.backend.Model.entity.Service;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,110 +17,68 @@ public class ServiceDaoJPA implements ServiceDao {
         this.sessionFactory = sessionFactory;
     }
 
-//
-//    @Override
-//    public Service findServiceById(long service_id) throws SQLException {
-//        PreparedStatement serviceById = connection.prepareStatement("SELECT * FROM service WHERE service_id = ?");
-//        serviceById.setLong(1, service_id);
-//        ResultSet rs = serviceById.executeQuery();
-//
-//        if (rs.next()) {
-//            return new Service(
-//                    rs.getLong("service_id"),
-//                    rs.getString("name"),
-//                    rs.getInt("price"),
-//                    rs.getInt("duration")
-//            );
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public boolean serviceExists(String service) throws SQLException {
-//        if (service == null || service.trim().isEmpty()) {
-//            return false;
-//        }
-//        PreparedStatement findServiceName = connection.prepareStatement("SELECT name FROM service WHERE name = ? LIMIT 1");
-//        findServiceName.setString(1, service);
-//        ResultSet rs = findServiceName.executeQuery();
-//
-//        return rs.next();
-//    }
-//
-//    @Override
-//    public void create(Service service) throws SQLException {
-//        if (serviceExists(service.getName())){
-//            throw new IllegalArgumentException("Service already exists.");
-//        }
-//
-//        String sql = "INSERT INTO service (name, price, duration) VALUES (?, ?, ?)";
-//        PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//
-//        stmt.setString(1, service.getName());
-//        stmt.setInt(2, service.getPrice());
-//        stmt.setInt(3, service.getDuration());
-//
-//        stmt.executeUpdate();
-//
-//        ResultSet keys = stmt.getGeneratedKeys();
-//        if (keys.next()) {
-//            service.setService_id(keys.getLong(1));
-//        }
-//    }
-//
-//
-//    @Override
-//    public void update(Service service) throws SQLException {
-//        String sql = "UPDATE service SET name = ?, price = ?, duration = ? WHERE service_id = ?;";
-//        PreparedStatement update = connection.prepareStatement(sql);
-//        update.setString(1,service.getName());
-//        update.setInt(2,service.getPrice());
-//        update.setInt(3, service.getDuration());
-//        update.setLong(4, service.getService_id());
-//
-//        update.executeUpdate();
-//    }
-//
-//    @Override
-//    public void remove(Service object) throws SQLException {
-//        String sql = "DELETE FROM service WHERE id = ?;";
-//        PreparedStatement stmt = connection.prepareStatement(sql);
-//        stmt.setLong(1, object.getService_id());
-//
-//        stmt.executeUpdate();
-//
-//    }
-//
-//    @Override
-//    public List<Service> findAll() throws SQLException {
-//        List<Service> services = new ArrayList<>();
-//        Statement findAll = connection.createStatement();
-//        ResultSet rs = findAll.executeQuery("SELECT * FROM service");
-//        while (rs.next()) {
-//            services.add(new Service(
-//                    rs.getLong("service_id"),
-//                    rs.getString("name"),
-//                    rs.getInt("price"),
-//                    rs.getInt("duration")
-//            ));
-//        }
-//        return services;
-//    }
-//
-//    @Override
-//    public Service readServiceByName(String serviceName) throws SQLException {
-//        PreparedStatement serviceByName = connection.prepareStatement("SELECT * FROM service WHERE name = ?");
-//        serviceByName.setString(1,serviceName);
-//        ResultSet rs = serviceByName.executeQuery();
-//
-//        if (rs.next()){
-//            return new Service(
-//                    rs.getLong("service_id"),
-//                    rs.getString("name"),
-//                    rs.getInt("price"),
-//                    rs.getInt("duration")
-//            );
-//        }
-//        return null;
-//    }
+
+    @Override
+    public Service findById(long service_id) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Service> q = session.createQuery("FROM Service WHERE id =: service_id", Service.class);
+            q.setParameter("service_id", service_id);
+            return q.uniqueResult();
+        }
+    }
+
+    @Override
+    public boolean serviceExists(String service) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Long> q = session.createQuery("SELECT COUNT(*) FROM Service WHERE name =: service", Long.class);
+            q.setParameter("service", service);
+            return q.uniqueResult() > 0;
+        }
+    }
+
+    @Override
+    public void create(Service service) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(service);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void update(Service service) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(service);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void remove(Service object) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.remove(object);
+            session.getTransaction().commit();
+        }
+
+    }
+
+    @Override
+    public List<Service> findAll(){
+        try (Session session = sessionFactory.openSession()) {
+            Query<Service> q = session.createQuery("FROM Service", Service.class);
+            return q.list();
+        }
+    }
+
+    @Override
+    public Service readServiceByName(String serviceName) {
+       try (Session session = sessionFactory.openSession()) {
+            Query<Service> q = session.createQuery("FROM Service WHERE name =: serviceName", Service.class);
+            q.setParameter("serviceName", serviceName);
+            return q.uniqueResult();
+       }
+    }
+
 }

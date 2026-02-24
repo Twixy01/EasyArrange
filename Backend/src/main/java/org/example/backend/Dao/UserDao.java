@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface UserDao extends Dao<User>{
     User findUser(String email, String password);
-    User findUserById(long userId);
     List<User> findUsersByRoleName(String roleName);
     List<User> findAllStaff();
     List<User> findAllCustomer();
