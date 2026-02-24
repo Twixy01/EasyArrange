@@ -6,7 +6,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface ShiftDao extends Dao<Shift> {
-    List<Shift> getAllShiftsByStaffId(int staffId);
-    List<Shift> getAllShiftsByTime(LocalTime time);
+    List<Shift> findAllShiftsByStaffId(long staffId);
+    List<Shift> findAllShiftsByTime(LocalTime time);
     List<Shift> findShiftsBetweenTime(LocalTime startTime, LocalTime endTime);
+    List<Shift> findShiftsByStaffIdBetweenDates(long staff_id, LocalTime startTime, LocalTime endTime);
 }

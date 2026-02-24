@@ -15,37 +15,27 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllBookings() throws Exception {
+    public List<Booking> getBookingsByStaffId(int staff_id) {
         return List.of();
     }
 
     @Override
-    public Booking getBookingById(long id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<Booking> getBookingsByStaffId(long staffId) throws Exception {
+    public List<Booking> getBookingsByCustomerId(int customer_id) {
         return List.of();
     }
 
     @Override
-    public List<Booking> getBookingsByCustomerId(long customerId) throws Exception {
+    public List<Booking> getBookingsBetween(LocalDateTime startTime, LocalDateTime endTime) {
         return List.of();
     }
 
     @Override
-    public List<Booking> getBookingsBetween(LocalDateTime start, LocalDateTime end) throws Exception {
+    public List<Booking> getBookingsByStaffBetween(int staff_id, LocalDateTime startTime, LocalDateTime endTime) {
         return List.of();
     }
 
     @Override
-    public List<Booking> getBookingsByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) throws Exception {
-        return List.of();
-    }
-
-    @Override
-    public List<Booking> getBookingsByCustomerBetween(long customerId, LocalDateTime start, LocalDateTime end) throws Exception {
+    public List<Booking> getBookingsByCustomerBetween(int customer_id, LocalDateTime startTime, LocalDateTime endTime) {
         return List.of();
     }
 }

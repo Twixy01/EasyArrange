@@ -18,7 +18,7 @@ public class ShiftDaoJPA implements ShiftDao {
 
 
     @Override
-    public List<Shift> getAllShiftsByStaffId(int staffId) {
+    public List<Shift> findAllShiftsByStaffId(int staffId) {
         try (Session session = sessionFactory.openSession()) {
             Query<Shift> q = session.createQuery("FROM Shift WHERE staff.id = :staffId", Shift.class);
             q.setParameter("staffId", staffId);
@@ -27,7 +27,7 @@ public class ShiftDaoJPA implements ShiftDao {
     }
 
     @Override
-    public List<Shift> getAllShiftsByTime(LocalTime time) {
+    public List<Shift> findAllShiftsByDate(LocalTime time) {
         try (Session session = sessionFactory.openSession()) {
             Query<Shift> q = session.createQuery(
                     "FROM Shift WHERE startShift <= :time AND endShift >= :time", Shift.class
@@ -88,4 +88,16 @@ public class ShiftDaoJPA implements ShiftDao {
             return q.getResultList();
         }
     }
+
+    @Override
+    public List<Shift> findShiftsByStaffIdBetweenDates(int staffId, LocalTime startTime, LocalTime endTime) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Shift> q = session.createQuery("FROM Shift WHERE staff.id = :staffId AND startShift >= :startDate AND endShift <= :endDate", Shift.class);
+            q.setParameter("staffId", staffId);
+            q.setParameter("startDate", startTime);
+            q.setParameter("endDate", endTime);
+            return q.getResultList();
+        }
+    }
+
 }
