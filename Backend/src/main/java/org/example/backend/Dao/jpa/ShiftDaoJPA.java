@@ -2,18 +2,11 @@ package org.example.backend.Dao.jpa;
 
 import org.example.backend.Dao.ShiftDao;
 import org.example.backend.Model.entity.Shift;
-import org.example.backend.Model.entity.Booking;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.awt.print.Book;
-import java.sql.*;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import java.util.List;
 
 public class ShiftDaoJPA implements ShiftDao {
@@ -34,20 +27,22 @@ public class ShiftDaoJPA implements ShiftDao {
     }
 
     @Override
-    public List<Shift> findAllShiftsByDate(LocalTime date) {
+    public List<Shift> findAllShiftsByDate(LocalTime time) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Shift> q = session.createQuery("FROM Shift WHERE startShift = :date", Shift.class);
-            q.setParameter("date", date);
+            Query<Shift> q = session.createQuery(
+                    "FROM Shift WHERE startShift <= :time AND endShift >= :time", Shift.class
+            );
+            q.setParameter("time", time);
             return q.getResultList();
         }
     }
 
     @Override
-    public List<Shift> findShiftsBetweenDates(LocalTime startTime, LocalTime endTime) {
+    public List<Shift> findShiftsBetweenTime(LocalTime startTime, LocalTime endDate) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Shift> q = session.createQuery("FROM Shift WHERE startShift >= :startTime AND endShift <= :endTime", Shift.class);
-            q.setParameter("startDate", startTime);
-            q.setParameter("endDate", endTime);
+            Query<Shift> q = session.createQuery("FROM Shift WHERE startShift >= :startTime AND endShift <= :endDate", Shift.class);
+            q.setParameter("startTime", startTime);
+            q.setParameter("endDate", endDate);
             return q.getResultList();
         }
     }

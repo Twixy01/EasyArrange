@@ -1,6 +1,7 @@
 package org.example.backend.Service.impl;
 
 import org.example.backend.Dao.RoleDao;
+import org.example.backend.Model.entity.Role;
 import org.example.backend.Service.RoleService;
 
 import javax.management.relation.Role;
@@ -13,12 +14,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role getRoleById(int id) {
-        String roleName = roleDao.findById(id);
-        if (roleName == null) {
+    public Role getRoleById(long id) {
+        Role role = roleDao.findById(id);
+        if (role == null) {
             throw new IllegalArgumentException("Role not found by id.");
         }
-        return roleName;
+        return role;
     }
     
 }

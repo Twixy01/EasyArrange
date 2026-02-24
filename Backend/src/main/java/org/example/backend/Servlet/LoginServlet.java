@@ -14,14 +14,7 @@ import org.example.backend.Service.impl.RoleServiceImpl;
 import org.example.backend.Service.impl.UserServiceImpl;
 import org.hibernate.SessionFactory;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
@@ -51,7 +44,7 @@ public class LoginServlet extends HttpServlet {
         RoleDao roleDao = new RoleDaoJPA(sessionFactory);
         RoleService roleService = new RoleServiceImpl(roleDao);
 
-        String role = roleService.getRoleById(user.getId());
+        String role = roleService.getRoleById(user.getId()).getName();
 
         HttpSession session = request.getSession();
         session.setAttribute("user", user);

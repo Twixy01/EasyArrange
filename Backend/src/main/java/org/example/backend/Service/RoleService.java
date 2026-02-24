@@ -1,6 +1,6 @@
 package org.example.backend.Service;
 
-import javax.management.relation.Role;
+import org.example.backend.Model.entity.Role;
 
 public interface RoleService {
     Role getRoleById(long id);
