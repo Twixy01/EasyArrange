@@ -30,6 +30,24 @@ public class Booking {
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BookingStatus status = BookingStatus.BOOKED;
+
+
+    public boolean isCancelled() {
+        return this.status == BookingStatus.CANCELLED;
+    }
+
+    public boolean isCompleted() {
+        return this.status == BookingStatus.COMPLETED;
+    }
+
+    public boolean isNoShow() {
+        return this.status == BookingStatus.NO_SHOW;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -76,6 +94,19 @@ public class Booking {
 
     public void setService(Service service) {
         this.service = service;
+    }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+    // Helper: considered active when BOOKED
+    public boolean isActive() {
+        return this.status == BookingStatus.BOOKED;
     }
 
 }
