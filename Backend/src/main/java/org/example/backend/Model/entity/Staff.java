@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
-
 @Entity
 @Table(name = "staff")
 public class Staff {
@@ -19,11 +17,10 @@ public class Staff {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "start_duty")
-    private Instant startDuty;
-
-    @Column(name = "end_duty")
-    private Instant endDuty;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "shift_id", nullable = false)
+    private Shift shift;
 
     public Long getId() {
         return id;
@@ -41,20 +38,12 @@ public class Staff {
         this.user = user;
     }
 
-    public Instant getStartDuty() {
-        return startDuty;
+    public Shift getShift() {
+        return shift;
     }
 
-    public void setStartDuty(Instant startDuty) {
-        this.startDuty = startDuty;
-    }
-
-    public Instant getEndDuty() {
-        return endDuty;
-    }
-
-    public void setEndDuty(Instant endDuty) {
-        this.endDuty = endDuty;
+    public void setShift(Shift shift) {
+        this.shift = shift;
     }
 
 }
