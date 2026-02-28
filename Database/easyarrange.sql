@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Feb 16. 20:47
+-- Létrehozás ideje: 2026. Feb 28. 17:18
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -27,21 +27,16 @@ SET time_zone = "+00:00";
 -- Tábla szerkezet ehhez a táblához `booking`
 --
 
+DROP TABLE IF EXISTS `booking`;
 CREATE TABLE `booking` (
   `booking_id` bigint(20) NOT NULL,
   `staff_id` bigint(20) NOT NULL,
   `customer_id` bigint(20) NOT NULL,
   `start_datetime` datetime NOT NULL,
   `end_datetime` datetime NOT NULL,
-  `service_id` bigint(20) NOT NULL
+  `service_id` bigint(20) NOT NULL,
+  `status` enum('BOOKED','CANCELLED','COMPLETED','NO-SHOW') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
-
---
--- A tábla adatainak kiíratása `booking`
---
-
-INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`, `end_datetime`, `service_id`) VALUES
-(2, 1, 3, '2026-02-03 13:00:00', '2026-02-26 12:53:18', 1);
 
 -- --------------------------------------------------------
 
@@ -49,6 +44,7 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`
 -- Tábla szerkezet ehhez a táblához `calendar_block`
 --
 
+DROP TABLE IF EXISTS `calendar_block`;
 CREATE TABLE `calendar_block` (
   `calendar_block_id` bigint(20) NOT NULL,
   `start_datetime` datetime NOT NULL,
@@ -56,19 +52,13 @@ CREATE TABLE `calendar_block` (
   `staff_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
---
--- A tábla adatainak kiíratása `calendar_block`
---
-
-INSERT INTO `calendar_block` (`calendar_block_id`, `start_datetime`, `end_datetime`, `staff_id`) VALUES
-(1, '2026-02-03 00:00:00', '2026-02-13 00:00:00', 1);
-
 -- --------------------------------------------------------
 
 --
 -- Tábla szerkezet ehhez a táblához `role`
 --
 
+DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `role_id` bigint(20) NOT NULL,
   `name` varchar(100) NOT NULL
@@ -89,6 +79,7 @@ INSERT INTO `role` (`role_id`, `name`) VALUES
 -- Tábla szerkezet ehhez a táblához `service`
 --
 
+DROP TABLE IF EXISTS `service`;
 CREATE TABLE `service` (
   `service_id` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -106,22 +97,28 @@ INSERT INTO `service` (`service_id`, `name`, `price`, `duration`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Tábla szerkezet ehhez a táblához `shift`
+--
+
+DROP TABLE IF EXISTS `shift`;
+CREATE TABLE `shift` (
+  `shift_id` bigint(20) NOT NULL,
+  `day` enum('MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY') NOT NULL,
+  `start_shift` time NOT NULL,
+  `end_shift` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tábla szerkezet ehhez a táblához `staff`
 --
 
+DROP TABLE IF EXISTS `staff`;
 CREATE TABLE `staff` (
   `staff_id` bigint(20) NOT NULL,
-  `user_id` bigint(20) NOT NULL,
-  `start_duty` datetime DEFAULT NULL,
-  `end_duty` datetime DEFAULT NULL
+  `user_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
-
---
--- A tábla adatainak kiíratása `staff`
---
-
-INSERT INTO `staff` (`staff_id`, `user_id`, `start_duty`, `end_duty`) VALUES
-(1, 4, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -129,17 +126,23 @@ INSERT INTO `staff` (`staff_id`, `user_id`, `start_duty`, `end_duty`) VALUES
 -- Tábla szerkezet ehhez a táblához `staff_service`
 --
 
+DROP TABLE IF EXISTS `staff_service`;
 CREATE TABLE `staff_service` (
   `staff_id` bigint(20) NOT NULL,
   `service_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
+-- --------------------------------------------------------
+
 --
--- A tábla adatainak kiíratása `staff_service`
+-- Tábla szerkezet ehhez a táblához `staff_shift`
 --
 
-INSERT INTO `staff_service` (`staff_id`, `service_id`) VALUES
-(1, 1);
+DROP TABLE IF EXISTS `staff_shift`;
+CREATE TABLE `staff_shift` (
+  `staff_id` bigint(20) NOT NULL,
+  `shift_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 -- --------------------------------------------------------
 
@@ -147,24 +150,24 @@ INSERT INTO `staff_service` (`staff_id`, `service_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` bigint(20) NOT NULL,
-  `name` varchar(50) DEFAULT NULL,
+  `name` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `phone_number` varchar(30) DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
-  `role_id` bigint(20) DEFAULT NULL
+  `role_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `user`
 --
 
-INSERT INTO `user` (`user_id`, `name`, `email`, `phone_number`, `profile_picture`, `password`, `role_id`) VALUES
-(3, 'Peter', 'test@gmail.com', NULL, 'profile', '1234', 1),
-(4, 'Milan', 'alma@gmail.com', NULL, 'picture_link', '1234', 3),
-(5, 'Nincsneve', 'NoName@email.com', NULL, '', 'nincsjelszose', 2);
+INSERT INTO `user` (`user_id`, `name`, `email`, `profile_picture`, `password`, `role_id`) VALUES
+(3, 'Peter', 'test@gmail.com', 'profile', '1234', 1),
+(4, 'Milan', 'alma@gmail.com', 'picture_link', '1234', 3),
+(5, 'Nincsneve', 'NoName@email.com', '', 'nincsjelszose', 2);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -176,49 +179,65 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `phone_number`, `profile_picture
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
   ADD UNIQUE KEY `uq_booking_staff_start_end` (`staff_id`,`start_datetime`,`end_datetime`),
-  ADD KEY `indx_booking_customer_id` (`customer_id`) USING BTREE,
-  ADD KEY `indx_booking_service_id` (`service_id`) USING BTREE;
+  ADD KEY `fk_booking_customer` (`customer_id`),
+  ADD KEY `fk_booking_service` (`service_id`);
 
 --
 -- A tábla indexei `calendar_block`
 --
 ALTER TABLE `calendar_block`
   ADD PRIMARY KEY (`calendar_block_id`),
-  ADD KEY `indx_calendar_block_staff_id` (`staff_id`) USING BTREE;
+  ADD KEY `fk_calendar_block_staff` (`staff_id`);
 
 --
 -- A tábla indexei `role`
 --
 ALTER TABLE `role`
   ADD PRIMARY KEY (`role_id`),
-  ADD UNIQUE KEY `unique_role_name` (`name`) USING BTREE;
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- A tábla indexei `service`
 --
 ALTER TABLE `service`
   ADD PRIMARY KEY (`service_id`),
-  ADD UNIQUE KEY `unique_service_name` (`name`) USING BTREE;
+  ADD UNIQUE KEY `name` (`name`);
+
+--
+-- A tábla indexei `shift`
+--
+ALTER TABLE `shift`
+  ADD PRIMARY KEY (`shift_id`),
+  ADD UNIQUE KEY `uk_shift_unique` (`day`,`start_shift`,`end_shift`);
 
 --
 -- A tábla indexei `staff`
 --
 ALTER TABLE `staff`
   ADD PRIMARY KEY (`staff_id`),
-  ADD UNIQUE KEY `unique_user_id` (`user_id`) USING BTREE;
+  ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- A tábla indexei `staff_service`
 --
 ALTER TABLE `staff_service`
-  ADD PRIMARY KEY (`staff_id`,`service_id`);
+  ADD PRIMARY KEY (`staff_id`,`service_id`),
+  ADD KEY `fk_staff_service_service` (`service_id`);
+
+--
+-- A tábla indexei `staff_shift`
+--
+ALTER TABLE `staff_shift`
+  ADD PRIMARY KEY (`staff_id`,`shift_id`),
+  ADD KEY `fk_staff_shift_shift` (`shift_id`);
 
 --
 -- A tábla indexei `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `unique_email` (`email`) USING BTREE;
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_user_role` (`role_id`);
 
 --
 -- A kiírt táblák AUTO_INCREMENT értéke
@@ -228,13 +247,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT a táblához `calendar_block`
 --
 ALTER TABLE `calendar_block`
-  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT a táblához `role`
@@ -249,10 +268,16 @@ ALTER TABLE `service`
   MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT a táblához `shift`
+--
+ALTER TABLE `shift`
+  MODIFY `shift_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT a táblához `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `staff_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `staff_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT a táblához `user`
@@ -268,9 +293,9 @@ ALTER TABLE `user`
 -- Megkötések a táblához `booking`
 --
 ALTER TABLE `booking`
-  ADD CONSTRAINT `fk_booking_customer` FOREIGN KEY (`customer_id`) REFERENCES `user` (`user_id`),
-  ADD CONSTRAINT `fk_booking_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`),
-  ADD CONSTRAINT `fk_booking_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`);
+  ADD CONSTRAINT `fk_booking_customer` FOREIGN KEY (`customer_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_booking_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_booking_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `calendar_block`
@@ -282,20 +307,27 @@ ALTER TABLE `calendar_block`
 -- Megkötések a táblához `staff`
 --
 ALTER TABLE `staff`
-  ADD CONSTRAINT `fk_staff_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_staff_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `staff_service`
 --
 ALTER TABLE `staff_service`
-  ADD CONSTRAINT `fk_ss_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_ss_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_staff_service_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_staff_service_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `staff_shift`
+--
+ALTER TABLE `staff_shift`
+  ADD CONSTRAINT `fk_staff_shift_shift` FOREIGN KEY (`shift_id`) REFERENCES `shift` (`shift_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_staff_shift_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);
+  ADD CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
