@@ -64,13 +64,4 @@ public class StaffDaoJPA implements StaffDao {
             return query.uniqueResult();
         }
     }
-
-    @Override
-    public Staff findByShiftId(long shiftId) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Staff> query = session.createQuery("FROM Staff s WHERE s.shift.id = :shiftId", Staff.class);
-            query.setParameter("shiftId", shiftId);
-            return query.uniqueResult();
-        }
-    }
 }
