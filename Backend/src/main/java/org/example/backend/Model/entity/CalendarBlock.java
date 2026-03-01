@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "calendar_block")
+@Table(name = "calendar_block", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "staff_start_end",
+        columnNames = {
+                "staff_id",
+                "start_datetime",
+                "end_datetime"})})
 public class CalendarBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,10 +19,10 @@ public class CalendarBlock {
     private Long id;
 
     @Column(name = "start_datetime", nullable = false)
-    private Instant startDatetime;
+    private LocalDateTime startDatetime;
 
     @Column(name = "end_datetime", nullable = false)
-    private Instant endDatetime;
+    private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -33,19 +37,19 @@ public class CalendarBlock {
         this.id = id;
     }
 
-    public Instant getStartDatetime() {
+    public LocalDateTime getStartDatetime() {
         return startDatetime;
     }
 
-    public void setStartDatetime(Instant startDatetime) {
+    public void setStartDatetime(LocalDateTime startDatetime) {
         this.startDatetime = startDatetime;
     }
 
-    public Instant getEndDatetime() {
+    public LocalDateTime getEndDatetime() {
         return endDatetime;
     }
 
-    public void setEndDatetime(Instant endDatetime) {
+    public void setEndDatetime(LocalDateTime endDatetime) {
         this.endDatetime = endDatetime;
     }
 

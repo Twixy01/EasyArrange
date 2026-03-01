@@ -1,11 +1,17 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "booking")
+@Table(name = "booking", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "uq_booking_staff_start_end",
+        columnNames = {
+                "staff_id",
+                "start_datetime",
+                "end_datetime"})})
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,20 +19,23 @@ public class Booking {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
     @Column(name = "start_datetime", nullable = false)
-    private Instant startDatetime;
+    private LocalDateTime startDatetime;
 
     @Column(name = "end_datetime", nullable = false)
-    private Instant endDatetime;
+    private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
 
@@ -34,19 +43,26 @@ public class Booking {
     @Column(name = "status", nullable = false)
     private BookingStatus status = BookingStatus.BOOKED;
 
-
     public boolean isCancelled() {
-        return this.status == BookingStatus.CANCELLED;
+        return status.isCancelled();
     }
 
     public boolean isCompleted() {
-        return this.status == BookingStatus.COMPLETED;
+        return status.isCompleted();
     }
 
     public boolean isNoShow() {
-        return this.status == BookingStatus.NO_SHOW;
+        return status.isNoShow();
     }
 
+    // Helper: considered active when BOOKED
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    public boolean isFinal(){
+        return status.isFinal();
+    }
 
     public Long getId() {
         return id;
@@ -72,19 +88,19 @@ public class Booking {
         this.customer = customer;
     }
 
-    public Instant getStartDatetime() {
+    public LocalDateTime getStartDatetime() {
         return startDatetime;
     }
 
-    public void setStartDatetime(Instant startDatetime) {
+    public void setStartDatetime(LocalDateTime startDatetime) {
         this.startDatetime = startDatetime;
     }
 
-    public Instant getEndDatetime() {
+    public LocalDateTime getEndDatetime() {
         return endDatetime;
     }
 
-    public void setEndDatetime(Instant endDatetime) {
+    public void setEndDatetime(LocalDateTime endDatetime) {
         this.endDatetime = endDatetime;
     }
 
@@ -103,10 +119,4 @@ public class Booking {
     public void setStatus(BookingStatus status) {
         this.status = status;
     }
-
-    // Helper: considered active when BOOKED
-    public boolean isActive() {
-        return this.status == BookingStatus.BOOKED;
-    }
-
 }

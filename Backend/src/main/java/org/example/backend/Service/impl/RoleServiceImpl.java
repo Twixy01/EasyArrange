@@ -4,8 +4,6 @@ import org.example.backend.Dao.RoleDao;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Service.RoleService;
 
-import javax.management.relation.Role;
-
 public class RoleServiceImpl implements RoleService {
     public final RoleDao roleDao;
 

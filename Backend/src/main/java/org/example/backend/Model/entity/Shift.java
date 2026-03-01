@@ -1,23 +1,22 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "shift")
+@Table(name = "shift", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "uk_shift_unique",
+        columnNames = {
+                "day",
+                "start_shift",
+                "end_shift"})})
 public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shift_id", nullable = false)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "staff_id", nullable = false)
-    private Staff staff;
 
     @Lob
     @Column(name = "day", nullable = false)
@@ -29,20 +28,15 @@ public class Shift {
     @Column(name = "end_shift", nullable = false)
     private LocalTime endShift;
 
+    @ManyToMany(mappedBy = "shifts")
+    private Set<Staff> staff = new LinkedHashSet<>();
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Staff getStaff() {
-        return staff;
-    }
-
-    public void setStaff(Staff staff) {
-        this.staff = staff;
     }
 
     public String getDay() {
@@ -69,14 +63,12 @@ public class Shift {
         this.endShift = endShift;
     }
 
-    @Override
-    public String toString() {
-        return "Shift{" +
-                "id=" + id +
-                ", staff=" + staff.getId() +
-                ", day='" + day + '\'' +
-                ", startShift=" + startShift +
-                ", endShift=" + endShift +
-                '}';
+    public Set<Staff> getStaff() {
+        return staff;
     }
+
+    public void setStaff(Set<Staff> staff) {
+        this.staff = staff;
+    }
+
 }
