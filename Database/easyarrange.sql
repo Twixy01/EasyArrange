@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Feb 28. 17:18
+-- Létrehozás ideje: 2026. Már 01. 08:03
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -187,7 +187,7 @@ ALTER TABLE `booking`
 --
 ALTER TABLE `calendar_block`
   ADD PRIMARY KEY (`calendar_block_id`),
-  ADD KEY `fk_calendar_block_staff` (`staff_id`);
+  ADD UNIQUE KEY `staff_start_end` (`staff_id`,`start_datetime`,`end_datetime`);
 
 --
 -- A tábla indexei `role`
