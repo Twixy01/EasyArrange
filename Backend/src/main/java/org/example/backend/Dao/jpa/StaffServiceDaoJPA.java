@@ -2,6 +2,7 @@ package org.example.backend.Dao.jpa;
 
 import org.example.backend.Dao.StaffServiceDao;
 import org.example.backend.Model.entity.Service;
+import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffService;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,7 +17,7 @@ public class StaffServiceDaoJPA implements StaffServiceDao {
     }
 
     @Override
-    public List<Service> findAllServiceByStaffId(long staffId) {
+    public List<Service> findAllServicesByStaffId(long staffId) {
         try(var session = sessionFactory.openSession()) {
             var query = session.createQuery(
                     "FROM StaffService ss WHERE ss.staff.id = :staffId",
@@ -27,11 +28,11 @@ public class StaffServiceDaoJPA implements StaffServiceDao {
     }
 
     @Override
-    public List<Service> findAllServiceByServiceId(long serviceId) {
+    public List<Staff> findAllStaffByServiceId(long serviceId) {
         try(var session = sessionFactory.openSession()) {
             var query = session.createQuery(
                     "FROM StaffService ss WHERE ss.service.id = :serviceId",
-                    Service.class);
+                    Staff.class);
             query.setParameter("serviceId", serviceId);
             return query.list();
         }
