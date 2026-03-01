@@ -2,8 +2,12 @@ package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Entity
-@Table(name = "service")
+@Table(name = "service", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "name",
+        columnNames = {"name"})})
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +22,12 @@ public class Service {
 
     @Column(name = "duration")
     private Integer duration;
+
+    @OneToMany(mappedBy = "service")
+    private Set<Booking> bookings = new LinkedHashSet<>();
+
+    @ManyToMany
+    private Set<Staff> staff = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -49,6 +59,22 @@ public class Service {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public Set<Staff> getStaff() {
+        return staff;
+    }
+
+    public void setStaff(Set<Staff> staff) {
+        this.staff = staff;
     }
 
 }
