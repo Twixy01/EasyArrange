@@ -1,12 +1,11 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.UserDao;
+import org.example.backend.Repository.UserDao;
 import org.example.backend.Model.entity.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.sql.*;
 import java.util.List;
 
 public class UserDaoJPA implements UserDao {
@@ -85,29 +84,41 @@ public class UserDaoJPA implements UserDao {
     }
 
     @Override
-    public void create(User user) {
+    public boolean create(User user) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(user);
             session.getTransaction().commit();
+                return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(User user) {
+    public boolean update(User user) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(user);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(User object) {
+    public boolean remove(User object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

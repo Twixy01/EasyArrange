@@ -1,12 +1,11 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.ServiceDao;
+import org.example.backend.Repository.ServiceDao;
 import org.example.backend.Model.entity.Service;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.sql.*;
 import java.util.List;
 
 public class ServiceDaoJPA implements ServiceDao {
@@ -35,29 +34,41 @@ public class ServiceDaoJPA implements ServiceDao {
     }
 
     @Override
-    public void create(Service service) {
+    public boolean create(Service service) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(service);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Service service) {
+    public boolean update(Service service) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(service);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(Service object) {
+    public boolean remove(Service object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

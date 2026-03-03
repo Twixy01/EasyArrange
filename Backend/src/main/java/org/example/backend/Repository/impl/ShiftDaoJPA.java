@@ -1,6 +1,6 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.ShiftDao;
+import org.example.backend.Repository.ShiftDao;
 import org.example.backend.Model.entity.Shift;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -54,29 +54,41 @@ public class ShiftDaoJPA implements ShiftDao {
     }
 
     @Override
-    public void create(Shift object) {
+    public boolean create(Shift object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Shift object) {
+    public boolean update(Shift object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(Shift object) {
+    public boolean remove(Shift object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

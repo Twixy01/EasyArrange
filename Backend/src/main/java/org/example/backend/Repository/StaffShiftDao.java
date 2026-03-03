@@ -1,4 +1,4 @@
-package org.example.backend.Dao;
+package org.example.backend.Repository;
 
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Model.entity.Staff;

@@ -1,6 +1,6 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.StaffShiftDao;
+import org.example.backend.Repository.StaffShiftDao;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffShift;
@@ -45,16 +45,20 @@ public class StaffShiftDaoJPA implements StaffShiftDao{
     }
 
     @Override
-    public void create(StaffShift object) {
+    public boolean create(StaffShift object) {
         try(var session = sessionFactory.openSession()){
             session.beginTransaction();
-            session.save(object);
+            session.persist(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(StaffShift object) {
+    public boolean update(StaffShift object) {
         try(var session = sessionFactory.openSession()){
             session.beginTransaction();
             session.update(object);
@@ -63,7 +67,7 @@ public class StaffShiftDaoJPA implements StaffShiftDao{
     }
 
     @Override
-    public void remove(StaffShift object) {
+    public boolean remove(StaffShift object) {
         try(var session = sessionFactory.openSession()){
             session.beginTransaction();
             session.remove(object);

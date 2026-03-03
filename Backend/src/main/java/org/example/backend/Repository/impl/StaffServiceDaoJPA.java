@@ -1,6 +1,6 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.StaffServiceDao;
+import org.example.backend.Repository.StaffServiceDao;
 import org.example.backend.Model.entity.Service;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffService;
@@ -46,29 +46,41 @@ public class StaffServiceDaoJPA implements StaffServiceDao {
     }
 
     @Override
-    public void create(StaffService staffService) {
+    public boolean create(StaffService staffService) {
         try(Session session = sessionFactory.openSession()){
             session.beginTransaction();
             session.save(staffService);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(StaffService staffService) {
+    public boolean update(StaffService staffService) {
         try(Session session = sessionFactory.openSession()){
             session.beginTransaction();
             session.update(staffService);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(StaffService staffService) {
+    public boolean remove(StaffService staffService) {
         try(Session session = sessionFactory.openSession()){
             session.beginTransaction();
-            session.remove(staffService);
+            session.delete(staffService);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

@@ -1,9 +1,8 @@
 package org.example.backend.Service.impl;
 
-import org.example.backend.Dao.StaffServiceDao;
+import org.example.backend.Repository.StaffServiceDao;
 import org.example.backend.Model.entity.Service;
 import org.example.backend.Model.entity.Staff;
-import org.example.backend.Service.StaffService;
 import org.example.backend.Service.StaffServiceService;
 
 import java.util.List;
