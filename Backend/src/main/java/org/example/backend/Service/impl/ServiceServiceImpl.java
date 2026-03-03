@@ -14,13 +14,12 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public List<Service> getAllServices() {
-        return List.of();
+    public Service getServiceByName(String serviceName) {
+        return serviceDao.findServiceByName(serviceName);
     }
 
     @Override
-    public Service getServiceByName(String name) {
-        return null;
+    public Service getServiceById(int serviceId) {
+        return serviceDao.findById(serviceId);
     }
-
 }

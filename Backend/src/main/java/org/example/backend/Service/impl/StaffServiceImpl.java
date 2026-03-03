@@ -1,23 +1,19 @@
 package org.example.backend.Service.impl;
 
+import org.example.backend.Dao.StaffDao;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Service.StaffService;
 
 public class StaffServiceImpl implements StaffService {
-    private final StaffService staffService;
+    private final StaffDao staffDao;
 
-    public StaffServiceImpl(StaffService staffService) {
-        this.staffService = staffService;
+    public StaffServiceImpl(StaffDao staffDao) {
+        this.staffDao = staffDao;
     }
 
 
     @Override
-    public Staff getAllUserById(long userId) {
-        return null;
-    }
-
-    @Override
-    public Staff getByShiftId(long shiftId) {
-        return null;
+    public Staff getByUserId(long userId) {
+        return staffDao.findByUserId(userId);
     }
 }

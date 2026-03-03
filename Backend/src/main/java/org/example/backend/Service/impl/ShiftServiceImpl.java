@@ -16,22 +16,21 @@ public class ShiftServiceImpl implements ShiftService {
 
     @Override
     public List<Shift> getAllShifts() {
-        return List.of();
+        return shiftDao.findAll();
     }
 
     @Override
-    public List<Shift> getShiftsByDate(LocalTime time) {
-        return List.of();
+    public List<Shift> getAllShiftsByTime(LocalTime time) {
+        return shiftDao.findAllShiftsByTime(time);
     }
 
     @Override
-    public List<Shift> getShiftsBetweenDates(LocalTime startTime, LocalTime endTime) {
-        return List.of();
+    public List<Shift> getShiftsBetweenTimes(LocalTime startTime, LocalTime endTime) {
+        return shiftDao.findShiftsBetweenTime(startTime, endTime);
     }
 
     @Override
-    public List<Shift> getShiftsByStaffIdBetweenDates(int staff_id, LocalTime startTime, LocalTime endTime) {
-        return List.of();
+    public List<Shift> getShiftsByStaffIdBetweenTimes(int staffId, LocalTime startTime, LocalTime endTime) {
+        return shiftDao.findShiftsByStaffIdBetweenTimes(staffId, startTime, endTime);
     }
-
 }

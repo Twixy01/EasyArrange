@@ -70,7 +70,7 @@ public class ServiceDaoJPA implements ServiceDao {
     }
 
     @Override
-    public Service readServiceByName(String serviceName) {
+    public Service findServiceByName(String serviceName) {
         try (Session session = sessionFactory.openSession()) {
             Query<Service> q = session.createQuery("FROM Service WHERE name =: serviceName", Service.class);
             q.setParameter("serviceName", serviceName);
