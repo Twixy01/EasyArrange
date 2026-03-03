@@ -1,15 +1,12 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.BookingDao;
+import org.example.backend.Repository.BookingDao;
 import org.example.backend.Model.entity.Booking;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.awt.print.Book;
-import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BookingDaoJPA implements BookingDao {
@@ -93,29 +90,41 @@ public class BookingDaoJPA implements BookingDao {
     }
 
     @Override
-    public void create(Booking booking) {
+    public boolean create(Booking booking) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(booking);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Booking booking) {
+    public boolean update(Booking booking) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(booking);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(Booking object) {
+    public boolean remove(Booking object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

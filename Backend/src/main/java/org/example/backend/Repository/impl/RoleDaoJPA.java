@@ -1,11 +1,10 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.RoleDao;
+import org.example.backend.Repository.RoleDao;
 import org.example.backend.Model.entity.Role;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import java.sql.*;
 import java.util.List;
 
 public class RoleDaoJPA implements RoleDao {
@@ -37,17 +36,18 @@ public class RoleDaoJPA implements RoleDao {
 
     //
     @Override
-    public void create(Role role) {
+    public boolean create(Role role) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(role);
             session.getTransaction().commit();
+            return true;
         }
     }
 
-    //
+
     @Override
-    public void update(Role role) {
+    public boolean update(Role role) {
         try (Session session = sessionFactory.openSession()) {
             Role targetRole = session.get(Role.class, role.getId());
             if (targetRole != null) {
@@ -55,6 +55,7 @@ public class RoleDaoJPA implements RoleDao {
                 targetRole.setName(role.getName());
                 session.update(targetRole);
                 session.getTransaction().commit();
+                return true;
             } else {
                 throw new RuntimeException("Role with id not found.");
             }
@@ -62,13 +63,14 @@ public class RoleDaoJPA implements RoleDao {
     }
 
     @Override
-    public void remove(Role role) {
+    public boolean remove(Role role) {
         try (Session session = sessionFactory.openSession()) {
             Role targetRole = session.get(Role.class, role.getId());
             if (targetRole != null) {
                 session.beginTransaction();
                 session.delete(targetRole);
                 session.getTransaction().commit();
+                return true;
             } else {
                 throw new RuntimeException("Role with id not found.");
             }

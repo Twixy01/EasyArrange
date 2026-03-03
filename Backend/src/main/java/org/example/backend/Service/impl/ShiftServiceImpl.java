@@ -1,6 +1,6 @@
 package org.example.backend.Service.impl;
 
-import org.example.backend.Dao.ShiftDao;
+import org.example.backend.Repository.ShiftDao;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Service.ShiftService;
 

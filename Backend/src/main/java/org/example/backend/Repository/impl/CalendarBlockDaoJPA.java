@@ -1,15 +1,12 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.CalendarBlockDao;
+import org.example.backend.Repository.CalendarBlockDao;
 import org.example.backend.Model.entity.CalendarBlock;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class CalendarBlockDaoJPA implements CalendarBlockDao {
@@ -62,29 +59,42 @@ public class CalendarBlockDaoJPA implements CalendarBlockDao {
     }
 
     @Override
-    public void create(CalendarBlock object) {
+    public boolean create(CalendarBlock object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.save(object);
+            session.persist(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(CalendarBlock object) {
+    public boolean update(CalendarBlock object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
+
     }
 
     @Override
-    public void remove(CalendarBlock object) {
+    public boolean remove(CalendarBlock object) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(object);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

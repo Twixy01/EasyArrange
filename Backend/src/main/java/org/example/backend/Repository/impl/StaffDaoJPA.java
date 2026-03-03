@@ -1,12 +1,13 @@
-package org.example.backend.Dao.jpa;
+package org.example.backend.Repository.impl;
 
-import org.example.backend.Dao.StaffDao;
+import org.example.backend.Repository.StaffDao;
 import org.example.backend.Model.entity.Staff;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class StaffDaoJPA implements StaffDao {
     private final SessionFactory sessionFactory;
@@ -23,29 +24,41 @@ public class StaffDaoJPA implements StaffDao {
     }
 
     @Override
-    public void create(Staff staff) {
+    public boolean create(Staff staff) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(staff);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void update(Staff staff) {
+    public boolean update(Staff staff) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(staff);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public void remove(Staff staff) {
+    public boolean remove(Staff staff) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(staff);
             session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
