@@ -2,10 +2,11 @@ package org.example.backend.Service;
 
 import org.example.backend.Model.entity.CalendarBlock;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CalendarBlockService {
-    List<CalendarBlock> getCalendarBlocksByStaffId(int staff_id);
-    List<CalendarBlock> getCalendarBlocksBetween(String date);
-    List<CalendarBlock> getCalendarBlocksByStaffIdBetween(int staff_id, String startDate, String endDate);
+    List<CalendarBlock> getCalendarBlocksByStaffId(int staffId);
+    List<CalendarBlock> getCalendarBlocksBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<CalendarBlock> getCalendarBlocksByStaffIdBetween(int staffId, LocalDateTime startDate, LocalDateTime endDate);
 }

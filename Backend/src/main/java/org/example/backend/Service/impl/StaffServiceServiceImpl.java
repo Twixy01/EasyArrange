@@ -1,25 +1,27 @@
 package org.example.backend.Service.impl;
 
+import org.example.backend.Dao.StaffServiceDao;
 import org.example.backend.Model.entity.Service;
+import org.example.backend.Model.entity.Staff;
+import org.example.backend.Service.StaffService;
 import org.example.backend.Service.StaffServiceService;
 
 import java.util.List;
 
 public class StaffServiceServiceImpl implements StaffServiceService {
-    private final StaffServiceService staffServiceService;
+    private final StaffServiceDao staffServiceDao;
 
-    public StaffServiceServiceImpl(StaffServiceService staffServiceService) {
-        this.staffServiceService = staffServiceService;
-    }
-
-
-    @Override
-    public List<Service> getAllServiceByStaffId(long staffId) {
-        return List.of();
+    public StaffServiceServiceImpl(StaffServiceDao staffServiceDao) {
+        this.staffServiceDao = staffServiceDao;
     }
 
     @Override
-    public List<Service> getAllServiceByServiceId(long serviceId) {
-        return List.of();
+    public List<Service> getAllServicesByStaffId(long staffId) {
+        return staffServiceDao.findAllServicesByStaffId(staffId);
+    }
+
+    @Override
+    public List<Staff> getAllStaffByServiceId(long serviceId) {
+        return staffServiceDao.findAllStaffByServiceId(serviceId);
     }
 }

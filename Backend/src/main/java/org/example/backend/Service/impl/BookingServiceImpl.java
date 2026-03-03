@@ -15,27 +15,27 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsByStaffId(int staff_id) {
-        return List.of();
+    public List<Booking> getBookingsByStaffId(int staffId) {
+        return bookingDao.findBookingsByStaffId(staffId);
     }
 
     @Override
-    public List<Booking> getBookingsByCustomerId(int customer_id) {
-        return List.of();
+    public List<Booking> getBookingsByCustomerId(int customerId) {
+        return bookingDao.findBookingsByCustomerId(customerId);
     }
 
     @Override
     public List<Booking> getBookingsBetween(LocalDateTime startTime, LocalDateTime endTime) {
-        return List.of();
+        return bookingDao.findBookingsBetween(startTime, endTime);
     }
 
     @Override
-    public List<Booking> getBookingsByStaffBetween(int staff_id, LocalDateTime startTime, LocalDateTime endTime) {
-        return List.of();
+    public List<Booking> getBookingsByStaffBetween(int staffId, LocalDateTime startTime, LocalDateTime endTime) {
+        return bookingDao.findBookingsByStaffBetween(staffId, startTime, endTime);
     }
 
     @Override
-    public List<Booking> getBookingsByCustomerBetween(int customer_id, LocalDateTime startTime, LocalDateTime endTime) {
-        return List.of();
+    public List<Booking> getBookingsByCustomerBetween(int customerId, LocalDateTime startTime, LocalDateTime endTime) {
+        return bookingDao.findBookingsByCustomerBetween(customerId, startTime, endTime);
     }
 }
