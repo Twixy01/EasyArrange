@@ -1,6 +1,6 @@
 package org.example.backend.Service.impl;
 
-import org.example.backend.Repository.RoleDao;
+import org.example.backend.RepositoryOld.RoleDao;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Service.RoleService;
 

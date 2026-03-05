@@ -1,6 +1,6 @@
 package org.example.backend.Service.impl;
 
-import org.example.backend.Repository.UserDao;
+import org.example.backend.RepositoryOld.UserDao;
 import org.example.backend.Model.entity.User;
 import org.example.backend.Service.UserService;
 

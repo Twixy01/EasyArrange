@@ -1,6 +1,6 @@
 package org.example.backend.Service.impl;
 
-import org.example.backend.Repository.CalendarBlockDao;
+import org.example.backend.RepositoryOld.CalendarBlockDao;
 import org.example.backend.Model.entity.CalendarBlock;
 import org.example.backend.Service.CalendarBlockService;
 
