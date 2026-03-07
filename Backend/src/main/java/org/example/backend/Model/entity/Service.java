@@ -26,8 +26,8 @@ public class Service {
     @OneToMany(mappedBy = "service")
     private Set<Booking> bookings = new LinkedHashSet<>();
 
-    @ManyToMany
-    private Set<Staff> staff = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "service")
+    private Set<StaffService> staff = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -69,11 +69,11 @@ public class Service {
         this.bookings = bookings;
     }
 
-    public Set<Staff> getStaff() {
+    public Set<StaffService> getStaff() {
         return staff;
     }
 
-    public void setStaff(Set<Staff> staff) {
+    public void setStaff(Set<StaffService> staff) {
         this.staff = staff;
     }
 
