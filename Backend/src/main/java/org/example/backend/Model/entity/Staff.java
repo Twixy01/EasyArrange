@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,21 +19,23 @@ public class Staff {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.RESTRICT) //when deleting a user,
+    // we need to check if it's not a staff because we will get an exception due to the restrict annotation
+    //it should be handled in the service layer
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "staff")
-    private Set<Booking> bookings = new LinkedHashSet<>();
+    private List<Booking> bookings = new ArrayList<>();
 
     @OneToMany(mappedBy = "staff")
     private Set<CalendarBlock> calendarBlocks = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "staff")
-    private Set<Service> services = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "staff")
+    private Set<StaffService> services = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "staff")
-    private Set<Shift> shifts = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "staff")
+    private Set<StaffShift> shifts = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -49,11 +53,11 @@ public class Staff {
         this.user = user;
     }
 
-    public Set<Booking> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Set<Booking> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
@@ -65,19 +69,19 @@ public class Staff {
         this.calendarBlocks = calendarBlocks;
     }
 
-    public Set<Service> getServices() {
+    public Set<StaffService> getServices() {
         return services;
     }
 
-    public void setServices(Set<Service> services) {
+    public void setServices(Set<StaffService> services) {
         this.services = services;
     }
 
-    public Set<Shift> getShifts() {
+    public Set<StaffShift> getShifts() {
         return shifts;
     }
 
-    public void setShifts(Set<Shift> shifts) {
+    public void setShifts(Set<StaffShift> shifts) {
         this.shifts = shifts;
     }
 

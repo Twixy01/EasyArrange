@@ -28,8 +28,8 @@ public class Shift {
     @Column(name = "end_shift", nullable = false)
     private LocalTime endShift;
 
-    @ManyToMany(mappedBy = "shifts")
-    private Set<Staff> staff = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "shift")
+    private Set<StaffShift> staff = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -63,11 +63,11 @@ public class Shift {
         this.endShift = endShift;
     }
 
-    public Set<Staff> getStaff() {
+    public Set<StaffShift> getStaff() {
         return staff;
     }
 
-    public void setStaff(Set<Staff> staff) {
+    public void setStaff(Set<StaffShift> staff) {
         this.staff = staff;
     }
 
