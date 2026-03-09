@@ -1,13 +1,13 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import org.example.backend.Model.entity.StaffShift;
-import org.example.backend.Model.entity.StaffShiftId;
-import org.example.backend.Model.entity.User;
+import org.example.backend.Model.entity.*;
 import org.example.backend.Repository.StaffShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,17 +29,21 @@ public class StaffShiftService {
         return staffShift.orElseThrow(() -> new IllegalArgumentException("StaffShift not found"));
     }
 
-    List<StaffShift> findAllShiftsByStaffId(long staffId) {
+    List<Shift> findAllShiftsByStaffId(Long staffId) {
         return staffShiftRepository.findAllShiftsByStaffId(staffId);
     }
 
-    List<StaffShift> findAllStaffByShiftId(long shiftId) {
+    List<Staff> findAllStaffByShiftId(Long shiftId) {
         return staffShiftRepository.findAllStaffByShiftId(shiftId);
     }
 
+    List<Shift> findAllShiftsByStaffIdBetweenShifts(Long staffId, LocalTime startShift, LocalTime endShift){
+        return staffShiftRepository.findAllShiftsByStaffIdBetweenShifts(staffId, startShift, endShift);
+    }
+
     @Transactional
-    public void remove(StaffShift staffShift) {
-        staffShiftRepository.delete(staffShift);
+    public StaffShift create(StaffShift staffShift) {
+        return staffShiftRepository.save(staffShift);
     }
 
     @Transactional
@@ -48,7 +52,7 @@ public class StaffShiftService {
     }
 
     @Transactional
-    public StaffShift create(StaffShift staffShift) {
-        return staffShiftRepository.save(staffShift);
+    public void remove(StaffShiftId staffShiftId) {
+        staffShiftRepository.deleteById(staffShiftId);
     }
 }

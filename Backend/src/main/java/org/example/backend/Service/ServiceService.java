@@ -27,7 +27,7 @@ public class ServiceService {
     }
 
     public boolean serviceExists(String service) {
-        return serviceRepository.serviceExists(service);
+        return serviceRepository.existsByName(service);
     }
 
     public Service findById(Long id) {
@@ -53,8 +53,7 @@ public class ServiceService {
     }
 
     @Transactional
-    public boolean delete(Long id) {
+    public void remove(Long id) {
         serviceRepository.deleteById(id);
-        return true;
     }
 }

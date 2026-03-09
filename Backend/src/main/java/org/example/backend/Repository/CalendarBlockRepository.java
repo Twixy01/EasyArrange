@@ -2,19 +2,28 @@ package org.example.backend.Repository;
 
 import org.example.backend.Model.entity.CalendarBlock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface CalendarBlockRepository extends JpaRepository<CalendarBlock, Long> {
 
-    Optional<CalendarBlock> findCalendarBlockById(Long id);
-    Optional<CalendarBlock> findByStartTime(LocalDateTime startTime);
-    List<CalendarBlock> findAllByOrderByStartTimeAsc();
-    List<CalendarBlock> findCalendarBlocksByStaffId(long staffId);
-    List<CalendarBlock> findCalendarBlocksBetween(LocalDateTime start, LocalDateTime end);
-    List<CalendarBlock> findCalendarBlocksByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end);
+    List<CalendarBlock> findAllByOrderByStartDatetimeAsc();
+
+    List<CalendarBlock> findAllByStaffId(Long staffId);
+
+    //    Optional<CalendarBlock> findByStartDateTime(LocalDateTime startTime);  több bookingot ad vissza, mert dolgozhat egy időben több staff
+
+    @Query("FROM CalendarBlock cb WHERE cb.startDatetime >= :start AND cb.endDatetime <= :end")
+    List<CalendarBlock> findAllBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("FROM CalendarBlock cb WHERE cb.staff.id = :staffId AND cb.startDatetime >=: start AND cb.endDatetime <=: end")
+    List<CalendarBlock> findAllByStaffBetween(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 
 }
