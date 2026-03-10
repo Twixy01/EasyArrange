@@ -46,10 +46,47 @@ public class BookingService {
         return bookingRepository.findAllByCustomerBetween(customerId, start, end);
     }
 
+    public List<Booking> findBookingsByStatus(org.example.backend.Model.entity.BookingStatus status) {
+        return bookingRepository.findAllBookingsByStatus(status);
+    }
+
     @Transactional
     public Booking create(Booking booking) {
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking must not be null");
+        }
+
+        if (booking.getId() != null && bookingRepository.existsById(booking.getId())) {
+            throw new IllegalArgumentException("Booking with id " + booking.getId() + " already exists");
+        }
+
+
+        if (booking.getStaff() == null || booking.getStaff().getId() == null) {
+            throw new IllegalArgumentException("Booking must have a staff assigned");
+        }
+        if (booking.getCustomer() == null || booking.getCustomer().getId() == null) {
+            throw new IllegalArgumentException("Booking must have a customer assigned");
+        }
+        if (booking.getService() == null || booking.getService().getId() == null) {
+            throw new IllegalArgumentException("Booking must have a service assigned");
+        }
+        if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Booking must have start and end datetimes");
+        }
+        if (booking.getEndDatetime().isBefore(booking.getStartDatetime()) || booking.getEndDatetime().isEqual(booking.getStartDatetime())) {
+            throw new IllegalArgumentException("Booking end must be after start");
+        }
+
+
+        List<Booking> overlapping = bookingRepository.findAllByStaffBetween(
+                booking.getStaff().getId(), booking.getStartDatetime(), booking.getEndDatetime());
+        if (!overlapping.isEmpty()) {
+            throw new IllegalArgumentException("Staff already has a booking in the given time range");
+        }
+
         return bookingRepository.save(booking);
     }
+
 
     @Transactional
     public Booking update(Booking booking) {
