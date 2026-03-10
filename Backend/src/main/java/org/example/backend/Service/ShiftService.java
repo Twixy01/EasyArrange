@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -39,12 +38,58 @@ public class ShiftService {
 
     @Transactional
     public Shift create(Shift shift) {
+        if (shift == null) {
+            throw new IllegalArgumentException("Shift must not be null");
+        }
+        if (shift.getId() != null && shiftRepository.existsById(shift.getId())) {
+            throw new IllegalArgumentException("Shift with id " + shift.getId() + " already exists");
+        }
+        if (shift.getStartShift() == null || shift.getEndShift() == null) {
+            throw new IllegalArgumentException("Shift start and end times must not be null");
+        }
+        if (shift.getStartShift().isAfter(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start time must be before end time");
+        }
+        if (shift.getStartShift().equals(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start and end times must not be the same");
+        }
+
         return shiftRepository.save(shift);
     }
 
     @Transactional
     public Shift update(Shift shift) {
-        return shiftRepository.save(shift);
+        if (shift == null) {
+            throw new IllegalArgumentException("Shift must not be null");
+        }
+
+        if (shift.getId() == null) {
+            throw new IllegalArgumentException("Shift id must be provided for update");
+        }
+
+        Shift existing = shiftRepository.findById(shift.getId()).orElseThrow(() ->
+                new IllegalArgumentException("Shift not found with id: " + shift.getId()));
+
+        if (shift.getStartShift() == null || shift.getEndShift() == null) {
+            throw new IllegalArgumentException("Shift start and end times must not be null");
+        }
+        if (shift.getStartShift().isAfter(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start time must be before end time");
+        }
+        if (shift.getStartShift().equals(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start and end times must not be the same");
+        }
+
+        List<Shift> overlapping = shiftRepository.findOverlappingShiftsExcludingId(shift.getId(), shift.getStartShift(), shift.getEndShift());
+        if (!overlapping.isEmpty()) {
+            throw new IllegalArgumentException("Updated shift would overlap with an existing shift");
+        }
+
+        existing.setDay(shift.getDay());
+        existing.setStartShift(shift.getStartShift());
+        existing.setEndShift(shift.getEndShift());
+
+        return shiftRepository.save(existing);
     }
 
     @Transactional
