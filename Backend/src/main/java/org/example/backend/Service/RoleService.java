@@ -20,12 +20,13 @@ public class RoleService {
     }
 
 
-    public long FindRoleIdByName(String roleName) {
-        return roleRepository.findRoleIdByName(roleName);
+    public Long findRoleIdByName(String roleName) {
+        Optional<Role> role = roleRepository.findByName(roleName);
+        return role.map(Role::getId).orElseThrow(()->new RuntimeException("Role Not Found With Name : " + roleName));
     }
 
     public Role findRoleById(Long id) {
-        Optional<Role> role = roleRepository.findRoleById(id);
+        Optional<Role> role = roleRepository.findById(id);
 
         return role.orElseThrow(()->
                 new IllegalArgumentException("Role not found with id: " + id));
@@ -33,12 +34,6 @@ public class RoleService {
 
     public List<Role> findAll() {
         return roleRepository.findAll();
-    }
-
-    @Transactional
-    public boolean delete(Long id) {
-        roleRepository.deleteById(id);
-        return true;
     }
 
     @Transactional
@@ -51,5 +46,9 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
+    @Transactional
+    public void remove(Long id) {
+        roleRepository.deleteById(id);
+    }
 
 }

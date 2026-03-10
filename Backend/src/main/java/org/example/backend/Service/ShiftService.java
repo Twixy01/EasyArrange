@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -19,24 +21,20 @@ public class ShiftService {
     }
 
     public Shift findShiftById(Long id) {
-        return shiftRepository.findShiftById(id).orElseThrow(() ->
+        return shiftRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Shift not found with id: " + id));
     }
 
-    public List<Shift> findAllShiftsByStaffId(long staffId) {
-        return shiftRepository.findAllShiftsByStaffId(staffId);
+    List<Shift> findAllShiftsByStartShift(LocalTime startShift){
+        return shiftRepository.findAllShiftsByStartShift(startShift);
     }
 
-    public List<Shift> findAllShiftsByTime(java.time.LocalTime time) {
-        return shiftRepository.findAllShiftsByTime(time);
+    List<Shift> findAllShiftsByEndShift(LocalTime endShift){
+        return shiftRepository.findAllShiftsByEndShift(endShift);
     }
 
-    public List<Shift> findShiftsBetweenTime(java.time.LocalTime startTime, java.time.LocalTime endTime) {
-        return shiftRepository.findShiftsBetweenTime(startTime, endTime);
-    }
-
-    public List<Shift> findShiftsByStaffIdBetweenTimes(long staff_id, java.time.LocalTime startTime, java.time.LocalTime endTime) {
-        return shiftRepository.findShiftsByStaffIdBetweenTimes(staff_id, startTime, endTime);
+    List<Shift> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift){
+        return shiftRepository.findAllShiftsBetweenShifts(startShift, endShift);
     }
 
     @Transactional
@@ -50,7 +48,7 @@ public class ShiftService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void remove(Long id) {
         shiftRepository.deleteById(id);
     }
 

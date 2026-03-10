@@ -23,7 +23,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findUserById(long id) {
+    public User findUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElseThrow(() -> new IllegalArgumentException("User not found!"));
     }
@@ -42,8 +42,8 @@ public class UserService {
     }
 
     @Transactional
-    public void remove(User user) {
-        userRepository.delete(user);
+    public User create(User user) {
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -52,8 +52,8 @@ public class UserService {
     }
 
     @Transactional
-    public User create(User user) {
-        return userRepository.save(user);
+    public void remove(Long userId) {
+        userRepository.deleteById(userId);
     }
 
 }

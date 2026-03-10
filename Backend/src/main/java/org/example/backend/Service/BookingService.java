@@ -18,29 +18,32 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
     }
 
-
-    public List<Booking> findBookingsByStaffId(long staffId) {
-        return bookingRepository.findBookingsByStaffId(staffId);
+    public List<Booking> findAll() {
+        return bookingRepository.findAll();
     }
 
-    public List<Booking> findBookingsByCustomerId(long customerId) {
-        return bookingRepository.findBookingsByCustomerId(customerId);
+    public Booking findBookingById(long id) {
+        return bookingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Booking with id " + id + " not found"));
+    }
+
+    public List<Booking> findBookingsByStaffId(Long staffId) {
+        return bookingRepository.findAllByStaffId(staffId);
+    }
+
+    public List<Booking> findBookingsByCustomerId(Long customerId) {
+        return bookingRepository.findAllByCustomerId(customerId);
     }
 
     public List<Booking> findBookingsBetween(java.time.LocalDateTime start, java.time.LocalDateTime end) {
-        return bookingRepository.findBookingsBetween(start, end);
+        return bookingRepository.findAllBetween(start, end);
     }
 
-    public List<Booking> findBookingsByStaffBetween(long staffId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
-        return bookingRepository.findBookingsByStaffBetween(staffId, start, end);
+    public List<Booking> findBookingsByStaffBetween(Long staffId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        return bookingRepository.findAllByStaffBetween(staffId, start, end);
     }
 
-    public List<Booking> findBookingsByCustomerBetween(long customerId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
-        return bookingRepository.findBookingsByCustomerBetween(customerId, start, end);
-    }
-
-    public  List<Booking> findAll() {
-        return bookingRepository.findAll();
+    public List<Booking> findBookingsByCustomerBetween(Long customerId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        return bookingRepository.findAllByCustomerBetween(customerId, start, end);
     }
 
     @Transactional
@@ -54,9 +57,8 @@ public class BookingService {
     }
 
     @Transactional
-    public boolean delete(Long id) {
+    public void remove(Long id) {
         bookingRepository.deleteById(id);
-        return true;
     }
 
 }

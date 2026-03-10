@@ -21,31 +21,30 @@ public class CalendarBlockService {
     }
 
     public CalendarBlock findCalendarBlockById(Long id) {
-        return calendarBlockRepository.findCalendarBlockById(id).orElseThrow(() ->
+        return calendarBlockRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Calendar block not found with id: " + id));
     }
 
-    public CalendarBlock findByStartTime(LocalDateTime startTime) {
-        return calendarBlockRepository.findByStartTime(startTime).orElseThrow(() ->
-                new IllegalArgumentException("Calendar block not found with start time: " + startTime));
+//    public CalendarBlock findByStartTime(LocalDateTime startTime) {
+//        return calendarBlockRepository.findByStartTime(startTime).orElseThrow(() ->
+//                new IllegalArgumentException("Calendar block not found with start time: " + startTime));
+//    }
+
+    public List<CalendarBlock> findAllByOrderByStartDatetimeAsc() {
+        return calendarBlockRepository.findAllByOrderByStartDatetimeAsc();
     }
 
-    public List<CalendarBlock> findAllByOrderByStartTimeAsc() {
-        return calendarBlockRepository.findAllByOrderByStartTimeAsc();
-    }
-
-    public List<CalendarBlock> findCalendarBlocksByStaffId(long staffId) {
-        return calendarBlockRepository.findCalendarBlocksByStaffId(staffId);
+    public List<CalendarBlock> findCalendarBlocksByStaffId(Long staffId) {
+        return calendarBlockRepository.findAllByStaffId(staffId);
     }
 
     public List<CalendarBlock> findCalendarBlocksBetween(LocalDateTime start, LocalDateTime end) {
-        return calendarBlockRepository.findCalendarBlocksBetween(start, end);
+        return calendarBlockRepository.findAllBetween(start, end);
     }
 
-    public List<CalendarBlock> findCalendarBlocksByStaffBetween(long staffId, LocalDateTime start, LocalDateTime end) {
-        return calendarBlockRepository.findCalendarBlocksByStaffBetween(staffId, start, end);
+    public List<CalendarBlock> findCalendarBlocksByStaffBetween(Long staffId, LocalDateTime start, LocalDateTime end) {
+        return calendarBlockRepository.findAllByStaffBetween(staffId, start, end);
     }
-
 
     @Transactional
     public CalendarBlock create(CalendarBlock calendarBlock) {
@@ -58,10 +57,8 @@ public class CalendarBlockService {
     }
 
     @Transactional
-    public boolean delete(Long id) {
+    public void remove(Long id) {
         calendarBlockRepository.deleteById(id);
-        return true;
     }
-
 
 }

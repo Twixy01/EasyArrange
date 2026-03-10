@@ -1,15 +1,16 @@
 package org.example.backend.Service;
 
+import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffService;
 import org.example.backend.Model.entity.StaffServiceId;
 import org.example.backend.Repository.StaffServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.example.backend.Model.entity.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@org.springframework.stereotype.Service
 public class StaffServiceService {
     private StaffServiceRepository staffServiceRepository;
 
@@ -27,11 +28,23 @@ public class StaffServiceService {
         return staffService.orElseThrow(() -> new IllegalArgumentException("StaffService not found"));
     }
 
-    List<StaffService> findAllServicesByStaffId(long staffId) {
+    List<Service> findAllServicesByStaffId(Long staffId) {
         return staffServiceRepository.findAllServicesByStaffId(staffId);
     }
 
-    List<StaffService> findAllStaffByServiceId(long serviceId) {
+    List<Staff> findAllStaffByServiceId(Long serviceId) {
         return staffServiceRepository.findAllStaffByServiceId(serviceId);
+    }
+
+    public StaffService create(StaffService staffService) {
+        return staffServiceRepository.save(staffService);
+    }
+
+    public StaffService update(StaffService staffService) {
+        return staffServiceRepository.save(staffService);
+    }
+
+    public void remove(StaffServiceId staffServiceId) {
+        staffServiceRepository.deleteById(staffServiceId);
     }
 }

@@ -21,25 +21,25 @@ public class StaffService {
         return staffRepository.findAll();
     }
 
-    public Staff findById(long id) {
+    public Staff findById(Long id) {
         Optional<Staff> staff = staffRepository.findById(id);
         return staff.orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
     }
 
-    public Staff findStaffByUserId(long id){
+    public Staff findStaffByUserId(Long id){
         Optional<Staff> staff = staffRepository.findById(id);
         return staff.orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
     }
 
-    public void remove(long id) {
-        staffRepository.deleteById(id);
+    public Staff create(Staff staff) {
+        return staffRepository.save(staff);
     }
 
     public Staff update(Staff staff) {
         return staffRepository.save(staff);
     }
 
-    public Staff save(Staff staff) {
-        return staffRepository.save(staff);
+    public void remove(Long id) {
+        staffRepository.deleteById(id);
     }
 }
