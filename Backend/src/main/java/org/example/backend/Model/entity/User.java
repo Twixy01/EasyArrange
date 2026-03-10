@@ -1,10 +1,10 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,12 +29,11 @@ public class User {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @OneToMany(mappedBy = "customer")
-    private Set<Booking> bookings = new LinkedHashSet<>();
+    private List<Booking> bookings = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private Staff staff;
@@ -87,11 +86,11 @@ public class User {
         this.role = role;
     }
 
-    public Set<Booking> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Set<Booking> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
