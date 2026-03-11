@@ -29,10 +29,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("FROM Booking b WHERE b.status = :status")
     List<Booking> findAllBookingsByStatus(@Param ("status") BookingStatus status);
 
-    @Query("SELECT b FROM Booking b WHERE b.staff.id = :staffId AND b.startDatetime <= :datetime AND b.endDatetime >= :datetime")
+    @Query("FROM Booking b ORDER BY b.startDatetime ASC")
     List<Booking> findAllByOrderByStartDatetimeAsc();
 
-    @Query("SELECT b FROM Booking b WHERE b.staff.id = :staffId AND b.startDatetime <= :datetime AND b.endDatetime >= :datetime")
+    @Query("SELECT b FROM Booking b ORDER BY b.startDatetime DESC")
     List<Booking> findAllByOrderByStartDatetimeDesc();
 
 }

@@ -18,10 +18,4 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     @Query("FROM Shift s WHERE s.startShift >= :startShift AND s.endShift <= :endShift")
     List<Shift> findAllShiftsBetweenShifts(@Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
-
-    @Query("FROM Shift s WHERE s.startShift < :endShift AND s.endShift > :startShift")
-    List<Shift> findOverlappingShifts(@Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
-
-    @Query("FROM Shift s WHERE s.id <> :id AND s.startShift < :endShift AND s.endShift > :startShift")
-    List<Shift> findOverlappingShiftsExcludingId(@Param("id") Long id, @Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
 }

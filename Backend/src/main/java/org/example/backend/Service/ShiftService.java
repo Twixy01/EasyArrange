@@ -80,11 +80,6 @@ public class ShiftService {
             throw new IllegalArgumentException("Shift start and end times must not be the same");
         }
 
-        List<Shift> overlapping = shiftRepository.findOverlappingShiftsExcludingId(shift.getId(), shift.getStartShift(), shift.getEndShift());
-        if (!overlapping.isEmpty()) {
-            throw new IllegalArgumentException("Updated shift would overlap with an existing shift");
-        }
-
         existing.setDay(shift.getDay());
         existing.setStartShift(shift.getStartShift());
         existing.setEndShift(shift.getEndShift());
