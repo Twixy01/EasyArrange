@@ -50,6 +50,14 @@ public class BookingService {
         return bookingRepository.findAllBookingsByStatus(status);
     }
 
+    public List<Booking> findBookingsByStaffAtDatetimeAsc(Long staffId, java.time.LocalDateTime datetime) {
+        return bookingRepository.findAllByOrderByStartDatetimeAsc();
+    }
+
+    public List<Booking> findBookingsByStaffAtDatetimeDesc(Long staffId, java.time.LocalDateTime datetime) {
+        return bookingRepository.findAllByOrderByStartDatetimeDesc();
+    }
+
     @Transactional
     public Booking create(Booking booking) {
         if (booking == null) {
