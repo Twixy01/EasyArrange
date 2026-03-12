@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Booking;
 import org.example.backend.Repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,37 +52,12 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking create(Booking booking) {
-        if (booking == null) {
-            throw new IllegalArgumentException("Booking must not be null");
-        }
+    public Booking create(@Valid Booking booking) {
+        var startTime = booking.getStartDatetime().toLocalTime();
+        var endTime = booking.getEndDatetime().toLocalTime();
 
-        if (booking.getId() != null && bookingRepository.existsById(booking.getId())) {
-            throw new IllegalArgumentException("Booking with id " + booking.getId() + " already exists");
-        }
-
-
-        if (booking.getStaff() == null || booking.getStaff().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a staff assigned");
-        }
-        if (booking.getCustomer() == null || booking.getCustomer().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a customer assigned");
-        }
-        if (booking.getService() == null || booking.getService().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a service assigned");
-        }
-        if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
-            throw new IllegalArgumentException("Booking must have start and end datetimes");
-        }
-        if (booking.getEndDatetime().isBefore(booking.getStartDatetime()) || booking.getEndDatetime().isEqual(booking.getStartDatetime())) {
-            throw new IllegalArgumentException("Booking end must be after start");
-        }
-
-
-        List<Booking> overlapping = bookingRepository.findAllByStaffBetween(
-                booking.getStaff().getId(), booking.getStartDatetime(), booking.getEndDatetime());
-        if (!overlapping.isEmpty()) {
-            throw new IllegalArgumentException("Staff already has a booking in the given time range");
+        if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time");
         }
 
         return bookingRepository.save(booking);
@@ -89,7 +65,15 @@ public class BookingService {
 
 
     @Transactional
-    public Booking update(Booking booking) {
+    public Booking update(@Valid Booking booking) {
+        var startTime = booking.getStartDatetime().toLocalTime();
+        var endTime = booking.getEndDatetime().toLocalTime();
+
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("Start and end time cannot be null");
+        } else if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
         return bookingRepository.save(booking);
     }
 

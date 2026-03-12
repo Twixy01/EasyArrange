@@ -1,6 +1,9 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -19,14 +22,17 @@ public class CalendarBlock {
     private Long id;
 
     @Column(name = "start_datetime", nullable = false)
+    @NotNull(message = "Start datetime can't be null")
     private LocalDateTime startDatetime;
 
     @Column(name = "end_datetime", nullable = false)
+    @NotNull(message = "End datetime can't be null")
     private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "staff_id", nullable = false)
+    @NotBlank(message = "Staff can't be blank")
     private Staff staff;
 
     public Long getId() {

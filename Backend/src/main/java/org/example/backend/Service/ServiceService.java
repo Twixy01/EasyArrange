@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Service;
 import org.example.backend.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,12 @@ public class ServiceService {
     }
 
     @Transactional
-    public Service create(Service service) {
+    public Service create(@Valid Service service) {
         return serviceRepository.save(service);
     }
 
     @Transactional
-    public Service update(Service service) {
+    public Service update(@Valid Service service) {
         return serviceRepository.save(service);
     }
 

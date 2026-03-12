@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Repository.RoleRepository;
 import org.example.backend.Repository.ServiceRepository;
@@ -37,12 +38,12 @@ public class RoleService {
     }
 
     @Transactional
-    public Role create(Role role) {
+    public Role create(@Valid Role role) {
         return roleRepository.save(role);
     }
 
     @Transactional
-    public Role update(Role role) {
+    public Role update(@Valid Role role) {
         return roleRepository.save(role);
     }
 

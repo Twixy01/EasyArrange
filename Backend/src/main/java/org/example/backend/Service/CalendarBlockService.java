@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.CalendarBlock;
 import org.example.backend.Repository.CalendarBlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,27 @@ public class CalendarBlockService {
     }
 
     @Transactional
-    public CalendarBlock create(CalendarBlock calendarBlock) {
+    public CalendarBlock create(@Valid CalendarBlock calendarBlock) {
+        var startTime = calendarBlock.getStartDatetime().toLocalTime();
+        var endTime = calendarBlock.getEndDatetime().toLocalTime();
+
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("Start and end time cannot be null");
+        } else if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
+
         return calendarBlockRepository.save(calendarBlock);
     }
 
     @Transactional
-    public CalendarBlock update(CalendarBlock calendarBlock) {
+    public CalendarBlock update(@Valid CalendarBlock calendarBlock) {
+        var startTime = calendarBlock.getStartDatetime().toLocalTime();
+        var endTime = calendarBlock.getEndDatetime().toLocalTime();
+
+        if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
         return calendarBlockRepository.save(calendarBlock);
     }
 
