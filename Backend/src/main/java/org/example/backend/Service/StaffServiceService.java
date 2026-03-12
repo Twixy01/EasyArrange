@@ -1,5 +1,6 @@
 package org.example.backend.Service;
 
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffService;
 import org.example.backend.Model.entity.StaffServiceId;
@@ -28,19 +29,19 @@ public class StaffServiceService {
         return staffService.orElseThrow(() -> new IllegalArgumentException("StaffService not found"));
     }
 
-    List<Service> findAllServicesByStaffId(Long staffId) {
+    public List<Service> findAllServicesByStaffId(Long staffId) {
         return staffServiceRepository.findAllServicesByStaffId(staffId);
     }
 
-    List<Staff> findAllStaffByServiceId(Long serviceId) {
+    public List<Staff> findAllStaffByServiceId(Long serviceId) {
         return staffServiceRepository.findAllStaffByServiceId(serviceId);
     }
 
-    public StaffService create(StaffService staffService) {
+    public StaffService create(@Valid StaffService staffService) {
         return staffServiceRepository.save(staffService);
     }
 
-    public StaffService update(StaffService staffService) {
+    public StaffService update(@Valid StaffService staffService) {
         return staffServiceRepository.save(staffService);
     }
 

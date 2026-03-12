@@ -17,8 +17,6 @@ public interface CalendarBlockRepository extends JpaRepository<CalendarBlock, Lo
 
     List<CalendarBlock> findAllByStaffId(Long staffId);
 
-    //    Optional<CalendarBlock> findByStartDateTime(LocalDateTime startTime);  több bookingot ad vissza, mert dolgozhat egy időben több staff
-
     @Query("FROM CalendarBlock cb WHERE cb.startDatetime >= :start AND cb.endDatetime <= :end")
     List<CalendarBlock> findAllBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 

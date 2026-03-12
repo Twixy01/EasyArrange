@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,61 +25,30 @@ public class ShiftService {
                 new IllegalArgumentException("Shift not found with id: " + id));
     }
 
-    List<Shift> findAllShiftsByStartShift(LocalTime startShift){
+    public List<Shift> findAllShiftsByStartShift(LocalTime startShift) {
         return shiftRepository.findAllShiftsByStartShift(startShift);
     }
 
-    List<Shift> findAllShiftsByEndShift(LocalTime endShift){
+    public List<Shift> findAllShiftsByEndShift(LocalTime endShift) {
         return shiftRepository.findAllShiftsByEndShift(endShift);
     }
 
-    List<Shift> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift){
+    public List<Shift> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift) {
         return shiftRepository.findAllShiftsBetweenShifts(startShift, endShift);
     }
 
     @Transactional
-    public Shift create(Shift shift) {
-        if (shift == null) {
-            throw new IllegalArgumentException("Shift must not be null");
-        }
-        if (shift.getId() != null && shiftRepository.existsById(shift.getId())) {
-            throw new IllegalArgumentException("Shift with id " + shift.getId() + " already exists");
-        }
-        if (shift.getStartShift() == null || shift.getEndShift() == null) {
-            throw new IllegalArgumentException("Shift start and end times must not be null");
-        }
-        if (shift.getStartShift().isAfter(shift.getEndShift())) {
-            throw new IllegalArgumentException("Shift start time must be before end time");
-        }
-        if (shift.getStartShift().equals(shift.getEndShift())) {
-            throw new IllegalArgumentException("Shift start and end times must not be the same");
-        }
-
+    public Shift create(@Valid Shift shift) {
+        validateShift(shift);
         return shiftRepository.save(shift);
     }
 
     @Transactional
-    public Shift update(Shift shift) {
-        if (shift == null) {
-            throw new IllegalArgumentException("Shift must not be null");
-        }
-
-        if (shift.getId() == null) {
-            throw new IllegalArgumentException("Shift id must be provided for update");
-        }
-
+    public Shift update(@Valid Shift shift) {
         Shift existing = shiftRepository.findById(shift.getId()).orElseThrow(() ->
                 new IllegalArgumentException("Shift not found with id: " + shift.getId()));
 
-        if (shift.getStartShift() == null || shift.getEndShift() == null) {
-            throw new IllegalArgumentException("Shift start and end times must not be null");
-        }
-        if (shift.getStartShift().isAfter(shift.getEndShift())) {
-            throw new IllegalArgumentException("Shift start time must be before end time");
-        }
-        if (shift.getStartShift().equals(shift.getEndShift())) {
-            throw new IllegalArgumentException("Shift start and end times must not be the same");
-        }
+        validateShift(shift);
 
         existing.setDay(shift.getDay());
         existing.setStartShift(shift.getStartShift());
@@ -92,5 +62,17 @@ public class ShiftService {
         shiftRepository.deleteById(id);
     }
 
+    private void validateShift(Shift shift) {
+        if (shiftRepository.existsByDayAndStartShiftAndEndShift(
+                shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
+        }
+        if (shift.getStartShift().isAfter(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start time must be before end time");
+        }
+        if (shift.getStartShift().equals(shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift start and end times must not be the same");
+        }
+    }
 
 }

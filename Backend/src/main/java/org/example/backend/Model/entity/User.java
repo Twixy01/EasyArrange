@@ -1,6 +1,7 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -17,19 +18,32 @@ public class User {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
+    @NotBlank(message = "Name cannot be blank")
+    @Size(max = 50, message = "Name must not exceed 50 characters")
     private String name;
 
     @Column(name = "email", nullable = false)
+    @NotBlank(message = "Email must not be blank")
+    @Email(message = "Email must be a valid email address")
+    @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
     @Column(name = "profile_picture")
+    @NotBlank(message = "Profile picture URL cannot be blank")
     private String profilePicture;
 
     @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password must not be blank")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$",
+            message = "Password must contain uppercase, lowercase and number"
+    )
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
+    @NotNull(message = "Role cannot be null")
     private Role role;
 
     @OneToMany(mappedBy = "customer")

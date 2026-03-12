@@ -15,10 +15,10 @@ import java.util.List;
 @Repository
 public interface StaffShiftRepository extends JpaRepository<StaffShift, StaffShiftId> {
     @Query("SELECT ss.shift FROM StaffShift ss WHERE ss.id.staffId = :staffId")
-    List<Shift> findAllShiftsByStaffId(Long staffId);
+    List<Shift> findAllShiftsByStaffId(@Param("staffId") Long staffId);
 
     @Query("SELECT ss FROM StaffShift ss WHERE ss.id.shiftId = :shiftId")
-    List<Staff> findAllStaffByShiftId(Long shiftId);
+    List<Staff> findAllStaffByShiftId(@Param("shiftId") Long shiftId);
 
     @Query("SELECT ss.shift FROM StaffShift ss WHERE ss.staff.id = :staffId AND" +
             " ss.shift.startShift >= :startShift AND ss.shift.endShift <= :endShift")

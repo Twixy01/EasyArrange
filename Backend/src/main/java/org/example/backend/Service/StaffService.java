@@ -1,5 +1,6 @@
 package org.example.backend.Service;
 
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Repository.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,11 @@ public class StaffService {
         return staff.orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
     }
 
-    public Staff create(Staff staff) {
+    public Staff create(@Valid Staff staff) {
         return staffRepository.save(staff);
     }
 
-    public Staff update(Staff staff) {
+    public Staff update(@Valid Staff staff) {
         return staffRepository.save(staff);
     }
 

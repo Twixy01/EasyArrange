@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.UserRepository;
@@ -33,21 +34,21 @@ public class UserService {
         return user.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
     }
 
-    List<User> findUsersByRole(Role role) {
+    public List<User> findUsersByRole(Role role) {
         return userRepository.findUsersByRole(role);
     }
 
-    List<User> findAllStaff() {
+    public List<User> findAllStaff() {
         return userRepository.findAllStaff();
     }
 
     @Transactional
-    public User create(User user) {
+    public User create(@Valid User user) {
         return userRepository.save(user);
     }
 
     @Transactional
-    public User update(User user) {
+    public User update(@Valid User user) {
         return userRepository.save(user);
     }
 

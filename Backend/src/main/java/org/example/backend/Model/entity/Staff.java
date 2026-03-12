@@ -1,6 +1,7 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -19,17 +20,16 @@ public class Staff {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT) //when deleting a user,
-    // we need to check if it's not a staff because we will get an exception due to the restrict annotation
-    //it should be handled in the service layer
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "user_id", nullable = false)
+    @NotNull(message = "User cannot be null")
     private User user;
 
     @OneToMany(mappedBy = "staff")
     private List<Booking> bookings = new ArrayList<>();
 
     @OneToMany(mappedBy = "staff")
-    private Set<CalendarBlock> calendarBlocks = new LinkedHashSet<>();
+    private List<CalendarBlock> calendarBlocks = new ArrayList<>();
 
     @OneToMany(mappedBy = "staff")
     private Set<StaffService> services = new LinkedHashSet<>();
@@ -61,11 +61,11 @@ public class Staff {
         this.bookings = bookings;
     }
 
-    public Set<CalendarBlock> getCalendarBlocks() {
+    public List<CalendarBlock> getCalendarBlocks() {
         return calendarBlocks;
     }
 
-    public void setCalendarBlocks(Set<CalendarBlock> calendarBlocks) {
+    public void setCalendarBlocks(List<CalendarBlock> calendarBlocks) {
         this.calendarBlocks = calendarBlocks;
     }
 

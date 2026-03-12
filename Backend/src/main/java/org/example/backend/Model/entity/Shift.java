@@ -1,6 +1,7 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
@@ -18,14 +19,17 @@ public class Shift {
     @Column(name = "shift_id", nullable = false)
     private Long id;
 
-    @Lob
     @Column(name = "day", nullable = false)
-    private String day;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Day must not be null")
+    private ShiftDay day;
 
     @Column(name = "start_shift", nullable = false)
+    @NotNull(message = "Shift start time must not be null")
     private LocalTime startShift;
 
     @Column(name = "end_shift", nullable = false)
+    @NotNull(message = "Shift end time must not be null")
     private LocalTime endShift;
 
     @OneToMany(mappedBy = "shift")
@@ -39,11 +43,11 @@ public class Shift {
         this.id = id;
     }
 
-    public String getDay() {
+    public ShiftDay getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(ShiftDay day) {
         this.day = day;
     }
 

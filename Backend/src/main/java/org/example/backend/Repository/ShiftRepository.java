@@ -1,6 +1,7 @@
 package org.example.backend.Repository;
 
 import org.example.backend.Model.entity.Shift;
+import org.example.backend.Model.entity.ShiftDay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,6 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     @Query("FROM Shift s WHERE s.startShift >= :startShift AND s.endShift <= :endShift")
     List<Shift> findAllShiftsBetweenShifts(@Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
+
+    boolean existsByDayAndStartShiftAndEndShift(ShiftDay day, LocalTime startShift, LocalTime endShift);
 }
