@@ -1,5 +1,6 @@
 package org.example.backend.Controller;
 
+import org.example.backend.DTO.UserDTO;
 import org.example.backend.Model.entity.User;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserController {
 
     @GetMapping("/list")
     public String getAllUsers(Model model) {
-        List<User> users = userService.findAll();
+        List<UserDTO> users = userService.findAll();
         model.addAttribute("users", users);
         return "users-list";
     }
