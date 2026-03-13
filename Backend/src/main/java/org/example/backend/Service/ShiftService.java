@@ -6,11 +6,13 @@ import org.example.backend.Model.entity.Shift;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@Validated
 public class ShiftService {
 
     private final ShiftRepository shiftRepository;
@@ -39,16 +41,28 @@ public class ShiftService {
 
     @Transactional
     public Shift create(@Valid Shift shift) {
-        validateShift(shift);
+        validateShiftTimes(shift);
+        if (shiftRepository.existsByDayAndStartShiftAndEndShift(
+                shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
+            throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
+        }
         return shiftRepository.save(shift);
     }
 
     @Transactional
     public Shift update(@Valid Shift shift) {
+        if (shift.getId() == null) {
+            throw new IllegalArgumentException("Shift id is required for update");
+        }
+
         Shift existing = shiftRepository.findById(shift.getId()).orElseThrow(() ->
                 new IllegalArgumentException("Shift not found with id: " + shift.getId()));
 
-        validateShift(shift);
+        validateShiftTimes(shift);
+        if (shiftRepository.existsByDayAndStartShiftAndEndShiftAndIdNot(
+                shift.getDay(), shift.getStartShift(), shift.getEndShift(), shift.getId())) {
+            throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
+        }
 
         existing.setDay(shift.getDay());
         existing.setStartShift(shift.getStartShift());
@@ -62,11 +76,7 @@ public class ShiftService {
         shiftRepository.deleteById(id);
     }
 
-    private void validateShift(Shift shift) {
-        if (shiftRepository.existsByDayAndStartShiftAndEndShift(
-                shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
-            throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
-        }
+    private void validateShiftTimes(Shift shift) {
         if (shift.getStartShift().isAfter(shift.getEndShift())) {
             throw new IllegalArgumentException("Shift start time must be before end time");
         }

@@ -21,4 +21,6 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
     List<Shift> findAllShiftsBetweenShifts(@Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
 
     boolean existsByDayAndStartShiftAndEndShift(ShiftDay day, LocalTime startShift, LocalTime endShift);
+
+    boolean existsByDayAndStartShiftAndEndShiftAndIdNot(ShiftDay day, LocalTime startShift, LocalTime endShift, Long id);
 }

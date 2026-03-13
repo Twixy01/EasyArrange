@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "email",
@@ -28,17 +26,12 @@ public class User {
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", nullable = false)
     @NotBlank(message = "Profile picture URL cannot be blank")
     private String profilePicture;
 
     @Column(name = "password", nullable = false)
     @NotBlank(message = "Password must not be blank")
-    @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$",
-            message = "Password must contain uppercase, lowercase and number"
-    )
-    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

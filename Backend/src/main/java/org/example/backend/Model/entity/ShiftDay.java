@@ -9,7 +9,7 @@ public enum ShiftDay {
     SATURDAY(6),
     SUNDAY(7);
 
-    private int dayNumber;
+    private final int dayNumber;
 
     ShiftDay(int dayNumber) {
         this.dayNumber = dayNumber;
@@ -17,10 +17,6 @@ public enum ShiftDay {
 
     public int getDayNumber() {
         return dayNumber;
-    }
-
-    public void setDayNumber(int dayNumber) {
-        this.dayNumber = dayNumber;
     }
 
     public boolean isWeekday() {

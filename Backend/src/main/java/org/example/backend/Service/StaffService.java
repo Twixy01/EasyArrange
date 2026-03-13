@@ -5,11 +5,13 @@ import org.example.backend.Model.entity.Staff;
 import org.example.backend.Repository.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Validated
 public class StaffService {
     private StaffRepository staffRepository;
 

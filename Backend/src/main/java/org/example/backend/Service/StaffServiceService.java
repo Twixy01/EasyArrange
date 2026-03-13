@@ -7,11 +7,13 @@ import org.example.backend.Model.entity.StaffServiceId;
 import org.example.backend.Repository.StaffServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.example.backend.Model.entity.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
+@Validated
 public class StaffServiceService {
     private StaffServiceRepository staffServiceRepository;
 
