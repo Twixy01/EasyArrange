@@ -6,6 +6,7 @@ import org.example.backend.Model.entity.StaffService;
 import org.example.backend.Model.entity.StaffServiceId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
 @Repository
 public interface StaffServiceRepository extends JpaRepository<StaffService, StaffServiceId> {
     @Query("SELECT ss.service FROM StaffService ss WHERE ss.id.staffId = :staffId")
-    List<Service> findAllServicesByStaffId(Long staffId);
+    List<Service> findAllServicesByStaffId(@Param("staffId") Long staffId);
 
     @Query("SELECT ss.staff FROM StaffService ss WHERE ss.id.serviceId = :serviceId")
-    List<Staff> findAllStaffByServiceId(Long serviceId);
+    List<Staff> findAllStaffByServiceId(@Param("serviceId") Long serviceId);
 }

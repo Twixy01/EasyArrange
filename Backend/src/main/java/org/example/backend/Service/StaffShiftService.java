@@ -1,17 +1,20 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.*;
 import org.example.backend.Repository.StaffShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Validated
 public class StaffShiftService {
     private StaffShiftRepository staffShiftRepository;
 
@@ -29,25 +32,25 @@ public class StaffShiftService {
         return staffShift.orElseThrow(() -> new IllegalArgumentException("StaffShift not found"));
     }
 
-    List<Shift> findAllShiftsByStaffId(Long staffId) {
+    public List<Shift> findAllShiftsByStaffId(Long staffId) {
         return staffShiftRepository.findAllShiftsByStaffId(staffId);
     }
 
-    List<Staff> findAllStaffByShiftId(Long shiftId) {
+    public List<Staff> findAllStaffByShiftId(Long shiftId) {
         return staffShiftRepository.findAllStaffByShiftId(shiftId);
     }
 
-    List<Shift> findAllShiftsByStaffIdBetweenShifts(Long staffId, LocalTime startShift, LocalTime endShift){
+    public List<Shift> findAllShiftsByStaffIdBetweenShifts(Long staffId, LocalTime startShift, LocalTime endShift) {
         return staffShiftRepository.findAllShiftsByStaffIdBetweenShifts(staffId, startShift, endShift);
     }
 
     @Transactional
-    public StaffShift create(StaffShift staffShift) {
+    public StaffShift create(@Valid StaffShift staffShift) {
         return staffShiftRepository.save(staffShift);
     }
 
     @Transactional
-    public StaffShift update(StaffShift staffShift) {
+    public StaffShift update(@Valid StaffShift staffShift) {
         return staffShiftRepository.save(staffShift);
     }
 

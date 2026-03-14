@@ -1,16 +1,19 @@
 package org.example.backend.Service;
 
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Staff;
 import org.example.backend.Model.entity.StaffService;
 import org.example.backend.Model.entity.StaffServiceId;
 import org.example.backend.Repository.StaffServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.example.backend.Model.entity.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
+@Validated
 public class StaffServiceService {
     private StaffServiceRepository staffServiceRepository;
 
@@ -28,19 +31,19 @@ public class StaffServiceService {
         return staffService.orElseThrow(() -> new IllegalArgumentException("StaffService not found"));
     }
 
-    List<Service> findAllServicesByStaffId(Long staffId) {
+    public List<Service> findAllServicesByStaffId(Long staffId) {
         return staffServiceRepository.findAllServicesByStaffId(staffId);
     }
 
-    List<Staff> findAllStaffByServiceId(Long serviceId) {
+    public List<Staff> findAllStaffByServiceId(Long serviceId) {
         return staffServiceRepository.findAllStaffByServiceId(serviceId);
     }
 
-    public StaffService create(StaffService staffService) {
+    public StaffService create(@Valid StaffService staffService) {
         return staffServiceRepository.save(staffService);
     }
 
-    public StaffService update(StaffService staffService) {
+    public StaffService update(@Valid StaffService staffService) {
         return staffServiceRepository.save(staffService);
     }
 

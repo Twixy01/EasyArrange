@@ -1,11 +1,10 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "email",
@@ -17,19 +16,27 @@ public class User {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
+    @NotBlank(message = "Name cannot be blank")
+    @Size(max = 50, message = "Name must not exceed 50 characters")
     private String name;
 
     @Column(name = "email", nullable = false)
+    @NotBlank(message = "Email must not be blank")
+    @Email(message = "Email must be a valid email address")
+    @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", nullable = false)
+    @NotBlank(message = "Profile picture URL cannot be blank")
     private String profilePicture;
 
     @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password must not be blank")
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
+    @NotNull(message = "Role cannot be null")
     private Role role;
 
     @OneToMany(mappedBy = "customer")

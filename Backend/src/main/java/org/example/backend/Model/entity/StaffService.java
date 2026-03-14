@@ -1,6 +1,7 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -8,18 +9,21 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "staff_service", schema = "easyarrange")
 public class StaffService {
     @EmbeddedId
+    @NotNull(message = "StaffServiceId cannot be null")
     private StaffServiceId id;
 
     @MapsId("staffId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
+    @NotNull(message = "Staff cannot be null")
     private Staff staff;
 
     @MapsId("serviceId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "service_id", nullable = false)
+    @NotNull(message = "Service cannot be null")
     private Service service;
 
     public StaffServiceId getId() {
