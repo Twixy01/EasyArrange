@@ -26,8 +26,7 @@ public class User {
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @Column(name = "profile_picture", nullable = false)
-    @NotBlank(message = "Profile picture URL cannot be blank")
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @Column(name = "password", nullable = false)

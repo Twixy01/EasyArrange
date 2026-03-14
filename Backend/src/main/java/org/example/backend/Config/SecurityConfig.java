@@ -13,13 +13,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/register"))
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        "/api/register",
+                        "/api/users/**"
+                ))
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
 
+                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 }

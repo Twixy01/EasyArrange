@@ -1,10 +1,10 @@
 package org.example.backend.DTO;
 
-public record UserRegistrationDTO(
+public record UserResponse(
+        Long userId,
         String name,
         String email,
-        String password,
         String profilePicture,
-        Long roleId
+        String role
 ) {
 }

@@ -1,18 +1,15 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.example.backend.Model.entity.Shift;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Service
-@Validated
 public class ShiftService {
 
     private final ShiftRepository shiftRepository;
@@ -40,7 +37,7 @@ public class ShiftService {
     }
 
     @Transactional
-    public Shift create(@Valid Shift shift) {
+    public Shift create(Shift shift) {
         validateShiftTimes(shift);
         if (shiftRepository.existsByDayAndStartShiftAndEndShift(
                 shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
@@ -50,7 +47,7 @@ public class ShiftService {
     }
 
     @Transactional
-    public Shift update(@Valid Shift shift) {
+    public Shift update(Shift shift) {
         if (shift.getId() == null) {
             throw new IllegalArgumentException("Shift id is required for update");
         }
