@@ -5,13 +5,12 @@ import jakarta.validation.Valid;
 import org.example.backend.Model.entity.CalendarBlock;
 import org.example.backend.Repository.CalendarBlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
-@Controller
+@Service
 public class CalendarBlockService {
 
     private final CalendarBlockRepository calendarBlockRepository;
@@ -49,13 +48,15 @@ public class CalendarBlockService {
 
     @Transactional
     public CalendarBlock create(@Valid CalendarBlock calendarBlock) {
-        var startTime = calendarBlock.getStartDatetime().toLocalTime();
-        var endTime = calendarBlock.getEndDatetime().toLocalTime();
+        if (calendarBlock.getStartDatetime() == null || calendarBlock.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
+        }
 
-        if (startTime == null || endTime == null) {
-            throw new IllegalArgumentException("Start and end time cannot be null");
-        } else if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
-            throw new IllegalArgumentException("Start time must be before end time");
+        LocalDateTime start = calendarBlock.getStartDatetime();
+        LocalDateTime end = calendarBlock.getEndDatetime();
+
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
 
         return calendarBlockRepository.save(calendarBlock);
@@ -63,11 +64,15 @@ public class CalendarBlockService {
 
     @Transactional
     public CalendarBlock update(@Valid CalendarBlock calendarBlock) {
-        var startTime = calendarBlock.getStartDatetime().toLocalTime();
-        var endTime = calendarBlock.getEndDatetime().toLocalTime();
+        if (calendarBlock.getStartDatetime() == null || calendarBlock.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
+        }
 
-        if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
-            throw new IllegalArgumentException("Start time must be before end time");
+        LocalDateTime start = calendarBlock.getStartDatetime();
+        LocalDateTime end = calendarBlock.getEndDatetime();
+
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
         return calendarBlockRepository.save(calendarBlock);
     }

@@ -32,7 +32,7 @@ public class CalendarBlock {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "staff_id", nullable = false)
-    @NotBlank(message = "Staff can't be blank")
+    @NotNull(message = "Staff can't be null")
     private Staff staff;
 
     public Long getId() {

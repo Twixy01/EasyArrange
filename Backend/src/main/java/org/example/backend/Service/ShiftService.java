@@ -6,6 +6,7 @@ import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
 import java.util.List;
