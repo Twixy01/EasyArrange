@@ -1,6 +1,7 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -15,6 +16,7 @@ public class Role {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
+    @NotBlank(message = "Role name can't be blank")
     private String name;
 
     @OneToMany(mappedBy = "role")

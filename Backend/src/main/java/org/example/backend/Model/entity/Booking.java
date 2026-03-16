@@ -1,6 +1,9 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
                 "start_datetime",
                 "end_datetime"})})
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id", nullable = false)
@@ -21,26 +25,32 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "staff_id", nullable = false)
+    @NotNull(message = "Staff can't be null")
     private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "customer_id", nullable = false)
+    @NotNull(message = "Customer can't be null")
     private User customer;
 
     @Column(name = "start_datetime", nullable = false)
+    @NotNull(message = "Start datetime can't be null")
     private LocalDateTime startDatetime;
 
     @Column(name = "end_datetime", nullable = false)
+    @NotNull(message = "End datetime can't be null")
     private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "service_id", nullable = false)
+    @NotNull(message = "Service can't be null")
     private Service service;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @NotNull(message = "Status can't be null")
     private BookingStatus status = BookingStatus.BOOKED;
 
     public boolean isCancelled() {

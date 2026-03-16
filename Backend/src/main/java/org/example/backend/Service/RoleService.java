@@ -1,15 +1,19 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+ximport jakarta.validation.constraints.NotNull;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Repository.RoleRepository;
 import org.example.backend.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
+@Validated
 @Service
 public class RoleService {
     private final RoleRepository roleRepository;
@@ -37,12 +41,12 @@ public class RoleService {
     }
 
     @Transactional
-    public Role create(Role role) {
+    public Role create(@NotNull @Valid Role role) {
         return roleRepository.save(role);
     }
 
     @Transactional
-    public Role update(Role role) {
+    public Role update(@NotNull @Valid Role role) {
         return roleRepository.save(role);
     }
 

@@ -1,16 +1,16 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.example.backend.Model.entity.CalendarBlock;
 import org.example.backend.Repository.CalendarBlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
-@Controller
+@Service
 public class CalendarBlockService {
 
     private final CalendarBlockRepository calendarBlockRepository;
@@ -47,12 +47,33 @@ public class CalendarBlockService {
     }
 
     @Transactional
-    public CalendarBlock create(CalendarBlock calendarBlock) {
+    public CalendarBlock create(@Valid CalendarBlock calendarBlock) {
+        if (calendarBlock.getStartDatetime() == null || calendarBlock.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
+        }
+
+        LocalDateTime start = calendarBlock.getStartDatetime();
+        LocalDateTime end = calendarBlock.getEndDatetime();
+
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
+        }
+
         return calendarBlockRepository.save(calendarBlock);
     }
 
     @Transactional
-    public CalendarBlock update(CalendarBlock calendarBlock) {
+    public CalendarBlock update(@Valid CalendarBlock calendarBlock) {
+        if (calendarBlock.getStartDatetime() == null || calendarBlock.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
+        }
+
+        LocalDateTime start = calendarBlock.getStartDatetime();
+        LocalDateTime end = calendarBlock.getEndDatetime();
+
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
+        }
         return calendarBlockRepository.save(calendarBlock);
     }
 

@@ -1,13 +1,18 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.backend.Model.entity.Booking;
 import org.example.backend.Repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Validated
 @Service
 public class BookingService {
 
@@ -34,15 +39,15 @@ public class BookingService {
         return bookingRepository.findAllByCustomerId(customerId);
     }
 
-    public List<Booking> findBookingsBetween(java.time.LocalDateTime start, java.time.LocalDateTime end) {
+    public List<Booking> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
         return bookingRepository.findAllBetween(start, end);
     }
 
-    public List<Booking> findBookingsByStaffBetween(Long staffId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+    public List<Booking> findBookingsByStaffBetween(Long staffId, LocalDateTime start, LocalDateTime end) {
         return bookingRepository.findAllByStaffBetween(staffId, start, end);
     }
 
-    public List<Booking> findBookingsByCustomerBetween(Long customerId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+    public List<Booking> findBookingsByCustomerBetween(Long customerId, LocalDateTime start, LocalDateTime end) {
         return bookingRepository.findAllByCustomerBetween(customerId, start, end);
     }
 
@@ -59,37 +64,16 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking create(Booking booking) {
-        if (booking == null) {
-            throw new IllegalArgumentException("Booking must not be null");
-        }
-
-        if (booking.getId() != null && bookingRepository.existsById(booking.getId())) {
-            throw new IllegalArgumentException("Booking with id " + booking.getId() + " already exists");
-        }
-
-
-        if (booking.getStaff() == null || booking.getStaff().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a staff assigned");
-        }
-        if (booking.getCustomer() == null || booking.getCustomer().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a customer assigned");
-        }
-        if (booking.getService() == null || booking.getService().getId() == null) {
-            throw new IllegalArgumentException("Booking must have a service assigned");
-        }
+    public Booking create(@NotNull @Valid Booking booking) {
         if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
-            throw new IllegalArgumentException("Booking must have start and end datetimes");
-        }
-        if (booking.getEndDatetime().isBefore(booking.getStartDatetime()) || booking.getEndDatetime().isEqual(booking.getStartDatetime())) {
-            throw new IllegalArgumentException("Booking end must be after start");
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
         }
 
+        LocalDateTime start = booking.getStartDatetime();
+        LocalDateTime end = booking.getEndDatetime();
 
-        List<Booking> overlapping = bookingRepository.findAllByStaffBetween(
-                booking.getStaff().getId(), booking.getStartDatetime(), booking.getEndDatetime());
-        if (!overlapping.isEmpty()) {
-            throw new IllegalArgumentException("Staff already has a booking in the given time range");
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
 
         return bookingRepository.save(booking);
@@ -97,7 +81,17 @@ public class BookingService {
 
 
     @Transactional
-    public Booking update(Booking booking) {
+    public Booking update(@NotNull @Valid Booking booking) {
+        if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
+            throw new IllegalArgumentException("Start and end datetime cannot be null");
+        }
+
+        LocalDateTime start = booking.getStartDatetime();
+        LocalDateTime end = booking.getEndDatetime();
+
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
+        }
         return bookingRepository.save(booking);
     }
 

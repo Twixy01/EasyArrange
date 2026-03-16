@@ -1,13 +1,17 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.backend.Model.entity.Service;
 import org.example.backend.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
+@Validated
 @org.springframework.stereotype.Service
 public class ServiceService {
 
@@ -43,12 +47,12 @@ public class ServiceService {
     }
 
     @Transactional
-    public Service create(Service service) {
+    public Service create(@NotNull @Valid Service service) {
         return serviceRepository.save(service);
     }
 
     @Transactional
-    public Service update(Service service) {
+    public Service update(@NotNull @Valid Service service) {
         return serviceRepository.save(service);
     }
 
