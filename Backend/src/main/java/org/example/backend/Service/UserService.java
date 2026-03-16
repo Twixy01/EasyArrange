@@ -45,8 +45,12 @@ public class UserService {
     }
 
     public User findUserForLogin(String email, String password) {
-        Optional<User> user = userRepository.findUserByEmailAndPassword(email, password);
-        return user.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
+        User user = userOptional.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
+        if (!encoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Wrong email or password");
+        }
+        return user;
     }
 
     public List<User> findUsersByRole(Role role) {
@@ -78,7 +82,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse update(Long userId,UserUpdateRequest userDto) {
+    public UserResponse update(Long userId, UserUpdateRequest userDto) {
+
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found!"));
+
+        if (!existingUser.getEmail().equals(userDto.email()) && userRepository.emailExists(userDto.email())) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
 
         User user = userUpdateRequestMapper.apply(userDto);
 
