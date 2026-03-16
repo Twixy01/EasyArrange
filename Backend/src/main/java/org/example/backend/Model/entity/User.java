@@ -26,8 +26,7 @@ public class User {
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @Column(name = "profile_picture", nullable = false)
-    @NotBlank(message = "Profile picture URL cannot be blank")
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @Column(name = "password", nullable = false)
@@ -44,6 +43,17 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Staff staff;
+
+    public User() {
+    }
+
+    public User(String name, String email, String profilePicture, String password, Role role) {
+        this.name = name;
+        this.email = email;
+        this.profilePicture = profilePicture;
+        this.password = password;
+        this.role = role;
+    }
 
     public Long getId() {
         return id;

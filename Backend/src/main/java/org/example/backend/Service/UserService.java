@@ -1,39 +1,56 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import org.example.backend.DTO.*;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
+import org.example.backend.Repository.RoleRepository;
 import org.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Validated
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserResponseMapper userResponseMapper;
+    private final UserRegistrationRequestMapper userRegistrationRequestMapper;
+    private final UserUpdateRequestMapper userUpdateRequestMapper;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserResponseMapper userResponseMapper, UserRegistrationRequestMapper userRegistrationRequestMapper, UserUpdateRequestMapper userUpdateRequestMapper) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.userResponseMapper = userResponseMapper;
+        this.userRegistrationRequestMapper = userRegistrationRequestMapper;
+        this.userUpdateRequestMapper = userUpdateRequestMapper;
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponse> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(userResponseMapper).collect(Collectors.toList());
     }
 
-    public User findUserById(Long id) {
+    public UserResponse findUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new IllegalArgumentException("User not found!"));
+        return user.map(userResponseMapper).orElseThrow(() -> new IllegalArgumentException("User not found!"));
     }
 
     public User findUserForLogin(String email, String password) {
-        Optional<User> user = userRepository.findUserByEmailAndPassword(email, password);
-        return user.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
+        User user = userOptional.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
+        if (!encoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Wrong email or password");
+        }
+        return user;
     }
 
     public List<User> findUsersByRole(Role role) {
@@ -45,13 +62,47 @@ public class UserService {
     }
 
     @Transactional
-    public User create(@Valid User user) {
-        return userRepository.save(user);
+    public UserResponse create(UserRegistrationRequest userDto) {
+        if (userRepository.emailExists(userDto.email())) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
+
+        User user = userRegistrationRequestMapper.apply(userDto);
+
+        user.setPassword(encoder.encode(userDto.password()));
+
+        Role role = roleRepository.findById(userDto.roleId())
+                .orElseThrow(() -> new IllegalArgumentException("Role not found!"));
+
+        user.setRole(role);
+
+        userRepository.save(user);
+
+        return userResponseMapper.apply(user);
     }
 
     @Transactional
-    public User update(@Valid User user) {
-        return userRepository.save(user);
+    public UserResponse update(Long userId, UserUpdateRequest userDto) {
+
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found!"));
+
+        if (!existingUser.getEmail().equals(userDto.email()) && userRepository.emailExists(userDto.email())) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
+
+        User user = userUpdateRequestMapper.apply(userDto);
+
+        user.setId(userId);
+
+        user.setPassword(encoder.encode(userDto.password()));
+
+        Role role = roleRepository.findById(userDto.roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
+        user.setRole(role);
+
+        userRepository.save(user);
+
+        return userResponseMapper.apply(user);
     }
 
     @Transactional
