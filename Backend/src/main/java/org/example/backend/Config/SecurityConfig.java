@@ -4,11 +4,14 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -40,20 +43,24 @@ public class SecurityConfig {
 
     //some test users
     @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+    @Profile("dev")
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager(PasswordEncoder passwordEncoder) {
         UserDetails testUser = org.springframework.security.core.userdetails.User.builder()
                 .username("testuser")
-                .password("{noop}testpassword")
+                .passwordEncoder(passwordEncoder::encode)
+                .password("testpassword")
                 .roles("customer").build();
 
         UserDetails testStaff = org.springframework.security.core.userdetails.User.builder()
                 .username("teststaff")
-                .password("{noop}testpassword")
+                .passwordEncoder(passwordEncoder::encode)
+                .password("testpassword")
                 .roles("staff").build();
 
         UserDetails testAdmin = org.springframework.security.core.userdetails.User.builder()
                 .username("testadmin")
-                .password("{noop}testpassword")
+                .passwordEncoder(passwordEncoder::encode)
+                .password("testpassword")
                 .roles("admin").build();
         return new InMemoryUserDetailsManager(testUser, testStaff, testAdmin);
 
@@ -61,7 +68,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -80,20 +87,22 @@ public class SecurityConfig {
                 "SELECT email, password, 1 FROM `user` WHERE email = ?");
 
         jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "SELECT u.email, r.name FROM `user` u JOIN `role` r ON u.role_id = r.role_id WHERE u.email = ?");
+                "SELECT u.email, CONCAT('ROLE_', r.name) FROM `user` u JOIN `role` r ON u.role_id = r.role_id WHERE u.email = ?");
 
         return jdbcUserDetailsManager;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(
-            InMemoryUserDetailsManager inMemoryUserDetailsManager,
             UserDetailsManager userDetailsManager,
             org.springframework.security.config.annotation.web.builders.HttpSecurity http,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            @Autowired(required = false) InMemoryUserDetailsManager inMemoryUserDetailsManager) {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        builder.userDetailsService(inMemoryUserDetailsManager).passwordEncoder(passwordEncoder);
+        if (inMemoryUserDetailsManager != null) {
+            builder.userDetailsService(inMemoryUserDetailsManager).passwordEncoder(passwordEncoder);
+        }
         builder.userDetailsService(userDetailsManager).passwordEncoder(passwordEncoder);
 
         return builder.build();
