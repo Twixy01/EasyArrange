@@ -23,13 +23,13 @@ public class Booking {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "staff_id", nullable = false)
     @NotNull(message = "Staff can't be null")
     private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "customer_id", nullable = false)
     @NotNull(message = "Customer can't be null")
     private User customer;
@@ -43,7 +43,7 @@ public class Booking {
     private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "service_id", nullable = false)
     @NotNull(message = "Service can't be null")
     private Service service;

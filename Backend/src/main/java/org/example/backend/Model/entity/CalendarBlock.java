@@ -30,7 +30,7 @@ public class CalendarBlock {
     private LocalDateTime endDatetime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
     @NotNull(message = "Staff can't be null")
     private Staff staff;
