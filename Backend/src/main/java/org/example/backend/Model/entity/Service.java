@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,7 +34,7 @@ public class Service {
     private Integer duration;
 
     @OneToMany(mappedBy = "service")
-    private Set<Booking> bookings = new LinkedHashSet<>();
+    private List<Booking> bookings = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
     private Set<StaffService> staff = new LinkedHashSet<>();
@@ -69,11 +71,11 @@ public class Service {
         this.duration = duration;
     }
 
-    public Set<Booking> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Set<Booking> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 

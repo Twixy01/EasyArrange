@@ -2,8 +2,11 @@ package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "staff_shift", schema = "easyarrange")
@@ -48,6 +51,23 @@ public class StaffShift {
 
     public void setShift(Shift shift) {
         this.shift = shift;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        StaffShift that = (StaffShift) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
 }
