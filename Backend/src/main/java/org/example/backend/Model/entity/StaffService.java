@@ -67,7 +67,7 @@ public class StaffService {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(Hibernate.getClass(this),id);
     }
 
 }
