@@ -1,18 +1,15 @@
 package org.example.backend.DTO.Shift;
 
 import org.example.backend.Model.entity.Shift;
-import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
-@Service
-public class ShiftCreateRequestMapper implements Function<ShiftCreateRequest, Shift> {
+public class ShiftCreateRequestMapper implements Function<Shift, ShiftCreateRequest> {
     @Override
-    public Shift apply(ShiftCreateRequest request) {
-        Shift shift = new Shift();
-        shift.setDay(request.day());
-        shift.setStartShift(request.startShift());
-        shift.setEndShift(request.endShift());
-        return shift;
+    public ShiftCreateRequest apply(Shift shift) {
+        return new ShiftCreateRequest(
+                shift.getStartShift(),
+                shift.getEndShift()
+        );
     }
 }
