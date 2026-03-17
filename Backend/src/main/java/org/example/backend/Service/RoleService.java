@@ -2,10 +2,9 @@ package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-ximport jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Repository.RoleRepository;
-import org.example.backend.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

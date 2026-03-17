@@ -7,7 +7,7 @@ import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.RoleRepository;
 import org.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,16 +21,16 @@ public class UserService {
     private final UserResponseMapper userResponseMapper;
     private final UserRegistrationRequestMapper userRegistrationRequestMapper;
     private final UserUpdateRequestMapper userUpdateRequestMapper;
-
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserResponseMapper userResponseMapper, UserRegistrationRequestMapper userRegistrationRequestMapper, UserUpdateRequestMapper userUpdateRequestMapper) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserResponseMapper userResponseMapper, UserRegistrationRequestMapper userRegistrationRequestMapper, UserUpdateRequestMapper userUpdateRequestMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userResponseMapper = userResponseMapper;
         this.userRegistrationRequestMapper = userRegistrationRequestMapper;
         this.userUpdateRequestMapper = userUpdateRequestMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponse> findAll() {
@@ -47,7 +47,7 @@ public class UserService {
     public User findUserForLogin(String email, String password) {
         Optional<User> userOptional = userRepository.findUserByEmail(email);
         User user = userOptional.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
-        if (!encoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Wrong email or password");
         }
         return user;
@@ -69,7 +69,7 @@ public class UserService {
 
         User user = userRegistrationRequestMapper.apply(userDto);
 
-        user.setPassword(encoder.encode(userDto.password()));
+        user.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId())
                 .orElseThrow(() -> new IllegalArgumentException("Role not found!"));
@@ -95,7 +95,7 @@ public class UserService {
 
         user.setId(userId);
 
-        user.setPassword(encoder.encode(userDto.password()));
+        user.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
         user.setRole(role);
