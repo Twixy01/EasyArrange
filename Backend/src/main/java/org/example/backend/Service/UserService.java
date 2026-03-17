@@ -1,7 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import org.example.backend.DTO.*;
+import org.example.backend.DTO.User.*;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.RoleRepository;

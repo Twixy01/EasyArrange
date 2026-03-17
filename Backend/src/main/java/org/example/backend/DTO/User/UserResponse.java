@@ -1,4 +1,4 @@
-package org.example.backend.DTO;
+package org.example.backend.DTO.User;
 
 public record UserResponse(
         Long userId,

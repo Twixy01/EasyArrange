@@ -2,9 +2,9 @@ package org.example.backend.Controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.example.backend.DTO.UserResponse;
-import org.example.backend.DTO.UserRegistrationRequest;
-import org.example.backend.DTO.UserUpdateRequest;
+import org.example.backend.DTO.User.UserResponse;
+import org.example.backend.DTO.User.UserRegistrationRequest;
+import org.example.backend.DTO.User.UserUpdateRequest;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
