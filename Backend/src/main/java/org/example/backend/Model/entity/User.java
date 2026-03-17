@@ -2,6 +2,8 @@ package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
     @NotNull(message = "Role cannot be null")
     private Role role;
 
