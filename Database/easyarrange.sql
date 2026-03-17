@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 16. 19:02
+-- Létrehozás ideje: 2026. Már 17. 12:06
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -235,14 +235,14 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `profile_picture`, `password`, `role_id`) VALUES
-(3, 'Peter', 'test@gmail.com', 'profile', '1234', 1),
-(4, 'Milan', 'alma@gmail.com', 'picture_link', '1234', 3),
-(5, 'Nincsneve', 'noname@email.com', 'profile', 'nincsjelszose', 2),
-(6, 'Anna', 'anna@gmail.com', 'profile', '1234', 2),
-(7, 'Bence', 'bence@gmail.com', 'profile', '1234', 2),
-(8, 'Kata', 'kata@gmail.com', 'profile', '1234', 3),
-(9, 'David', 'david@gmail.com', 'profile', '1234', 2),
-(10, 'Sofia', 'sofia@gmail.com', 'profile', '1234', 3);
+(3, 'Peter', 'test@gmail.com', 'profile', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 1),
+(4, 'Milan', 'alma@gmail.com', 'picture_link', '$2a$10$hDowIUWT9wH7Ijdr78/nnuv/Bc/arzyDJvATxdFfq.IDPXojUNS/i', 3),
+(5, 'Nincsneve', 'noname@email.com', 'profile', '$2a$10$muUAaM9HS6Aq.VNJBnrJaeruHzW24hgYlBm2c1SuR20j/71RnfNfe', 2),
+(6, 'Anna', 'anna@gmail.com', 'profile', '$2a$10$np7X0HLTmdELFoOVA/.Df.pliYehAotzPcW5tKmyprPKQPBvkVp5i', 2),
+(7, 'Bence', 'bence@gmail.com', 'profile', '$2a$10$rZggb8AKCS3F36najikyp.2Dw5CAIqy6dzMAkkeE.VZ0DESkTwV76', 2),
+(8, 'Kata', 'kata@gmail.com', 'profile', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
+(9, 'David', 'david@gmail.com', 'profile', '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
+(10, 'Sofia', 'sofia@gmail.com', 'profile', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3);
 
 --
 -- Indexek a kiírt táblákhoz
