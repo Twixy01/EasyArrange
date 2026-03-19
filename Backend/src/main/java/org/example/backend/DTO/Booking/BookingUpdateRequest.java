@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record BookingUpdateRequest (
-        @NotBlank(message = "Booking time must not be blank")
+        @NotNull(message = "Booking time can't be null")
         LocalDateTime startDateTime,
 
-        @NotBlank(message = "Booking time must not be blank")
+        @NotNull(message = "Booking time can't be null")
         LocalDateTime endDateTime,
 
         @NotNull(message = "Service ID must be specified")
