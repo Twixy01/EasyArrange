@@ -35,23 +35,22 @@ public class BookingRestController {
 
     @GetMapping
     public List<BookingResponse> getAll() {
-        return bookingService.findAll().stream().map(responseMapper).collect(Collectors.toList());
+        return bookingService.findAllResponses();
     }
 
     @GetMapping("/{id}")
     public BookingResponse getById(@PathVariable("id") Long id) {
-        Booking booking = bookingService.findBookingById(id);
-        return responseMapper.apply(booking);
+        return bookingService.findBookingByIdResponse(id);
     }
 
     @GetMapping("/staff/{staffId}")
     public List<BookingResponse> getByStaff(@PathVariable("staffId") Long staffId) {
-        return bookingService.findBookingsByStaffId(staffId).stream().map(responseMapper).collect(Collectors.toList());
+        return bookingService.findBookingsByStaffIdResponses(staffId);
     }
 
     @GetMapping("/customer/{customerId}")
     public List<BookingResponse> getByCustomer(@PathVariable("customerId") Long customerId) {
-        return bookingService.findBookingsByCustomerId(customerId).stream().map(responseMapper).collect(Collectors.toList());
+        return bookingService.findBookingsByCustomerIdResponses(customerId);
     }
 
     @GetMapping("/between")
@@ -59,28 +58,26 @@ public class BookingRestController {
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
-        return bookingService.findBookingsBetween(start, end).stream().map(responseMapper).collect(Collectors.toList());
+        return bookingService.findBookingsBetweenResponses(start, end);
     }
 
     @GetMapping("/status")
     public List<BookingResponse> getByStatus(@RequestParam("status") String status) {
         BookingStatus bookingStatus = BookingStatus.valueOf(status);
-        return bookingService.findBookingsByStatus(bookingStatus).stream().map(responseMapper).collect(Collectors.toList());
+        return bookingService.findBookingsByStatusResponses(bookingStatus);
     }
 
     @PostMapping
     public BookingResponse create(@Valid @RequestBody BookingUpdateRequest request) {
         Booking booking = updateMapper.apply(request);
-        Booking created = bookingService.create(booking);
-        return responseMapper.apply(created);
+        return bookingService.createResponse(booking);
     }
 
     @PutMapping("/{id}")
     public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request) {
         Booking booking = updateMapper.apply(request);
         booking.setId(id);
-        Booking updated = bookingService.update(booking);
-        return responseMapper.apply(updated);
+        return bookingService.updateResponse(booking);
     }
 
     @DeleteMapping("/{id}")
@@ -88,4 +85,3 @@ public class BookingRestController {
         bookingService.remove(id);
     }
 }
-

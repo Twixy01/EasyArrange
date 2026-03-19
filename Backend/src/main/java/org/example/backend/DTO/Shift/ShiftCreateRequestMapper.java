@@ -10,6 +10,7 @@ public class ShiftCreateRequestMapper implements Function<ShiftCreateRequest, Sh
     @Override
     public Shift apply(ShiftCreateRequest request) {
         Shift shift = new Shift();
+        shift.setDay(request.day());
         shift.setStartShift(request.startShift());
         shift.setEndShift(request.endShift());
         return shift;

@@ -17,3 +17,4 @@ public class ShiftResponseMapper implements Function<Shift, ShiftResponse> {
         );
     }
 }
+
