@@ -2,11 +2,13 @@ package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user", schema = "easyarrange", uniqueConstraints = {@UniqueConstraint(name = "email",
@@ -120,6 +122,23 @@ public class User {
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Hibernate.getClass(this).hashCode();
     }
 
 }
