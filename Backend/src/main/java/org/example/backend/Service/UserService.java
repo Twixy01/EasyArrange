@@ -44,13 +44,13 @@ public class UserService {
         return user.map(userResponseMapper).orElseThrow(() -> new IllegalArgumentException("User not found!"));
     }
 
-    public User findUserForLogin(String email, String password) {
-        Optional<User> userOptional = userRepository.findUserByEmail(email);
+    public UserResponse findUserForLogin(UserLoginRequest loginRequest) {
+        Optional<User> userOptional = userRepository.findUserByEmail(loginRequest.email());
         User user = userOptional.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new IllegalArgumentException("Wrong email or password");
         }
-        return user;
+        return userResponseMapper.apply(user);
     }
 
     public List<User> findUsersByRole(Role role) {
