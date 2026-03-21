@@ -79,12 +79,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.authorizeHttpRequests((authorize) -> authorize
-//                        .requestMatchers("/**").permitAll()
-			.requestMatchers(HttpMethod.GET,"/api/users").authenticated()
-			.requestMatchers(HttpMethod.GET,"/api/users/**").hasRole("CUSTOMER")
-			.requestMatchers(HttpMethod.POST,"/api/register").hasRole("ADMIN")
-			.requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
-			.requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/**").permitAll()
+//			.requestMatchers(HttpMethod.GET,"/api/users").authenticated()
+//			.requestMatchers(HttpMethod.GET,"/api/users/**").hasRole("CUSTOMER")
+//			.requestMatchers(HttpMethod.POST,"/api/register").hasRole("ADMIN")
+//			.requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
+//			.requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
         ).formLogin(withDefaults());
 
         http.httpBasic(withDefaults());

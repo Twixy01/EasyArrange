@@ -2,36 +2,56 @@ package org.example.backend.Controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.example.backend.DTO.UserResponse;
-import org.example.backend.DTO.UserRegistrationRequest;
-import org.example.backend.DTO.UserUpdateRequest;
+import org.example.backend.DTO.User.*;
+import org.example.backend.Service.StaffService;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @Validated
 public class UserRestController {
 
     private final UserService userService;
+    private final StaffService staffService;
+    private final UserResponseMapper userResponseMapper;
 
     @Autowired
-    public UserRestController(UserService userService) {
+    public UserRestController(UserService userService, StaffService staffService, UserResponseMapper userResponseMapper) {
         this.userService = userService;
+        this.staffService = staffService;
+        this.userResponseMapper = userResponseMapper;
     }
 
-    @GetMapping("/users")
+    @GetMapping()
     public List<UserResponse> getUsers() {
         return userService.findAll();
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public UserResponse getUser(@PathVariable("userId") Long userId) {
         return userService.findUserById(userId);
+    }
+
+    @GetMapping("/staff")
+    public List<UserResponse> getStaffUsers() {
+        return userService.findAllStaff().stream()
+                .map(userResponseMapper)
+                .collect(Collectors.toList());
+    }
+    @GetMapping("/staff/{staffId}")
+    public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
+        return userService.findUserById(staffService.findById(staffId).userId());
+    }
+
+    @GetMapping("/login")
+    public UserResponse findUserForLogin(@RequestBody UserLoginRequest user) {
+        return userService.findUserForLogin(user);
     }
 
     @PostMapping("/register")
@@ -39,12 +59,12 @@ public class UserRestController {
         return userService.create(userDto);
     }
 
-    @PutMapping("/users/{userId}")
+    @PutMapping("/{userId}")
     public UserResponse updateUser(@Valid @PathVariable("userId") @Positive Long userId, @Valid @RequestBody UserUpdateRequest userDto) {
         return userService.update(userId, userDto);
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable("userId") @Positive Long userId) {
         userService.remove(userId);
     }

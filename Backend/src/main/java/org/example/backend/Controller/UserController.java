@@ -1,6 +1,6 @@
 package org.example.backend.Controller;
 
-import org.example.backend.DTO.UserResponse;
+import org.example.backend.DTO.User.UserResponse;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

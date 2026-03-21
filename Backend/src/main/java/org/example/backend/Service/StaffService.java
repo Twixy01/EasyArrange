@@ -1,38 +1,67 @@
 package org.example.backend.Service;
 
+import org.example.backend.DTO.Staff.StaffRequest;
+import org.example.backend.DTO.Staff.StaffResponse;
+import org.example.backend.DTO.Staff.StaffResponseMapper;
 import org.example.backend.Model.entity.Staff;
+import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.StaffRepository;
+import org.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffService {
+    private UserRepository userRepository;
     private StaffRepository staffRepository;
+    private StaffResponseMapper staffResponseMapper;
 
     @Autowired
-    public StaffService(StaffRepository staffRepository) {
+    public StaffService(UserRepository userRepository, StaffRepository staffRepository, StaffResponseMapper staffResponseMapper) {
+        this.userRepository = userRepository;
         this.staffRepository = staffRepository;
+        this.staffResponseMapper = staffResponseMapper;
     }
 
-    public List<Staff> findAll() {
-        return staffRepository.findAll();
+    public List<StaffResponse> findAll() {
+        return staffRepository.findAll().stream()
+                .map(staffResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public Staff findById(Long id) {
+    public StaffResponse findById(Long id) {
         Optional<Staff> staff = staffRepository.findById(id);
-        return staff.orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
+        return staff.map(staffResponseMapper).orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
     }
 
-    public Staff findStaffByUserId(Long id){
-        Optional<Staff> staff = staffRepository.findById(id);
-        return staff.orElseThrow(() -> new IllegalArgumentException("Staff Not Found!"));
+    public StaffResponse findStaffByUserId(Long id){
+        Optional<Staff> staff = staffRepository.findStaffByUserId(id);
+        return staff.map(staffResponseMapper).orElseThrow(() -> new IllegalArgumentException("Staff Not Found By UserId!"));
     }
 
-    public Staff create(Staff staff) {
-        return staffRepository.save(staff);
+    public boolean existsByUserId(Long userId) {
+        return staffRepository.existsByUserId(userId);
+    }
+
+    public StaffResponse create(StaffRequest staffDto) {
+        if (existsByUserId(staffDto.userId())) {
+            throw new IllegalArgumentException("User with id " + staffDto.userId() + " is already a staff member.");
+        }
+        User user = userRepository.findById(staffDto.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + staffDto.userId()));
+
+        String roleName = user.getRole().getName();
+        if (!roleName.equals("STAFF") && !roleName.equals("ADMIN")) {
+            throw new IllegalArgumentException("User must have STAFF role to be added as staff.");
+        }
+        Staff staff = new Staff();
+        staff.setUser(user);
+        staffRepository.save(staff);
+        return staffResponseMapper.apply(staff);
     }
 
     public Staff update(Staff staff) {
