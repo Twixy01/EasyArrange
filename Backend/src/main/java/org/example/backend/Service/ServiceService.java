@@ -1,59 +1,89 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import org.example.backend.DTO.Service.ServiceRequest;
+import org.example.backend.DTO.Service.ServiceRequestMapper;
+import org.example.backend.DTO.Service.ServiceResponse;
+import org.example.backend.DTO.Service.ServiceResponseMapper;
 import org.example.backend.Model.entity.Service;
 import org.example.backend.Repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Validated
 @org.springframework.stereotype.Service
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
+    private final ServiceResponseMapper serviceResponseMapper;
+    private final ServiceRequestMapper serviceRequestMapper;
 
     @Autowired
-    public ServiceService(ServiceRepository serviceRepository) {
+    public ServiceService(ServiceRepository serviceRepository, ServiceResponseMapper serviceResponseMapper, ServiceRequestMapper serviceRequestMapper) {
         this.serviceRepository = serviceRepository;
+        this.serviceResponseMapper = serviceResponseMapper;
+        this.serviceRequestMapper = serviceRequestMapper;
     }
 
-    public List<Service> findAll() {
-        return serviceRepository.findAll();
+    public List<ServiceResponse> findAll() {
+        return serviceRepository.findAll().stream()
+                .map(serviceResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<Service> findAllOrderedByName() {
-        return serviceRepository.findAllByOrderByNameAsc();
+    public List<ServiceResponse> findAllOrderedByName() {
+        return serviceRepository.findAllByOrderByNameAsc().stream()
+                .map(serviceResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public boolean serviceExists(String service) {
-        return serviceRepository.existsByName(service);
-    }
-
-    public Service findById(Long id) {
+    public ServiceResponse findById(Long id) {
         Optional<Service> service = serviceRepository.findById(id);
 
-        return service.orElseThrow(()->
+        return service.map(serviceResponseMapper).orElseThrow(() ->
                 new IllegalArgumentException("Service not found with id: " + id));
     }
 
-    public Service findByName(String name) {
-        return serviceRepository.findByName(name).orElseThrow(() ->
+    public ServiceResponse findByName(String name) {
+        Optional<Service> service = serviceRepository.findByName(name);
+        return service.map(serviceResponseMapper).orElseThrow(() ->
                 new IllegalArgumentException("Service not found with name: " + name));
     }
 
-    @Transactional
-    public Service create(@NotNull @Valid Service service) {
-        return serviceRepository.save(service);
+    public boolean serviceExists(String serviceName) {
+        return serviceRepository.existsByName(serviceName);
     }
 
     @Transactional
-    public Service update(@NotNull @Valid Service service) {
-        return serviceRepository.save(service);
+    public ServiceResponse create(ServiceRequest serviceDto) {
+        if (serviceExists(serviceDto.name())) {
+            throw new IllegalArgumentException("Service with name '" + serviceDto.name() + "' already exists.");
+        }
+
+        Service service = new Service();
+        serviceRequestMapper.accept(serviceDto, service);
+
+        serviceRepository.save(service);
+
+        return serviceResponseMapper.apply(service);
+    }
+
+    @Transactional
+    public ServiceResponse update(Long serviceId, ServiceRequest serviceDto) {
+        Service existingService = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Service not found with id: " + serviceId));
+
+        if (!existingService.getName().equals(serviceDto.name()) && serviceRepository.existsByName(serviceDto.name())){
+            throw new IllegalArgumentException("Service with name '" + serviceDto.name() + "' already exists.");
+        }
+
+        serviceRequestMapper.accept(serviceDto, existingService);
+
+        serviceRepository.save(existingService);
+
+        return serviceResponseMapper.apply(existingService);
     }
 
     @Transactional
