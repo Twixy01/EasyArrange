@@ -50,7 +50,7 @@ public class UserRestController {
     }
 
     @GetMapping("/login")
-    public UserResponse findUserForLogin(@RequestBody UserLoginRequest user) {
+    public UserResponse findUserForLogin(@Valid @RequestBody UserLoginRequest user) {
         return userService.findUserForLogin(user);
     }
 
