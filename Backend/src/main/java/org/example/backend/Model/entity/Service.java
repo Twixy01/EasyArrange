@@ -20,17 +20,12 @@ public class Service {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    @NotBlank(message = "Service name can't be blank")
     private String name;
 
     @Column(name = "price")
-    @NotNull(message = "Price can't be null")
-    @Positive(message = "Price must be positive")
     private Integer price;
 
     @Column(name = "duration")
-    @NotNull(message = "Duration can't be null")
-    @Positive(message = "Duration must be positive")
     private Integer duration;
 
     @OneToMany(mappedBy = "service")

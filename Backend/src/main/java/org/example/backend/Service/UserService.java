@@ -68,7 +68,7 @@ public class UserService {
         }
 
         User user = userRegistrationRequestMapper.apply(userDto);
-
+        //set encoded password
         user.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId())
@@ -91,18 +91,17 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists!");
         }
 
-        User user = userUpdateRequestMapper.apply(userDto);
+        userUpdateRequestMapper.accept(userDto,existingUser);
 
-        user.setId(userId);
-
-        user.setPassword(passwordEncoder.encode(userDto.password()));
+        //set encoded password
+        existingUser.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
-        user.setRole(role);
+        existingUser.setRole(role);
 
-        userRepository.save(user);
+        userRepository.save(existingUser);
 
-        return userResponseMapper.apply(user);
+        return userResponseMapper.apply(existingUser);
     }
 
     @Transactional
