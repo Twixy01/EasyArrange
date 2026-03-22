@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface StaffRepository extends JpaRepository<Staff, Long> {
     @Query("SELECT s FROM Staff s WHERE s.user.id = :userId")
     Optional<Staff> findStaffByUserId(@Param("userId") Long id);
-    boolean existsByUserId(Long userId);
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Staff s WHERE s.user.id = :userId")
+    boolean existsByUserId(@Param("userId") Long userId);
 }
