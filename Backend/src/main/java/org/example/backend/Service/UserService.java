@@ -1,7 +1,7 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import org.example.backend.DTO.*;
+import org.example.backend.DTO.User.*;
 import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.RoleRepository;
@@ -44,13 +44,13 @@ public class UserService {
         return user.map(userResponseMapper).orElseThrow(() -> new IllegalArgumentException("User not found!"));
     }
 
-    public User findUserForLogin(String email, String password) {
-        Optional<User> userOptional = userRepository.findUserByEmail(email);
+    public UserResponse findUserForLogin(UserLoginRequest loginRequest) {
+        Optional<User> userOptional = userRepository.findUserByEmail(loginRequest.email());
         User user = userOptional.orElseThrow(() -> new IllegalArgumentException("Wrong email or password"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new IllegalArgumentException("Wrong email or password");
         }
-        return user;
+        return userResponseMapper.apply(user);
     }
 
     public List<User> findUsersByRole(Role role) {
@@ -68,7 +68,7 @@ public class UserService {
         }
 
         User user = userRegistrationRequestMapper.apply(userDto);
-
+        //set encoded password
         user.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId())
@@ -91,18 +91,17 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists!");
         }
 
-        User user = userUpdateRequestMapper.apply(userDto);
+        userUpdateRequestMapper.accept(userDto,existingUser);
 
-        user.setId(userId);
-
-        user.setPassword(passwordEncoder.encode(userDto.password()));
+        //set encoded password
+        existingUser.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
-        user.setRole(role);
+        existingUser.setRole(role);
 
-        userRepository.save(user);
+        userRepository.save(existingUser);
 
-        return userResponseMapper.apply(user);
+        return userResponseMapper.apply(existingUser);
     }
 
     @Transactional

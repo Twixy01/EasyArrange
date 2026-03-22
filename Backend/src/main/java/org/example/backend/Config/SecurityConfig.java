@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -79,16 +80,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.authorizeHttpRequests((authorize) -> authorize
-//                        .requestMatchers("/**").permitAll()
-			.requestMatchers(HttpMethod.GET,"/api/users").authenticated()
-			.requestMatchers(HttpMethod.GET,"/api/users/**").hasRole("CUSTOMER")
-			.requestMatchers(HttpMethod.POST,"/api/register").hasRole("ADMIN")
-			.requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
-			.requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
-        ).formLogin(withDefaults());
+                        .requestMatchers("/**").permitAll()
+//			.requestMatchers(HttpMethod.GET,"/api/users").authenticated()
+//			.requestMatchers(HttpMethod.GET,"/api/users/**").hasRole("CUSTOMER")
+//			.requestMatchers(HttpMethod.POST,"/api/register").hasRole("ADMIN")
+//			.requestMatchers(HttpMethod.PUT,"/api/users/**").hasRole("ADMIN")
+//			.requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
+        );
 
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
