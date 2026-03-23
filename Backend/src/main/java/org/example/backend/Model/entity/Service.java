@@ -1,9 +1,6 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -32,7 +29,7 @@ public class Service {
     private List<Booking> bookings = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
-    private Set<StaffService> staff = new LinkedHashSet<>();
+    private Set<StaffServiceJunction> staff = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -74,11 +71,11 @@ public class Service {
         this.bookings = bookings;
     }
 
-    public Set<StaffService> getStaff() {
+    public Set<StaffServiceJunction> getStaff() {
         return staff;
     }
 
-    public void setStaff(Set<StaffService> staff) {
+    public void setStaff(Set<StaffServiceJunction> staff) {
         this.staff = staff;
     }
 

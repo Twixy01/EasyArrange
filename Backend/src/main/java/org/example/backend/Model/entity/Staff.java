@@ -32,7 +32,7 @@ public class Staff {
     private List<CalendarBlock> calendarBlocks = new ArrayList<>();
 
     @OneToMany(mappedBy = "staff")
-    private Set<StaffService> services = new LinkedHashSet<>();
+    private Set<StaffServiceJunction> services = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "staff")
     private Set<StaffShift> shifts = new LinkedHashSet<>();
@@ -69,11 +69,11 @@ public class Staff {
         this.calendarBlocks = calendarBlocks;
     }
 
-    public Set<StaffService> getServices() {
+    public Set<StaffServiceJunction> getServices() {
         return services;
     }
 
-    public void setServices(Set<StaffService> services) {
+    public void setServices(Set<StaffServiceJunction> services) {
         this.services = services;
     }
 
