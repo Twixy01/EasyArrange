@@ -13,7 +13,7 @@ import java.util.Objects;
 public class StaffShift {
     @EmbeddedId
     @NotNull(message = "StaffShiftId cannot be null")
-    private StaffShiftId id;
+    private StaffShiftId id = new StaffShiftId();
 
     @MapsId("staffId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,7 +34,7 @@ public class StaffShift {
     }
 
     public void setId(StaffShiftId id) {
-        this.id = id;
+        this.id = (id != null) ? id : new StaffShiftId();
     }
 
     public Staff getStaff() {
@@ -43,6 +43,10 @@ public class StaffShift {
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+        if (id == null) {
+            id = new StaffShiftId();
+        }
+        id.setStaffId(staff != null ? staff.getId() : null);
     }
 
     public Shift getShift() {
@@ -51,6 +55,10 @@ public class StaffShift {
 
     public void setShift(Shift shift) {
         this.shift = shift;
+        if (id == null){
+            id = new StaffShiftId();
+        }
+        id.setShiftId(shift != null ? shift.getId() : null);
     }
 
     @Override

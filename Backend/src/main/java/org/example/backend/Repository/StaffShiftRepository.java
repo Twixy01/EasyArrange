@@ -17,7 +17,7 @@ public interface StaffShiftRepository extends JpaRepository<StaffShift, StaffShi
     @Query("SELECT ss.shift FROM StaffShift ss WHERE ss.id.staffId = :staffId")
     List<Shift> findAllShiftsByStaffId(@Param("staffId") Long staffId);
 
-    @Query("SELECT ss FROM StaffShift ss WHERE ss.id.shiftId = :shiftId")
+    @Query("SELECT ss.staff FROM StaffShift ss WHERE ss.id.shiftId = :shiftId")
     List<Staff> findAllStaffByShiftId(@Param("shiftId") Long shiftId);
 
     @Query("SELECT ss.shift FROM StaffShift ss WHERE ss.staff.id = :staffId AND" +
