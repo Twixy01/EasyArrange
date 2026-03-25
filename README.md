@@ -1,39 +1,82 @@
-# EasyArrange
+# 💇‍♂️ EasyArrange – Salon Booking Web Application
 
-Database connection setup
+A modern full-stack web application for managing bookings in a multifunctional salon (haircuts, beard trims, nail care, etc.).
+Built with Spring Boot (backend) and React (frontend).
 
-## 1. Tomcat setup
+---
+
+## 🚀 Tech Stack
+
+* Backend: Spring Boot
+* Frontend: React + Vite
+* Database: MySQL
+* Animations: Framer Motion
+* Routing: React Router
+
+---
+
+## 📦 Project Structure
+
 ```text
-Add it at the run configuration:
-Tomcat Local Server - 10.1.50 version
+EasyArrange/
+│
+├── Backend/        # Spring Boot application
+├── Frontend/       # React (Vite) application
+└── README.md
 ```
-## 2. Add the context.xml in webapp/META-INF:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Context path="/backend">
-   <Resource name="jdbc/easyarrange"
-      auth="Container"
-      type="javax.sql.DataSource"
-      username="root"
-      password=""
-      driverClassName="org.mariadb.jdbc.Driver"
-      url="jdbc:mariadb://localhost:3306/easyarrange"
-      maxActive="8"
-      maxIdle="4"/>
-</Context>
 
-```
-## 3. Code for connecting to database in Servlets:
-```java
-Context initCtx = null;
-Connection conn = null;
-try {
-        initCtx = new InitialContext();
-        Context envCtx = (Context) initCtx.lookup("java:comp/env");
-        DataSource ds = (DataSource)envCtx.lookup("jdbc/easyarrange");
-        conn = ds.getConnection();
+---
 
-        conn.close();
-} 
+## ⚙️ Setup Instructions
+
+Follow these steps to run the application locally:
+
+### 1️⃣ Start the Database
+
+Make sure your MySQL server is running.
+
+> ⚠️ Ensure your database credentials match the `application.properties` in the backend.
+
+---
+
+### 2️⃣ Run the Backend
+
+Navigate to the backend folder and start the Spring Boot application:
+
+```bash
+cd Backend
+./mvnw spring-boot:run
 ```
-then -> add the catch statements
+
+Or run it from your IDE.
+
+---
+
+### 3️⃣ Run the Frontend
+
+Navigate to the root project folder:
+
+```bash
+cd EasyArrange
+cd Frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+npm install react-router-dom framer-motion
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+---
+
+## 🌐 Access the Application
+
+* Frontend: http://localhost:5173
+* Backend: http://localhost:8080
