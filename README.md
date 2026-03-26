@@ -1,4 +1,4 @@
-# 💇‍♂️ EasyArrange – Salon Booking Web Application
+# 💇‍♂️ EasyArrange – Booking Web Application For a Salon
 
 A modern full-stack web application for managing bookings in a multifunctional salon (haircuts, beard trims, nail care, etc.).
 Built with Spring Boot (backend) and React (frontend).
