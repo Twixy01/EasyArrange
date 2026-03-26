@@ -49,17 +49,6 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Staff staff;
 
-    public User() {
-    }
-
-    public User(String name, String email, String profilePicture, String password, Role role) {
-        this.name = name;
-        this.email = email;
-        this.profilePicture = profilePicture;
-        this.password = password;
-        this.role = role;
-    }
-
     public Long getId() {
         return id;
     }

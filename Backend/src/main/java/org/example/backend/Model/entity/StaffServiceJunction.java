@@ -10,10 +10,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "staff_service", schema = "easyarrange")
-public class StaffService {
+public class StaffServiceJunction {
     @EmbeddedId
-    @NotNull(message = "StaffServiceId cannot be null")
-    private StaffServiceId id;
+    private StaffServiceId id = new StaffServiceId();
 
     @MapsId("staffId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,7 +33,7 @@ public class StaffService {
     }
 
     public void setId(StaffServiceId id) {
-        this.id = id;
+        this.id = (id != null) ? id : new StaffServiceId();
     }
 
     public Staff getStaff() {
@@ -43,6 +42,10 @@ public class StaffService {
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+        if (id == null) {
+            id = new StaffServiceId();
+        }
+        id.setStaffId(staff != null ? staff.getId() : null);
     }
 
     public Service getService() {
@@ -51,6 +54,10 @@ public class StaffService {
 
     public void setService(Service service) {
         this.service = service;
+        if (id == null) {
+            id = new StaffServiceId();
+        }
+        id.setServiceId(service != null ? service.getId() : null);
     }
 
     @Override
@@ -61,7 +68,7 @@ public class StaffService {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
             return false;
         }
-        StaffService that = (StaffService) o;
+        StaffServiceJunction that = (StaffServiceJunction) o;
         return id != null && Objects.equals(id, that.id);
     }
 
