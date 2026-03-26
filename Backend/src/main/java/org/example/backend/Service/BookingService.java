@@ -3,10 +3,7 @@ package org.example.backend.Service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.example.backend.DTO.Booking.BookingCreateRequest;
-import org.example.backend.DTO.Booking.BookingCreateRequestMapper;
-import org.example.backend.DTO.Booking.BookingResponse;
-import org.example.backend.DTO.Booking.BookingResponseMapper;
+import org.example.backend.DTO.Booking.*;
 import org.example.backend.Model.entity.Booking;
 import org.example.backend.Model.entity.BookingStatus;
 import org.example.backend.Model.entity.Service;
@@ -33,19 +30,21 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
     private final BookingCreateRequestMapper bookingCreateRequestMapper;
+    private final BookingUpdateRequestMapper bookingUpdateRequestMapper;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository,
                           BookingResponseMapper responseMapper,
                           StaffRepository staffRepository,
                           UserRepository userRepository,
-                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper) {
+                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper, BookingUpdateRequestMapper bookingUpdateRequestMapper) {
         this.bookingRepository = bookingRepository;
         this.responseMapper = responseMapper;
         this.staffRepository = staffRepository;
         this.userRepository = userRepository;
         this.serviceRepository = serviceRepository;
         this.bookingCreateRequestMapper = bookingCreateRequestMapper;
+        this.bookingUpdateRequestMapper = bookingUpdateRequestMapper;
     }
 
     public List<Booking> findAll() {
@@ -139,25 +138,29 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking update(@NotNull @Valid Booking booking) {
-        if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
-            throw new IllegalArgumentException("Start and end datetime cannot be null");
-        }
+    public Booking update(@Valid Long id, BookingUpdateRequest bookingRequest) {
 
-        LocalDateTime start = booking.getStartDatetime();
-        LocalDateTime end = booking.getEndDatetime();
+        LocalDateTime start = bookingRequest.startDateTime();
+        LocalDateTime end = bookingRequest.endDateTime();
 
         if (!start.isBefore(end)) {
             throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
-        return bookingRepository.save(booking);
+
+        Booking existing = bookingRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("Booking not found with id: " + id));
+
+        bookingUpdateRequestMapper.accept(existing, bookingRequest);
+
+        Service service = serviceRepository.findById(bookingRequest.serviceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));
+        existing.setService(service);
+
+        existing.setStatus(BookingStatus.valueOf(bookingRequest.status()));
+
+        return bookingRepository.save(existing);
     }
 
-    @Transactional
-    public BookingResponse updateResponse(@NotNull @Valid Booking booking) {
-        Booking updated = update(booking);
-        return responseMapper.apply(updated);
-    }
 
     @Transactional
     public void remove(Long id) {

@@ -71,9 +71,7 @@ public class BookingRestController {
 
     @PutMapping("/{id}")
     public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request) {
-        Booking booking = updateMapper.apply(request);
-        booking.setId(id);
-        return bookingService.updateResponse(booking);
+        return bookingService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
