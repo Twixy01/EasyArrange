@@ -25,7 +25,7 @@ public class ShiftRestController {
 
     @GetMapping
     public List<ShiftResponse> getAll() {
-        return shiftService.findAllShiftsBetweenShiftsResponse(null, null);
+        return shiftService.findAll();
     }
 
     @GetMapping("/{id}")

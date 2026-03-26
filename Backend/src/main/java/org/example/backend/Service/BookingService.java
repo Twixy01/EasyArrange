@@ -3,12 +3,20 @@ package org.example.backend.Service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.example.backend.DTO.Booking.BookingCreateRequest;
+import org.example.backend.DTO.Booking.BookingCreateRequestMapper;
 import org.example.backend.DTO.Booking.BookingResponse;
 import org.example.backend.DTO.Booking.BookingResponseMapper;
 import org.example.backend.Model.entity.Booking;
+import org.example.backend.Model.entity.BookingStatus;
+import org.example.backend.Model.entity.Service;
+import org.example.backend.Model.entity.Staff;
+import org.example.backend.Model.entity.User;
 import org.example.backend.Repository.BookingRepository;
+import org.example.backend.Repository.ServiceRepository;
+import org.example.backend.Repository.StaffRepository;
+import org.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
@@ -16,16 +24,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Validated
-@Service
+@org.springframework.stereotype.Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final BookingResponseMapper responseMapper;
+    private final StaffRepository staffRepository;
+    private final UserRepository userRepository;
+    private final ServiceRepository serviceRepository;
+    private final BookingCreateRequestMapper bookingCreateRequestMapper;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, BookingResponseMapper responseMapper) {
+    public BookingService(BookingRepository bookingRepository,
+                          BookingResponseMapper responseMapper,
+                          StaffRepository staffRepository,
+                          UserRepository userRepository,
+                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper) {
         this.bookingRepository = bookingRepository;
         this.responseMapper = responseMapper;
+        this.staffRepository = staffRepository;
+        this.userRepository = userRepository;
+        this.serviceRepository = serviceRepository;
+        this.bookingCreateRequestMapper = bookingCreateRequestMapper;
     }
 
     public List<Booking> findAll() {
@@ -85,25 +105,37 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking create(@NotNull @Valid Booking booking) {
-        if (booking.getStartDatetime() == null || booking.getEndDatetime() == null) {
+    public BookingResponse create(@NotNull @Valid BookingCreateRequest bookingRequest) {
+        if (bookingRequest.startDateTime() == null || bookingRequest.endDateTime() == null) {
             throw new IllegalArgumentException("Start and end datetime cannot be null");
         }
 
-        LocalDateTime start = booking.getStartDatetime();
-        LocalDateTime end = booking.getEndDatetime();
+        LocalDateTime start = bookingRequest.startDateTime();
+        LocalDateTime end = bookingRequest.endDateTime();
 
         if (!start.isBefore(end)) {
             throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
 
-        return bookingRepository.save(booking);
-    }
+        Booking booking = bookingCreateRequestMapper.apply(bookingRequest);
 
-    @Transactional
-    public BookingResponse createResponse(@NotNull @Valid Booking booking) {
-        Booking created = create(booking);
-        return responseMapper.apply(created);
+        Staff staff = staffRepository.findById(bookingRequest.staffId())
+                .orElseThrow(() -> new IllegalArgumentException("Staff with id " + bookingRequest.staffId() + " not found"));
+        booking.setStaff(staff);
+
+        User customer = userRepository.findById(bookingRequest.customerId())
+                .orElseThrow(() -> new IllegalArgumentException("Customer with id " + bookingRequest.customerId() + " not found"));
+        booking.setCustomer(customer);
+
+        Service service = serviceRepository.findById(bookingRequest.serviceId())
+                .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));
+        booking.setService(service);
+
+        booking.setStatus(BookingStatus.valueOf(bookingRequest.status()));
+
+        bookingRepository.save(booking);
+
+        return responseMapper.apply(booking);
     }
 
     @Transactional

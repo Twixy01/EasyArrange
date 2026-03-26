@@ -1,10 +1,7 @@
 package org.example.backend.Controller;
 
 import jakarta.validation.Valid;
-import org.example.backend.DTO.Booking.BookingResponse;
-import org.example.backend.DTO.Booking.BookingResponseMapper;
-import org.example.backend.DTO.Booking.BookingUpdateRequest;
-import org.example.backend.DTO.Booking.BookingUpdateRequestMapper;
+import org.example.backend.DTO.Booking.*;
 import org.example.backend.Model.entity.Booking;
 import org.example.backend.Model.entity.BookingStatus;
 import org.example.backend.Service.BookingService;
@@ -68,9 +65,8 @@ public class BookingRestController {
     }
 
     @PostMapping
-    public BookingResponse create(@Valid @RequestBody BookingUpdateRequest request) {
-        Booking booking = updateMapper.apply(request);
-        return bookingService.createResponse(booking);
+    public BookingResponse create(@Valid @RequestBody BookingCreateRequest request) {
+        return bookingService.create(request);
     }
 
     @PutMapping("/{id}")

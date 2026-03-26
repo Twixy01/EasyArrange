@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public record ShiftCreateRequest(
         @NotNull(message = "Shift day can't be null")
-        ShiftDay day,
+        String day,
 
         @NotNull(message = "Shift time can't be null")
         LocalTime startShift,

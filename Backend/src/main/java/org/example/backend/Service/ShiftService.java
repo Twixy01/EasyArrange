@@ -6,6 +6,7 @@ import org.example.backend.DTO.Shift.ShiftResponse;
 import org.example.backend.DTO.Shift.ShiftCreateRequestMapper;
 import org.example.backend.DTO.Shift.ShiftResponseMapper;
 import org.example.backend.Model.entity.Shift;
+import org.example.backend.Model.entity.ShiftDay;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,10 @@ public class ShiftService {
 
     public ShiftResponse findShiftByIdResponse(Long id) {
         return responseMapper.apply(findShiftById(id));
+    }
+
+    public List<ShiftResponse> findAll() {
+        return shiftRepository.findAll().stream().map(responseMapper).collect(Collectors.toList());
     }
 
     public List<Shift> findAllShiftsByStartShift(LocalTime startShift) {
@@ -71,6 +76,9 @@ public class ShiftService {
                 shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
             throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
         }
+
+        shift.setDay(ShiftDay.valueOf(request.day()));
+
         Shift saved = shiftRepository.save(shift);
         return responseMapper.apply(saved);
     }
