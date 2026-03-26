@@ -1,22 +1,32 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import org.example.backend.DTO.Shift.ShiftCreateRequest;
+import org.example.backend.DTO.Shift.ShiftResponse;
+import org.example.backend.DTO.Shift.ShiftCreateRequestMapper;
+import org.example.backend.DTO.Shift.ShiftResponseMapper;
 import org.example.backend.Model.entity.Shift;
+import org.example.backend.Model.entity.ShiftDay;
 import org.example.backend.Repository.ShiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShiftService {
 
     private final ShiftRepository shiftRepository;
+    private final ShiftCreateRequestMapper createMapper;
+    private final ShiftResponseMapper responseMapper;
 
     @Autowired
-    public ShiftService(ShiftRepository shiftRepository) {
+    public ShiftService(ShiftRepository shiftRepository, ShiftCreateRequestMapper createMapper, ShiftResponseMapper responseMapper) {
         this.shiftRepository = shiftRepository;
+        this.createMapper = createMapper;
+        this.responseMapper = responseMapper;
     }
 
     public Shift findShiftById(Long id) {
@@ -24,26 +34,53 @@ public class ShiftService {
                 new IllegalArgumentException("Shift not found with id: " + id));
     }
 
+    public ShiftResponse findShiftByIdResponse(Long id) {
+        return responseMapper.apply(findShiftById(id));
+    }
+
+    public List<ShiftResponse> findAll() {
+        return shiftRepository.findAll().stream().map(responseMapper).collect(Collectors.toList());
+    }
+
     public List<Shift> findAllShiftsByStartShift(LocalTime startShift) {
         return shiftRepository.findAllShiftsByStartShift(startShift);
+    }
+
+    public List<ShiftResponse> findAllShiftsByStartShiftResponse(LocalTime startShift) {
+        return findAllShiftsByStartShift(startShift).stream().map(responseMapper).collect(Collectors.toList());
     }
 
     public List<Shift> findAllShiftsByEndShift(LocalTime endShift) {
         return shiftRepository.findAllShiftsByEndShift(endShift);
     }
 
+    public List<ShiftResponse> findAllShiftsByEndShiftResponse(LocalTime endShift) {
+        return findAllShiftsByEndShift(endShift).stream().map(responseMapper).collect(Collectors.toList());
+    }
+
     public List<Shift> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift) {
         return shiftRepository.findAllShiftsBetweenShifts(startShift, endShift);
     }
 
+    public List<ShiftResponse> findAllShiftsBetweenShiftsResponse(LocalTime startShift, LocalTime endShift) {
+        return findAllShiftsBetweenShifts(startShift, endShift).stream().map(responseMapper).collect(Collectors.toList());
+    }
+
     @Transactional
-    public Shift create(Shift shift) {
+    public ShiftResponse create(ShiftCreateRequest request) {
+        // map request to entity
+        Shift shift = createMapper.apply(request);
+
         validateShiftTimes(shift);
         if (shiftRepository.existsByDayAndStartShiftAndEndShift(
                 shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
             throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
         }
-        return shiftRepository.save(shift);
+
+        shift.setDay(ShiftDay.valueOf(request.day()));
+
+        Shift saved = shiftRepository.save(shift);
+        return responseMapper.apply(saved);
     }
 
     @Transactional
@@ -66,6 +103,14 @@ public class ShiftService {
         existing.setEndShift(shift.getEndShift());
 
         return shiftRepository.save(existing);
+    }
+
+    @Transactional
+    public ShiftResponse updateResponse(Long id, ShiftCreateRequest request) {
+        Shift shift = createMapper.apply(request);
+        shift.setId(id);
+        Shift updated = update(shift);
+        return responseMapper.apply(updated);
     }
 
     @Transactional
