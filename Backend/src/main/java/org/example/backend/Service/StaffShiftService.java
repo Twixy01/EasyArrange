@@ -1,6 +1,8 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import org.example.backend.DTO.Shift.ShiftResponse;
+import org.example.backend.DTO.Shift.ShiftResponseMapper;
 import org.example.backend.DTO.Staff.StaffResponse;
 import org.example.backend.DTO.Staff.StaffResponseMapper;
 import org.example.backend.DTO.StaffShift.StaffShiftRequest;
@@ -25,14 +27,16 @@ public class StaffShiftService {
     private final ShiftRepository shiftRepository;
     private StaffShiftRepository staffShiftRepository;
     private StaffShiftResponseMapper staffShiftResponseMapper;
+    private ShiftResponseMapper shiftResponseMapper;
 
     @Autowired
-    public StaffShiftService(StaffShiftRepository staffShiftRepository, StaffShiftResponseMapper staffShiftResponseMapper, StaffResponseMapper staffResponseMapper, StaffRepository staffRepository, ShiftRepository shiftRepository) {
+    public StaffShiftService(StaffShiftRepository staffShiftRepository, StaffShiftResponseMapper staffShiftResponseMapper, StaffResponseMapper staffResponseMapper, StaffRepository staffRepository, ShiftRepository shiftRepository, ShiftResponseMapper shiftResponseMapper) {
         this.staffShiftRepository = staffShiftRepository;
         this.staffShiftResponseMapper = staffShiftResponseMapper;
         this.staffResponseMapper = staffResponseMapper;
         this.staffRepository = staffRepository;
         this.shiftRepository = shiftRepository;
+        this.shiftResponseMapper = shiftResponseMapper;
     }
 
     public List<StaffShiftResponse> findAll() {
@@ -50,9 +54,10 @@ public class StaffShiftService {
         return staffShift.map(staffShiftResponseMapper).orElseThrow(() -> new IllegalArgumentException("StaffShift not found"));
     }
 
-    //needs ShiftDTO !!!
-    public List<Shift> findAllShiftsByStaffId(Long staffId) {
-        return staffShiftRepository.findAllShiftsByStaffId(staffId);
+    public List<ShiftResponse> findAllShiftsByStaffId(Long staffId) {
+        return staffShiftRepository.findAllShiftsByStaffId(staffId).stream()
+                .map(shiftResponseMapper)
+                .collect(Collectors.toList());
     }
 
     public List<StaffResponse> findAllStaffByShiftId(Long shiftId) {
@@ -61,9 +66,10 @@ public class StaffShiftService {
                 .collect(Collectors.toList());
     }
 
-    //needs ShiftDTO !!!
-    public List<Shift> findAllShiftsByStaffIdBetweenShifts(Long staffId, LocalTime startShift, LocalTime endShift) {
-        return staffShiftRepository.findAllShiftsByStaffIdBetweenShifts(staffId, startShift, endShift);
+    public List<ShiftResponse> findAllShiftsByStaffIdBetweenShifts(Long staffId, LocalTime startShift, LocalTime endShift) {
+        return staffShiftRepository.findAllShiftsByStaffIdBetweenShifts(staffId, startShift, endShift).stream()
+                .map(shiftResponseMapper)
+                .collect(Collectors.toList());
     }
 
     @Transactional

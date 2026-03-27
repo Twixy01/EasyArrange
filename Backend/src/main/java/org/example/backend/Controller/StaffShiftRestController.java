@@ -1,6 +1,7 @@
 package org.example.backend.Controller;
 
 import jakarta.validation.constraints.Positive;
+import org.example.backend.DTO.Shift.ShiftResponse;
 import org.example.backend.DTO.Staff.StaffResponse;
 import org.example.backend.DTO.StaffShift.StaffShiftRequest;
 import org.example.backend.DTO.StaffShift.StaffShiftResponse;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -34,15 +36,23 @@ public class StaffShiftRestController {
         return staffShiftService.findById(staffId, shiftId);
     }
 
-    //needs ShiftDTO !!!
-    /*@GetMapping("/staff/{staffId}")
+    @GetMapping("/staff/{staffId}")
     public List<ShiftResponse> getShiftsByStaffId(@PathVariable("staffId") @Positive Long staffId) {
         return staffShiftService.findAllShiftsByStaffId(staffId);
-    }*/
+    }
 
     @GetMapping("/shift/{shiftId}")
     public List<StaffResponse> getStaffByShiftId(@PathVariable("shiftId") @Positive Long shiftId) {
         return staffShiftService.findAllStaffByShiftId(shiftId);
+    }
+
+    @GetMapping()
+    public List<ShiftResponse> getAllShiftsByStaffIdBetweenShifts(
+            @RequestParam("staffId") @Positive Long staffId,
+            @RequestParam("start") LocalTime startShift,
+            @RequestParam("end") LocalTime endShift
+    ) {
+        return staffShiftService.findAllShiftsByStaffIdBetweenShifts(staffId, startShift, endShift);
     }
 
     @PostMapping("/create")
