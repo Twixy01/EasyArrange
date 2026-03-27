@@ -20,14 +20,10 @@ import java.util.stream.Collectors;
 public class BookingRestController {
 
     private final BookingService bookingService;
-    private final BookingResponseMapper responseMapper;
-    private final BookingUpdateRequestMapper updateMapper;
 
     @Autowired
-    public BookingRestController(BookingService bookingService, BookingResponseMapper responseMapper, BookingUpdateRequestMapper updateMapper) {
+    public BookingRestController(BookingService bookingService) {
         this.bookingService = bookingService;
-        this.responseMapper = responseMapper;
-        this.updateMapper = updateMapper;
     }
 
     @GetMapping

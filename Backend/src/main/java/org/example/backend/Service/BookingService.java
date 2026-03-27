@@ -31,13 +31,14 @@ public class BookingService {
     private final ServiceRepository serviceRepository;
     private final BookingCreateRequestMapper bookingCreateRequestMapper;
     private final BookingUpdateRequestMapper bookingUpdateRequestMapper;
+    private final BookingResponseMapper bookingResponseMapper;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository,
                           BookingResponseMapper responseMapper,
                           StaffRepository staffRepository,
                           UserRepository userRepository,
-                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper, BookingUpdateRequestMapper bookingUpdateRequestMapper) {
+                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper, BookingUpdateRequestMapper bookingUpdateRequestMapper, BookingResponseMapper bookingResponseMapper) {
         this.bookingRepository = bookingRepository;
         this.responseMapper = responseMapper;
         this.staffRepository = staffRepository;
@@ -45,6 +46,7 @@ public class BookingService {
         this.serviceRepository = serviceRepository;
         this.bookingCreateRequestMapper = bookingCreateRequestMapper;
         this.bookingUpdateRequestMapper = bookingUpdateRequestMapper;
+        this.bookingResponseMapper = bookingResponseMapper;
     }
 
     public List<Booking> findAll() {
@@ -138,7 +140,7 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking update(@Valid Long id, BookingUpdateRequest bookingRequest) {
+    public BookingResponse update(@Valid Long id, BookingUpdateRequest bookingRequest) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -158,7 +160,8 @@ public class BookingService {
 
         existing.setStatus(BookingStatus.valueOf(bookingRequest.status()));
 
-        return bookingRepository.save(existing);
+        bookingRepository.save(existing);
+        return bookingResponseMapper.apply(existing);
     }
 
 
