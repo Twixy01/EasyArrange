@@ -46,9 +46,9 @@ public class StaffShiftRestController {
         return staffShiftService.findAllStaffByShiftId(shiftId);
     }
 
-    @GetMapping()
+    @GetMapping("/staff/{staffId}/between")
     public List<ShiftResponse> getAllShiftsByStaffIdBetweenShifts(
-            @RequestParam("staffId") @Positive Long staffId,
+            @PathVariable("staffId") @Positive Long staffId,
             @RequestParam("start") LocalTime startShift,
             @RequestParam("end") LocalTime endShift
     ) {
