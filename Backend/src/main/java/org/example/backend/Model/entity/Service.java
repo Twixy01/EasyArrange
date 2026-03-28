@@ -25,11 +25,19 @@ public class Service {
     @Column(name = "duration")
     private Integer duration;
 
+    @Lob
+    @Column(name = "description")
+    private String description;
+    @Lob
+    @Column(name = "image")
+    private String image;
+
     @OneToMany(mappedBy = "service")
     private List<Booking> bookings = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
     private Set<StaffServiceJunction> staff = new LinkedHashSet<>();
+
 
     public Long getId() {
         return id;
@@ -77,6 +85,22 @@ public class Service {
 
     public void setStaff(Set<StaffServiceJunction> staff) {
         this.staff = staff;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

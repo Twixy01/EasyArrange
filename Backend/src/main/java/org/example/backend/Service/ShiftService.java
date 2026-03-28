@@ -29,46 +29,37 @@ public class ShiftService {
         this.responseMapper = responseMapper;
     }
 
-    public Shift findShiftById(Long id) {
-        return shiftRepository.findById(id).orElseThrow(() ->
+    public ShiftResponse findShiftById(Long id) {
+        return shiftRepository.findById(id)
+                .map(responseMapper)
+                .orElseThrow(() ->
                 new IllegalArgumentException("Shift not found with id: " + id));
-    }
-
-    public ShiftResponse findShiftByIdResponse(Long id) {
-        return responseMapper.apply(findShiftById(id));
     }
 
     public List<ShiftResponse> findAll() {
         return shiftRepository.findAll().stream().map(responseMapper).collect(Collectors.toList());
     }
 
-    public List<Shift> findAllShiftsByStartShift(LocalTime startShift) {
-        return shiftRepository.findAllShiftsByStartShift(startShift);
+    public List<ShiftResponse> findAllShiftsByStartShift(LocalTime startShift) {
+        return shiftRepository.findAllShiftsByStartShift(startShift).stream()
+                .map(responseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<ShiftResponse> findAllShiftsByStartShiftResponse(LocalTime startShift) {
-        return findAllShiftsByStartShift(startShift).stream().map(responseMapper).collect(Collectors.toList());
+    public List<ShiftResponse> findAllShiftsByEndShift(LocalTime endShift) {
+        return shiftRepository.findAllShiftsByEndShift(endShift).stream()
+                .map(responseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<Shift> findAllShiftsByEndShift(LocalTime endShift) {
-        return shiftRepository.findAllShiftsByEndShift(endShift);
-    }
-
-    public List<ShiftResponse> findAllShiftsByEndShiftResponse(LocalTime endShift) {
-        return findAllShiftsByEndShift(endShift).stream().map(responseMapper).collect(Collectors.toList());
-    }
-
-    public List<Shift> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift) {
-        return shiftRepository.findAllShiftsBetweenShifts(startShift, endShift);
-    }
-
-    public List<ShiftResponse> findAllShiftsBetweenShiftsResponse(LocalTime startShift, LocalTime endShift) {
-        return findAllShiftsBetweenShifts(startShift, endShift).stream().map(responseMapper).collect(Collectors.toList());
+    public List<ShiftResponse> findAllShiftsBetweenShifts(LocalTime startShift, LocalTime endShift) {
+        return shiftRepository.findAllShiftsBetweenShifts(startShift, endShift).stream()
+                .map(responseMapper)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public ShiftResponse create(ShiftCreateRequest request) {
-        // map request to entity
         Shift shift = createMapper.apply(request);
 
         validateShiftTimes(shift);
@@ -83,6 +74,7 @@ public class ShiftService {
         return responseMapper.apply(saved);
     }
 
+    //We don't use updates for shifts
     @Transactional
     public Shift update(Shift shift) {
         if (shift.getId() == null) {

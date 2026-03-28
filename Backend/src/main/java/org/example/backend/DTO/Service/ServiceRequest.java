@@ -12,6 +12,8 @@ public record ServiceRequest(
         Integer price,
         @NotNull(message = "Duration can't be null")
         @Positive(message = "Duration must be positive")
-        Integer duration
+        Integer duration,
+        String description,
+        String image
 ) {
 }

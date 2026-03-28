@@ -1,10 +1,12 @@
 package org.example.backend.DTO.Booking;
 
 import org.example.backend.Model.entity.Booking;
+import org.springframework.stereotype.Service;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+@Service
 public class BookingUpdateRequestMapper implements BiConsumer<Booking, BookingUpdateRequest> {
     @Override
     public void accept(Booking booking, BookingUpdateRequest bookingUpdateRequest) {
@@ -12,14 +14,4 @@ public class BookingUpdateRequestMapper implements BiConsumer<Booking, BookingUp
         booking.setEndDatetime(bookingUpdateRequest.endDateTime());
 
     }
-//    @Override
-//    public BookingUpdateRequest apply(Booking booking) {
-//        return new BookingUpdateRequest(
-//                booking.getStartDatetime(),
-//                booking.getEndDatetime(),
-//                booking.getService().getId(),
-//                booking.getStatus().name()
-//        );
-//    }
-
 }

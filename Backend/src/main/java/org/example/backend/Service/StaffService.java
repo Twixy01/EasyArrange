@@ -2,6 +2,7 @@ package org.example.backend.Service;
 
 import org.example.backend.DTO.Service.ServiceResponseMapper;
 import org.example.backend.DTO.Staff.StaffRequest;
+import org.example.backend.DTO.Staff.StaffRequestMapper;
 import org.example.backend.DTO.Staff.StaffResponse;
 import org.example.backend.DTO.Staff.StaffResponseMapper;
 import org.example.backend.Model.entity.Staff;
@@ -17,15 +18,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class StaffService {
+    private final StaffRequestMapper staffRequestMapper;
     private UserRepository userRepository;
     private StaffRepository staffRepository;
     private StaffResponseMapper staffResponseMapper;
 
     @Autowired
-    public StaffService(UserRepository userRepository, StaffRepository staffRepository, StaffResponseMapper staffResponseMapper) {
+    public StaffService(UserRepository userRepository, StaffRepository staffRepository, StaffResponseMapper staffResponseMapper, StaffRequestMapper staffRequestMapper) {
         this.userRepository = userRepository;
         this.staffRepository = staffRepository;
         this.staffResponseMapper = staffResponseMapper;
+        this.staffRequestMapper = staffRequestMapper;
     }
 
     public List<StaffResponse> findAll() {
@@ -59,7 +62,7 @@ public class StaffService {
         if (!roleName.equals("STAFF") && !roleName.equals("ADMIN")) {
             throw new IllegalArgumentException("User must have STAFF or ADMIN role to be added as staff.");
         }
-        Staff staff = new Staff();
+        Staff staff = staffRequestMapper.apply(staffDto);
         staff.setUser(user);
         staffRepository.save(staff);
         return staffResponseMapper.apply(staff);

@@ -49,67 +49,56 @@ public class BookingService {
         this.bookingResponseMapper = bookingResponseMapper;
     }
 
-    public List<Booking> findAll() {
-        return bookingRepository.findAll();
+    public List<BookingResponse> findAll() {
+        return bookingRepository.findAll().stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<BookingResponse> findAllResponses() {
-        return findAll().stream().map(responseMapper).collect(Collectors.toList());
+    public BookingResponse findBookingById(long id) {
+        return bookingRepository
+                .findById(id).map(bookingResponseMapper)
+                .orElseThrow(() -> new IllegalArgumentException("Booking with id " + id + " not found"));
     }
 
-    public Booking findBookingById(long id) {
-        return bookingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Booking with id " + id + " not found"));
+    public List<BookingResponse> findBookingsByStaffId(Long staffId) {
+        return bookingRepository.findAllByStaffId(staffId).stream()
+                .map(responseMapper)
+                .collect(Collectors.toList());
     }
 
-    public BookingResponse findBookingByIdResponse(long id) {
-        return responseMapper.apply(findBookingById(id));
+    public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
+        return bookingRepository.findAllByCustomerId(customerId).stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<Booking> findBookingsByStaffId(Long staffId) {
-        return bookingRepository.findAllByStaffId(staffId);
+    public List<BookingResponse> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
+        return bookingRepository.findAllBetween(start, end).stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<BookingResponse> findBookingsByStaffIdResponses(Long staffId) {
-        return findBookingsByStaffId(staffId).stream().map(responseMapper).collect(Collectors.toList());
+    public List<BookingResponse> findBookingsByStatus(org.example.backend.Model.entity.BookingStatus status) {
+        return bookingRepository.findAllBookingsByStatus(status).stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<Booking> findBookingsByCustomerId(Long customerId) {
-        return bookingRepository.findAllByCustomerId(customerId);
+    public List<BookingResponse> findBookingsByStaffAtDatetimeAsc(Long staffId, java.time.LocalDateTime datetime) {
+        return bookingRepository.findAllByOrderByStartDatetimeAsc().stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
-    public List<BookingResponse> findBookingsByCustomerIdResponses(Long customerId) {
-        return findBookingsByCustomerId(customerId).stream().map(responseMapper).collect(Collectors.toList());
-    }
-
-    public List<Booking> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
-        return bookingRepository.findAllBetween(start, end);
-    }
-
-    public List<BookingResponse> findBookingsBetweenResponses(LocalDateTime start, LocalDateTime end) {
-        return findBookingsBetween(start, end).stream().map(responseMapper).collect(Collectors.toList());
-    }
-
-    public List<Booking> findBookingsByStatus(org.example.backend.Model.entity.BookingStatus status) {
-        return bookingRepository.findAllBookingsByStatus(status);
-    }
-
-    public List<BookingResponse> findBookingsByStatusResponses(org.example.backend.Model.entity.BookingStatus status) {
-        return findBookingsByStatus(status).stream().map(responseMapper).collect(Collectors.toList());
-    }
-
-    public List<Booking> findBookingsByStaffAtDatetimeAsc(Long staffId, java.time.LocalDateTime datetime) {
-        return bookingRepository.findAllByOrderByStartDatetimeAsc();
-    }
-
-    public List<Booking> findBookingsByStaffAtDatetimeDesc(Long staffId, java.time.LocalDateTime datetime) {
-        return bookingRepository.findAllByOrderByStartDatetimeDesc();
+    public List<BookingResponse> findBookingsByStaffAtDatetimeDesc(Long staffId, java.time.LocalDateTime datetime) {
+        return bookingRepository.findAllByOrderByStartDatetimeDesc().stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public BookingResponse create(@NotNull @Valid BookingCreateRequest bookingRequest) {
-        if (bookingRequest.startDateTime() == null || bookingRequest.endDateTime() == null) {
-            throw new IllegalArgumentException("Start and end datetime cannot be null");
-        }
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();

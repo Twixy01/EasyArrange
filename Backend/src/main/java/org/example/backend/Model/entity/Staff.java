@@ -2,9 +2,11 @@ package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +26,14 @@ public class Staff {
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull(message = "User cannot be null")
     private User user;
+
+    @Size(max = 255)
+    @Column(name = "title")
+    private String title;
+
+    @Lob
+    @Column(name = "bio")
+    private String bio;
 
     @OneToMany(mappedBy = "staff")
     private List<Booking> bookings = new ArrayList<>();
@@ -85,4 +95,19 @@ public class Staff {
         this.shifts = shifts;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
 }

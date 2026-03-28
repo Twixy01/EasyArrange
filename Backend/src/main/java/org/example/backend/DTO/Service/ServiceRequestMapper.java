@@ -12,6 +12,8 @@ public class ServiceRequestMapper implements BiConsumer<ServiceRequest, Service>
         service.setName(serviceRequest.name());
         service.setPrice(serviceRequest.price());
         service.setDuration(serviceRequest.duration());
+        service.setDescription(serviceRequest.description());
+        service.setImage(serviceRequest.image());
     }
 
 }
