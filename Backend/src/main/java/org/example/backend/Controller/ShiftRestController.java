@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/shifts")
+@CrossOrigin
 @Validated
 public class ShiftRestController {
 
@@ -30,17 +31,17 @@ public class ShiftRestController {
 
     @GetMapping("/{id}")
     public ShiftResponse getById(@PathVariable("id") Long id) {
-        return shiftService.findShiftByIdResponse(id);
+        return shiftService.findShiftById(id);
     }
 
     @GetMapping("/start")
     public List<ShiftResponse> getByStart(@RequestParam("time") LocalTime time) {
-        return shiftService.findAllShiftsByStartShiftResponse(time);
+        return shiftService.findAllShiftsByStartShift(time);
     }
 
     @GetMapping("/end")
     public List<ShiftResponse> getByEnd(@RequestParam("time") LocalTime time) {
-        return shiftService.findAllShiftsByEndShiftResponse(time);
+        return shiftService.findAllShiftsByEndShift(time);
     }
 
     @PostMapping
