@@ -36,11 +36,11 @@ public class CalendarBlockService {
         this.calendarBlockRequestMapper = calendarBlockRequestMapper;
     }
 
-    public CalendarBlockResponse findCalendarBlockById(Long id) {
-        return calendarBlockRepository.findById(id)
+    public CalendarBlockResponse findCalendarBlockById(Long calendarBlockId) {
+        return calendarBlockRepository.findById(calendarBlockId)
                 .map(calendarBlockResponseMapper)
                 .orElseThrow(() ->
-                new IllegalArgumentException("Calendar block not found with id: " + id));
+                new IllegalArgumentException("Calendar block not found with id: " + calendarBlockId));
     }
 
     public List<CalendarBlockResponse> findAllByOrderByStartDatetimeAsc() {

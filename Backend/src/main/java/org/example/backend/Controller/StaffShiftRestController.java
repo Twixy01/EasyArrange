@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/staff-shift")
+@RequestMapping("/api/staff-shifts")
 @CrossOrigin
 @Validated
 public class StaffShiftRestController {

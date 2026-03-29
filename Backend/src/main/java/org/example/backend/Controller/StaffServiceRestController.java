@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/staff-service")
+@RequestMapping("/api/staff-services")
 @CrossOrigin
 @Validated
 public class StaffServiceRestController {
-    private StaffServiceJunctionService staffServiceJunctionService;
+    private final StaffServiceJunctionService staffServiceJunctionService;
 
     @Autowired
     public StaffServiceRestController(StaffServiceJunctionService staffServiceJunctionService) {
