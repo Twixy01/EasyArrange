@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 17. 12:06
+-- Létrehozás ideje: 2026. Már 29. 15:07
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -106,19 +106,29 @@ CREATE TABLE `service` (
   `service_id` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
   `price` int(11) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL
+  `duration` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `image` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `service`
 --
 
-INSERT INTO `service` (`service_id`, `name`, `price`, `duration`) VALUES
-(1, 'Hajvágás', 6500, 40),
-(2, 'Szakáll vágás', 4500, 25),
-(3, 'Hajfestés', 12000, 90),
-(4, 'Hajmosás', 2000, 10),
-(5, 'Gyerek hajvágás', 5000, 30);
+INSERT INTO `service` (`service_id`, `name`, `price`, `duration`, `description`, `image`) VALUES
+(1, 'Haircut', 6500, 40, 'Precision haircut tailored to your style.', 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=1200&q=80'),
+(2, 'Beard trimming', 4500, 25, 'Sharp beard shaping and edge cleanup.', 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80'),
+(3, 'Hair dyeing', 12000, 90, 'Modern coloring with expert consultation.', 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80'),
+(4, 'Hair washing', 2000, 10, 'Relaxing wash with premium salon products.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80'),
+(5, 'Kid Haircut', 5000, 30, 'Gentle, kid-friendly haircut tailored to your child’s style in a calm and comfortable environment.', 'https://images.unsplash.com/photo-1704072650662-76df3af134a7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+(7, 'Beard Shaping & Line-up', 5000, 30, 'Defined beard contours with sharp, clean lines.', 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80'),
+(8, 'Full Beard Grooming', 6500, 40, 'Complete beard care with trim, shaping, and nourishing finish.', 'https://images.unsplash.com/photo-1585747860715-ebba7e41a0d7?auto=format&fit=crop&w=1200&q=80'),
+(9, 'Fade / Skin Fade', 7000, 45, 'Clean fade blended with precision and modern styling.', 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80'),
+(10, 'Hair Styling', 4000, 20, 'Professional styling and finishing for a polished look.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80'),
+(11, 'Hair Bleaching', 14000, 100, 'Professional lightening process for bold color results.', 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80'),
+(12, 'Manicure', 6000, 45, 'Clean nail shaping and hand care with an elegant finish.', 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80'),
+(13, 'Pedicure', 7500, 60, 'Foot and nail care treatment for comfort and appearance.', 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=1200&q=80'),
+(14, 'Facial Treatment', 9000, 60, 'Refreshing facial care for cleaner, healthier-looking skin.', 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80');
 
 -- --------------------------------------------------------
 
@@ -154,19 +164,21 @@ INSERT INTO `shift` (`shift_id`, `day`, `start_shift`, `end_shift`) VALUES
 DROP TABLE IF EXISTS `staff`;
 CREATE TABLE `staff` (
   `staff_id` bigint(20) NOT NULL,
-  `user_id` bigint(20) NOT NULL
+  `user_id` bigint(20) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `bio` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `staff`
 --
 
-INSERT INTO `staff` (`staff_id`, `user_id`) VALUES
-(4, 3),
-(1, 4),
-(5, 6),
-(2, 8),
-(3, 10);
+INSERT INTO `staff` (`staff_id`, `user_id`, `title`, `bio`) VALUES
+(1, 4, 'Color Specialist', 'Balayage, highlights, hair coloring, washing, and polished styling.'),
+(2, 8, 'Senior Hair Stylist', 'Precision cuts, kid haircuts, fades, styling, washing, and modern color work.'),
+(3, 10, 'Nail Technician', 'Manicure, pedicure, nail care, and refreshing facial treatments.'),
+(4, 3, 'Master Barber', 'Haircuts, fades, beard trimming, beard shaping, and premium grooming.'),
+(5, 6, 'Junior Stylist', 'Fresh cuts, kid haircuts, beard trims, washing, and stylish finishing.');
 
 -- --------------------------------------------------------
 
@@ -186,10 +198,32 @@ CREATE TABLE `staff_service` (
 
 INSERT INTO `staff_service` (`staff_id`, `service_id`) VALUES
 (1, 1),
+(1, 3),
+(1, 4),
+(1, 10),
+(1, 11),
+(2, 1),
 (2, 2),
+(2, 3),
+(2, 4),
+(2, 5),
+(2, 9),
+(2, 10),
 (3, 3),
+(3, 12),
+(3, 13),
+(3, 14),
+(4, 1),
+(4, 2),
 (4, 4),
-(5, 5);
+(4, 7),
+(4, 8),
+(4, 9),
+(5, 1),
+(5, 2),
+(5, 4),
+(5, 5),
+(5, 10);
 
 -- --------------------------------------------------------
 
@@ -225,7 +259,7 @@ CREATE TABLE `user` (
   `user_id` bigint(20) NOT NULL,
   `name` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
+  `profile_picture` text DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `role_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
@@ -235,14 +269,14 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `profile_picture`, `password`, `role_id`) VALUES
-(3, 'Peter', 'test@gmail.com', 'profile', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 1),
-(4, 'Milan', 'alma@gmail.com', 'picture_link', '$2a$10$hDowIUWT9wH7Ijdr78/nnuv/Bc/arzyDJvATxdFfq.IDPXojUNS/i', 3),
-(5, 'Nincsneve', 'noname@email.com', 'profile', '$2a$10$muUAaM9HS6Aq.VNJBnrJaeruHzW24hgYlBm2c1SuR20j/71RnfNfe', 2),
-(6, 'Anna', 'anna@gmail.com', 'profile', '$2a$10$np7X0HLTmdELFoOVA/.Df.pliYehAotzPcW5tKmyprPKQPBvkVp5i', 2),
+(3, 'Peter', 'peter@gmail.com', 'https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dhttps://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$ZgM5/hHebKqYNJXfeU6.4Oa9hitXQD6oafy74YLMAoO7HvaJC/n1C', 1),
+(4, 'Milan', 'milan@gmail.com', 'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$hDowIUWT9wH7Ijdr78/nnuv/Bc/arzyDJvATxdFfq.IDPXojUNS/i', 3),
+(5, 'Elek', 'elek@gmail.com', 'profile', '$2a$10$muUAaM9HS6Aq.VNJBnrJaeruHzW24hgYlBm2c1SuR20j/71RnfNfe', 2),
+(6, 'Anna', 'anna@gmail.com', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$np7X0HLTmdELFoOVA/.Df.pliYehAotzPcW5tKmyprPKQPBvkVp5i', 2),
 (7, 'Bence', 'bence@gmail.com', 'profile', '$2a$10$rZggb8AKCS3F36najikyp.2Dw5CAIqy6dzMAkkeE.VZ0DESkTwV76', 2),
-(8, 'Kata', 'kata@gmail.com', 'profile', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
+(8, 'Kata', 'kata@gmail.com', 'https://plus.unsplash.com/premium_photo-1688572454849-4348982edf7d?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
 (9, 'David', 'david@gmail.com', 'profile', '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
-(10, 'Sofia', 'sofia@gmail.com', 'profile', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3);
+(10, 'Sofia', 'sofia@gmail.com', 'https://plus.unsplash.com/premium_photo-1690407617542-2f210cf20d7e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -340,7 +374,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT a táblához `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT a táblához `shift`
@@ -352,13 +386,13 @@ ALTER TABLE `shift`
 -- AUTO_INCREMENT a táblához `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `staff_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `staff_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Megkötések a kiírt táblákhoz
