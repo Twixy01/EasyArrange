@@ -12,7 +12,9 @@ public class ServiceResponseMapper implements Function<Service, ServiceResponse>
                 service.getId(),
                 service.getName(),
                 service.getPrice(),
-                service.getDuration()
+                service.getDuration(),
+                service.getDescription(),
+                service.getImage()
         );
     }
 }

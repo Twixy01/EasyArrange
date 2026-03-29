@@ -1,9 +1,11 @@
 package org.example.backend.DTO.Service;
 
 public record ServiceResponse(
-        Long id,
+        Long serviceId,
         String name,
         Integer price,
-        Integer duration
+        Integer duration,
+        String description,
+        String image
 ) {
 }

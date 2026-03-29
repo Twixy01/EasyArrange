@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/staff-service")
+@CrossOrigin
 @Validated
 public class StaffServiceRestController {
     private StaffServiceJunctionService staffServiceJunctionService;

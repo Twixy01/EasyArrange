@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/services")
+@CrossOrigin
 @Validated
 public class ServiceRestController {
     private final ServiceService serviceService;

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin
 @Validated
 public class UserRestController {
 
@@ -44,10 +45,10 @@ public class UserRestController {
                 .map(userResponseMapper)
                 .collect(Collectors.toList());
     }
-    @GetMapping("/staff/{staffId}")
+    /*@GetMapping("/staff/{staffId}")
     public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
-        return userService.findUserById(staffService.findById(staffId).userId());
-    }
+        return userService.findUserById(staffService.findById(staffId));
+    }*/
 
     @GetMapping("/login")
     public UserResponse findUserForLogin(@Valid @RequestBody UserLoginRequest user) {

@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/staff-shift")
+@CrossOrigin
 @Validated
 public class StaffShiftRestController {
     private final StaffShiftService staffShiftService;
