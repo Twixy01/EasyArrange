@@ -59,7 +59,7 @@ public class BookingRestController {
         return bookingService.findBookingsByStatus(bookingStatus);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public BookingResponse create(@Valid @RequestBody BookingCreateRequest request) {
         return bookingService.create(request);
     }

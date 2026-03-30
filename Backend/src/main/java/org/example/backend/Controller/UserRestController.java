@@ -3,7 +3,6 @@ package org.example.backend.Controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.example.backend.DTO.User.*;
-import org.example.backend.Service.StaffService;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -19,13 +18,11 @@ import java.util.stream.Collectors;
 public class UserRestController {
 
     private final UserService userService;
-    private final StaffService staffService;
     private final UserResponseMapper userResponseMapper;
 
     @Autowired
-    public UserRestController(UserService userService, StaffService staffService, UserResponseMapper userResponseMapper) {
+    public UserRestController(UserService userService, UserResponseMapper userResponseMapper) {
         this.userService = userService;
-        this.staffService = staffService;
         this.userResponseMapper = userResponseMapper;
     }
 
@@ -49,8 +46,7 @@ public class UserRestController {
     public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
         return userService.findUserById(staffService.findById(staffId));
     }*/
-
-    @GetMapping("/login")
+    @PostMapping("/login")
     public UserResponse findUserForLogin(@Valid @RequestBody UserLoginRequest user) {
         return userService.findUserForLogin(user);
     }

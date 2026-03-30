@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/calendar-blocks")
+@CrossOrigin
 @Validated
 public class CalendarBlockRestController {
 
