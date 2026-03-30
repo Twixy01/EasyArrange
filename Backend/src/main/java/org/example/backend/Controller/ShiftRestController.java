@@ -44,7 +44,7 @@ public class ShiftRestController {
         return shiftService.findAllShiftsByEndShift(time);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ShiftResponse create(@Valid @RequestBody ShiftCreateRequest request) {
         return shiftService.create(request);
     }

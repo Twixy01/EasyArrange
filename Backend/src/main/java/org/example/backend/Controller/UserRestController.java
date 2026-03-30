@@ -46,7 +46,7 @@ public class UserRestController {
     public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
         return userService.findUserById(staffService.findById(staffId));
     }*/
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public UserResponse findUserForLogin(@Valid @RequestBody UserLoginRequest user) {
         return userService.findUserForLogin(user);
     }
