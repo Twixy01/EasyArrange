@@ -9,7 +9,7 @@ public record UserLoginRequest(
         @Email(message = "Invalid email format")
         String email,
         @NotBlank(message = "Password must not be blank")
-        @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+        @Size(min = 4, max = 100, message = "Password must be between 4 and 100 characters")
         String password
 ) {
 }
