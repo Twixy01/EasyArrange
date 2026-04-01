@@ -1,10 +1,9 @@
 import { Link, NavLink } from "react-router-dom"
 import {useState} from "react";
-import { useAuth } from "../../hooks/UseAuth.js";
+// import { useAuth } from "../../hooks/UseAuth.js";
 
 function NavBar() {
-
-    let isLoggedIn = useAuth().currentUser;
+    let {isLoggedIn} = useState(false)
 
     return (
         <nav className="navbar">

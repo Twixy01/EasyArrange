@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react"
-import { getStaffByService } from "../services/api"
 import { DataContext } from "../context/DataContext"
 import Card from "../components/common/Card"
+import { getStaffByService, getAvailableSlots } from "../services/api"
 
 function BookingPage() {
     const { services } = useContext(DataContext);
@@ -31,19 +31,20 @@ function BookingPage() {
         loadAvailableStaff();
     }, [selectedStaff, selectedService]);
 
-    // useEffect(() => {
-    //     if (!selectedStaff || !selectedDate) return;
-    //     const loadAvailableSlots = async () => {
-    //         try {
-    //             const response = await getAvailableSlots(selectedStaff.id, selectedDate);
-    //             setSlots(response);
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     };
+    useEffect(() => {
+        if (!selectedStaff || !selectedDate) return;
+        const loadAvailableSlots = async () => {
+            try {
+                const response = await getAvailableSlots(selectedStaff.staffId, selectedDate);
+                setSlots(response);
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
-    //     loadAvailableSlots();
-    // }, [selectedStaff, selectedDate]);
+        loadAvailableSlots();
+    }, [selectedStaff, selectedDate]);
+
 
     return (
         <>
@@ -87,14 +88,14 @@ function BookingPage() {
                   <Card
                     key={member.staffId}
                     className={`select-card ${
-                      String(selectedStaff) === String(member.staffId)
+                      Number(selectedStaff?.staffId) === Number(member.staffId)
                         ? "selected"
                         : ""
                     }`}
                   >
                     <button
                       className="select-card-button"
-                      onClick={() => setSelectedStaff(member.staffId)}
+                      onClick={() => setSelectedStaff(member)}
                     >
                       <div className="staff-inline">
                         <img src={member.user.profilePicture} alt={member.user.name} />
@@ -143,6 +144,9 @@ function BookingPage() {
                 )}
               </div>
             </div>
+
+
+            
 
         </>
     )

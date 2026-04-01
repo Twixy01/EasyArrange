@@ -26,20 +26,52 @@ export const getStaffByService = async (serviceId) => {
 
 const getShiftsByStaff = async (staffId) => {
     const response = await fetch(`${BASE_URL}/staff-shifts/staff/${staffId}`);
-    const data = await response.json();
-    return data;
-}
 
-export const getAvailableSlots = async (staffId, date) => {
+    if (!response.ok) {
+        throw new Error('Failed to fetch shifts');
+    }
+
+    return await response.json();
+};
+
+export const getAvailableSlots = async (staffId, selectedDate) => {
     const shifts = await getShiftsByStaff(staffId);
-    const selectedDate = new Date(date);
+    const selectedDateObj = new Date(selectedDate);
 
-    const shiftOfSelectedDate = shifts.filter(shift => {
-        shift.day == date.getDate().day()
-    })
-    const startOfDay = new Date(selectedDate);
-    startOfDay.setHours(0, 0, 0, 0);
+    const shiftOfSelectedDate = shifts.find(
+        shift => shift.day === formatDayOfWeek(selectedDateObj.getDay())
+    );
+
+    if (!shiftOfSelectedDate) {
+        return [];
+    }
+
+    const startOfDay = new Date(`${selectedDate}T${shiftOfSelectedDate.startShift}`);
+    const endOfDay = new Date(`${selectedDate}T${shiftOfSelectedDate.endShift}`);
+
     const slots = [];
 
-    return shifts;
+    for (
+        let time = new Date(startOfDay);
+        time < endOfDay;
+        time.setMinutes(time.getMinutes() + 15)
+    ) {
+        slots.push(
+            {
+                start: formatTime(time),
+                label: formatTime(time)
+            }
+        );
+    }
+
+    return slots;
+};
+
+function formatDayOfWeek(day) {
+    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    return days[day];
+}
+
+function formatTime(time) {
+    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
