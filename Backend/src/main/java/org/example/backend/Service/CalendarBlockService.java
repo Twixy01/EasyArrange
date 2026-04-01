@@ -43,8 +43,8 @@ public class CalendarBlockService {
                 new IllegalArgumentException("Calendar block not found with id: " + calendarBlockId));
     }
 
-    public List<CalendarBlockResponse> findAllByOrderByStartDatetimeAsc() {
-        return calendarBlockRepository.findAllByOrderByStartDatetimeAsc().stream()
+    public List<CalendarBlockResponse> findAllByOrderByStartDateTimeAsc() {
+        return calendarBlockRepository.findAllByOrderByStartDateTimeAsc().stream()
                 .map(calendarBlockResponseMapper)
                 .collect(Collectors.toList());
     }

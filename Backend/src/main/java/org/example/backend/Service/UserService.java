@@ -60,6 +60,9 @@ public class UserService {
     public List<User> findAllStaff() {
         return userRepository.findAllStaff();
     }
+    public List<User> findAllCustomers() {
+        return userRepository.findAllCustomers();
+    }
 
     @Transactional
     public UserResponse create(UserRegistrationRequest userDto) {

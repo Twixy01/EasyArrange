@@ -11,8 +11,8 @@ public class BookingCreateRequestMapper implements Function<BookingCreateRequest
     @Override
     public Booking apply(BookingCreateRequest bookingRequest) {
         Booking booking = new Booking();
-        booking.setStartDatetime(bookingRequest.startDateTime());
-        booking.setEndDatetime(bookingRequest.endDateTime());
+        booking.setStartDateTime(bookingRequest.startDateTime());
+        booking.setEndDateTime(bookingRequest.endDateTime());
         return booking;
     }
 }

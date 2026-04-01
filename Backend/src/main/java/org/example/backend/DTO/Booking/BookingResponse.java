@@ -15,5 +15,4 @@ public record BookingResponse (
     ServiceResponse service,
     String status
 ) {
-
 }

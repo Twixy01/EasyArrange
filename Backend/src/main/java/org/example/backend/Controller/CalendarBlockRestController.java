@@ -28,7 +28,7 @@ public class CalendarBlockRestController {
 
     @GetMapping
     public List<CalendarBlockResponse> getCalendarBlocks() {
-        return calendarBlockService.findAllByOrderByStartDatetimeAsc();
+        return calendarBlockService.findAllByOrderByStartDateTimeAsc();
     }
 
     @GetMapping("/{calendarBlockId}")

@@ -42,6 +42,12 @@ public class UserRestController {
                 .map(userResponseMapper)
                 .collect(Collectors.toList());
     }
+    @GetMapping("/customers")
+    public List<UserResponse> getCustomerUsers() {
+        return userService.findAllCustomers().stream()
+                .map(userResponseMapper)
+                .collect(Collectors.toList());
+    }
     /*@GetMapping("/staff/{staffId}")
     public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
         return userService.findUserById(staffService.findById(staffId));

@@ -17,22 +17,22 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByCustomerId(Long customerId);
 
-    @Query("FROM Booking b WHERE b.startDatetime >= :start AND b.endDatetime <= :end")
+    @Query("FROM Booking b WHERE b.startDateTime >= :start AND b.endDateTime <= :end")
     List<Booking> findAllBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("FROM Booking b WHERE b.staff.id = :staffId AND b.startDatetime >= :start AND b.endDatetime <= :end")
+    @Query("FROM Booking b WHERE b.staff.id = :staffId AND b.startDateTime >= :start AND b.endDateTime <= :end")
     List<Booking> findAllByStaffBetween(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("FROM Booking b WHERE b.customer.id = :customerId AND b.startDatetime >= :start AND b.endDatetime <= :end")
+    @Query("FROM Booking b WHERE b.customer.id = :customerId AND b.startDateTime >= :start AND b.endDateTime <= :end")
     List<Booking> findAllByCustomerBetween(@Param("customerId") Long customerId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("FROM Booking b WHERE b.status = :status")
     List<Booking> findAllBookingsByStatus(@Param ("status") BookingStatus status);
 
-    @Query("FROM Booking b ORDER BY b.startDatetime ASC")
-    List<Booking> findAllByOrderByStartDatetimeAsc();
+    @Query("FROM Booking b ORDER BY b.startDateTime ASC")
+    List<Booking> findAllByOrderByStartDateTimeAsc();
 
-    @Query("SELECT b FROM Booking b ORDER BY b.startDatetime DESC")
-    List<Booking> findAllByOrderByStartDatetimeDesc();
+    @Query("SELECT b FROM Booking b ORDER BY b.startDateTime DESC")
+    List<Booking> findAllByOrderByStartDateTimeDesc();
 
 }

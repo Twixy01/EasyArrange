@@ -53,6 +53,8 @@ public class BookingService {
         return bookingRepository.findAll().stream()
                 .map(bookingResponseMapper)
                 .collect(Collectors.toList());
+
+
     }
 
     public BookingResponse findBookingById(long id) {
@@ -86,13 +88,13 @@ public class BookingService {
     }
 
     public List<BookingResponse> findBookingsByStaffAtDatetimeAsc(Long staffId, java.time.LocalDateTime datetime) {
-        return bookingRepository.findAllByOrderByStartDatetimeAsc().stream()
+        return bookingRepository.findAllByOrderByStartDateTimeAsc().stream()
                 .map(bookingResponseMapper)
                 .collect(Collectors.toList());
     }
 
     public List<BookingResponse> findBookingsByStaffAtDatetimeDesc(Long staffId, java.time.LocalDateTime datetime) {
-        return bookingRepository.findAllByOrderByStartDatetimeDesc().stream()
+        return bookingRepository.findAllByOrderByStartDateTimeDesc().stream()
                 .map(bookingResponseMapper)
                 .collect(Collectors.toList());
     }

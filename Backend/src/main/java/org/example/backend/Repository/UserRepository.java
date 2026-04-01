@@ -16,10 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findUsersByRole(Role role);
 
-    @Query("SELECT u FROM User u WHERE u.role.name = 'customer'")
-    List<User> findAllCustomer();
+    @Query("SELECT u FROM User u WHERE u.role.name = 'CUSTOMER'")
+    List<User> findAllCustomers();
 
-    @Query("SELECT u FROM User u WHERE u.role.name = 'staff'")
+    @Query("SELECT u FROM User u WHERE u.role.name = 'STAFF'")
     List<User> findAllStaff();
 
     @Query("SELECT u FROM User u WHERE u.name LIKE %:namePart%")
