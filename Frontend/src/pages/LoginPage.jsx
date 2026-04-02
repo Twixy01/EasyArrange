@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../hooks/UseAuth'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
@@ -7,6 +8,7 @@ function LoginPage() {
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -68,12 +70,9 @@ function LoginPage() {
       }
 
       const data = await res.json()
-      if (data.token) localStorage.setItem('token', data.token)
+      login(data)
 
-
-      localStorage.setItem('user', JSON.stringify(data))
-
-      console.log(data)
+      console.log('Logged in', data)
       navigate('/')
     } catch (err) {
       console.error('Login error', err)

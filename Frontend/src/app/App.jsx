@@ -1,5 +1,5 @@
 import '../App.css'
-import { Routes, Route } from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
 import NavBar from '../components/layout/NavBar'
 import Home from '../pages/Home'
 import StaffPage from '../pages/StaffPage'
@@ -9,24 +9,27 @@ import ContactPage from '../pages/ContactPage'
 import BookingPage from '../pages/BookingPage'
 import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
+import {DataProvider} from "../context/DataContext.jsx";
 
 
 function App() {
-  return (
-    <div className="main-content">
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/staff" element={<StaffPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/booking" element={<BookingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Routes>
-    </div>
-  )
+    return (
+        <div className="main-content">
+            <NavBar/>
+            <DataProvider>
+                <Routes>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/staff" element={<StaffPage/>}/>
+                    <Route path="/services" element={<ServicesPage/>}/>
+                    <Route path="/about" element={<AboutPage/>}/>
+                    <Route path="/contact" element={<ContactPage/>}/>
+                    <Route path="/booking" element={<BookingPage/>}/>
+                    <Route path="/login" element={<LoginPage/>}/>
+                    <Route path="/register" element={<RegisterPage/>}/>
+                </Routes>
+            </DataProvider>
+        </div>
+    )
 }
 
 export default App
