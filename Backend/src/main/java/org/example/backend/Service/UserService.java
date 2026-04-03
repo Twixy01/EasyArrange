@@ -74,7 +74,7 @@ public class UserService {
         //set encoded password
         user.setPassword(passwordEncoder.encode(userDto.password()));
 
-        Role role = roleRepository.findById(userDto.roleId())
+        Role role = roleRepository.findById(userDto.role().roleId())
                 .orElseThrow(() -> new IllegalArgumentException("Role not found!"));
 
         user.setRole(role);
@@ -99,7 +99,7 @@ public class UserService {
         //set encoded password
         existingUser.setPassword(passwordEncoder.encode(userDto.password()));
 
-        Role role = roleRepository.findById(userDto.roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
+        Role role = roleRepository.findById(userDto.role().roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
         existingUser.setRole(role);
 
         userRepository.save(existingUser);

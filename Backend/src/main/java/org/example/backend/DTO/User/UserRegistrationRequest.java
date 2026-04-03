@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.example.backend.DTO.Role.RoleResponse;
 
 public record UserRegistrationRequest(
         @NotBlank(message = "Name must not be blank")
@@ -19,6 +20,6 @@ public record UserRegistrationRequest(
         String password,
 
         @NotNull(message = "Role must be specified")
-        Long roleId
+        RoleResponse role
 ) {
 }

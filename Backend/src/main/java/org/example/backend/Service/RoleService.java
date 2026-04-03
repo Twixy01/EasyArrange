@@ -25,7 +25,7 @@ public class RoleService {
 
     public Long findRoleIdByName(String roleName) {
         Optional<Role> role = roleRepository.findByName(roleName);
-        return role.map(Role::getId).orElseThrow(()->new RuntimeException("Role Not Found With Name : " + roleName));
+        return role.map(Role::getRoleId).orElseThrow(()->new RuntimeException("Role Not Found With Name : " + roleName));
     }
 
     public Role findRoleById(Long id) {

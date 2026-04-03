@@ -1,5 +1,6 @@
 package org.example.backend.DTO.User;
 
+import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ public class UserRegistrationRequestMapper implements Function<UserRegistrationR
         user.setName(request.name());
         user.setEmail(request.email());
         // Password will be handled separately in the service layer to ensure it's properly encoded
-        // Role will be set in the service layer based on roleId
+        user.setRole(new Role(request.role().roleId(), request.role().name()));
         return user;
     }
 }

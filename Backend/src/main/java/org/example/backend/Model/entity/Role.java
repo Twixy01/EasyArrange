@@ -13,7 +13,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false)
-    private Long id;
+    private Long roleId;
 
     @Column(name = "name", nullable = false, length = 100)
     @NotBlank(message = "Role name can't be blank")
@@ -22,12 +22,19 @@ public class Role {
     @OneToMany(mappedBy = "role")
     private Set<User> users = new LinkedHashSet<>();
 
-    public Long getId() {
-        return id;
+    public Role(Long roleId, String name) {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Role() {
+
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
     public String getName() {

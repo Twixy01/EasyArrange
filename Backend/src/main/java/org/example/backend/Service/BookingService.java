@@ -123,7 +123,7 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));
         booking.setService(service);
 
-        booking.setStatus(BookingStatus.valueOf(bookingRequest.status()));
+        //Booking status is set to BOOKED by default in the Booking entity, so we don't need to set it here
 
         bookingRepository.save(booking);
 
