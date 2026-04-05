@@ -38,7 +38,7 @@ function NavBar() {
                     <>
                         <NavLink to="/profile"> My profile </NavLink>
                         <span className="sep">|</span>
-                        <button onClick={handleLogout} className="link-button"> Logout </button>
+                        <NavLink to="/" onClick={handleLogout}> Logout </NavLink>
                     </>
                 ) : (
                     <>
