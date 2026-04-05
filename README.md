@@ -65,7 +65,7 @@ Install dependencies:
 
 ```bash
 npm install
-npm install react-router-dom framer-motion
+npm install react-router-dom framer-motion @tanstack/react-query
 ```
 
 Start the development server:

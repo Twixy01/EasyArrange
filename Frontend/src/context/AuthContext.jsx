@@ -1,93 +1,58 @@
-// import { createContext, useEffect, useMemo, useState } from "react";
-// import { salonApi } from "../services/api";
+import React, { createContext, useEffect, useState } from 'react'
 
-// export const AuthContext = createContext(null);
+export const AuthContext = createContext(null)
 
-// export function AuthProvider({ children }) {
-//   const [users, setUsers] = useState(() => {
-//     const saved = localStorage.getItem("salon-users");
-//     return saved ? JSON.parse(saved) : defaultUsers;
-//   });
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('user')
+      return stored ? JSON.parse(stored) : null
+    } catch (e) {
+      return null
+    }
+  })
 
-//   const [currentUser, setCurrentUser] = useState(() => {
-//     const saved = localStorage.getItem("salon-current-user");
-//     return saved ? JSON.parse(saved) : null;
-//   });
+  useEffect(() => {
+    console.debug('[AuthProvider] mounted - initial user:', user)
+    function onStorage(e) {
+      if (e.key === 'user' || e.key === 'token') {
+        try {
+          const stored = localStorage.getItem('user')
+          const parsed = stored ? JSON.parse(stored) : null
+          console.debug('[AuthProvider] storage event - new user:', parsed)
+          setUser(parsed)
+        } catch (err) {
+          console.debug('[AuthProvider] storage event - parse error')
+          setUser(null)
+        }
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
 
-//   useEffect(() => {
-//     localStorage.setItem("salon-users", JSON.stringify(users));
-//   }, [users]);
+  const login = (userData) => {
+    console.debug('[AuthProvider] login called with:', userData)
+    setUser(userData)
+    try { localStorage.setItem('user', JSON.stringify(userData)) } catch (e) { /* ignore */ }
+    if (userData && userData.token) {
+      try { localStorage.setItem('token', userData.token) } catch (e) { /* ignore */ }
+    }
+  }
 
-//   useEffect(() => {
-//     localStorage.setItem("salon-current-user", JSON.stringify(currentUser));
-//   }, [currentUser]);
+  const logout = () => {
+    console.debug('[AuthProvider] logout called')
+    setUser(null)
+    try { localStorage.removeItem('user') } catch (e) { /* ignore */ }
+    try { localStorage.removeItem('token') } catch (e) { /* ignore */ }
+  }
 
-//   const login = async ({ email, password }) => {
-//     try {
-//       const user = await salonApi.loginUser({ email, password });
-//       setCurrentUser(user);
-//       return user;
-//     } catch {
-//       const localUser = users.find(
-//         (item) => item.email === email && item.password === password
-//       );
-//       if (!localUser) {
-//         throw new Error("Invalid email or password.");
-//       }
-//       setCurrentUser(localUser);
-//       return localUser;
-//     }
-//   };
+  const value = {
+    user,
+    isLoggedIn: Boolean(user),
+    login,
+    logout
+  }
 
-//   const register = ({ name, email, password }) => {
-//     const exists = users.some((item) => item.email === email);
-//     if (exists) {
-//       throw new Error("An account with that email already exists.");
-//     }
-//     const newUser = {
-//       id: Date.now(),
-//       userId: Date.now(),
-//       name,
-//       email,
-//       password,
-//       profilePicture: "",
-//       role: "CUSTOMER",
-//     };
-//     const updated = [...users, newUser];
-//     setUsers(updated);
-//     setCurrentUser(newUser);
-//     return newUser;
-//   };
-
-//   const logout = () => {
-//     setCurrentUser(null);
-//   };
-
-//   const updateProfile = (payload) => {
-//     if (!currentUser) return;
-
-//     const updatedUser = { ...currentUser, ...payload };
-//     setCurrentUser(updatedUser);
-//     setUsers((prev) =>
-//       prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-//     );
-//   };
-
-//   const value = useMemo(
-//     () => ({
-//       users,
-//       currentUser,
-//       role: currentUser?.role || null,
-//       isStaff: currentUser?.role === "STAFF",
-//       isCustomer: currentUser?.role === "CUSTOMER",
-//       isAuthenticated: !!currentUser,
-//       login,
-//       register,
-//       logout,
-//       updateProfile,
-//     }),
-//     [users, currentUser]
-//   );
-
-//   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-// }
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}

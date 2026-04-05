@@ -1,9 +1,21 @@
-import { Link, NavLink } from "react-router-dom"
-import {useState} from "react";
-// import { useAuth } from "../../hooks/UseAuth.js";
+import { Link, NavLink, useNavigate } from "react-router-dom"
+import { useEffect } from "react";
+import { useAuth } from '../../hooks/UseAuth'
 
 function NavBar() {
-    let {isLoggedIn} = useState(false)
+
+    const { isLoggedIn, user, logout } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        console.debug('[NavBar] auth changed - isLoggedIn:', isLoggedIn, 'user:', user)
+    }, [isLoggedIn, user])
+
+    const handleLogout = (e) => {
+        e.preventDefault()
+        logout()
+        navigate('/')
+    }
 
     return (
         <nav className="navbar">
@@ -12,26 +24,29 @@ function NavBar() {
             </div>
             <div className="navbar-links">
                 <NavLink to="/staff"> Staff Members </NavLink>
-                |
+                <span className="sep">|</span>
                 <NavLink to="/services"> Services </NavLink>
-                |
+                <span className="sep">|</span>
                 <NavLink to="/about"> About Us </NavLink>
-                |
+                <span className="sep">|</span>
                 <NavLink to="/contact"> Contact </NavLink>
-                |
+                <span className="sep">|</span>
                 <NavLink to="/booking"> Book Now </NavLink>
-                |
+                <span className="sep">|</span>
 
-                { isLoggedIn ? (
-                    <NavLink to="/profile">My profile</NavLink>
-                    |
-                    <NavLink to="/logout"> Logout</NavLink>
+                {isLoggedIn ? (
+                    <>
+                        <NavLink to="/profile"> My profile </NavLink>
+                        <span className="sep">|</span>
+                        <NavLink to="/" onClick={handleLogout}> Logout </NavLink>
+                    </>
                 ) : (
-                     <NavLink to="/login"> Login</NavLink>
-                    |
-                    <NavLink to="/register"> Register</NavLink>
-                    )
-                }
+                    <>
+                        <NavLink to="/login"> Login </NavLink>
+                        <span className="sep">|</span>
+                        <NavLink to="/register"> Register </NavLink>
+                    </>
+                )}
 
             </div>
         </nav>
