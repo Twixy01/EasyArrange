@@ -12,6 +12,7 @@ Built with Spring Boot (backend) and React (frontend).
 * Database: MySQL
 * Animations: Framer Motion
 * Routing: React Router
+* Fetching: Axios
 
 ---
 
@@ -65,7 +66,7 @@ Install dependencies:
 
 ```bash
 npm install
-npm install react-router-dom framer-motion @tanstack/react-query
+npm install react-router-dom framer-motion @tanstack/react-query axios
 ```
 
 Start the development server:
