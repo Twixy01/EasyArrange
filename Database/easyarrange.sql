@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Már 30. 18:27
+-- Létrehozás ideje: 2026. Ápr 06. 12:34
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -67,8 +67,7 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`
 (22, 2, 6, '2026-04-04 11:30:00', '2026-04-04 12:15:00', 9, 'BOOKED'),
 (23, 5, 7, '2026-04-04 12:30:00', '2026-04-04 13:00:00', 5, 'BOOKED'),
 (24, 1, 9, '2026-04-05 10:00:00', '2026-04-05 11:30:00', 3, 'BOOKED'),
-(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'BOOKED'),
-(26, 2, 6, '2026-04-05 13:00:00', '2026-04-05 13:20:00', 10, 'BOOKED');
+(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'BOOKED');
 
 -- --------------------------------------------------------
 
@@ -97,6 +96,7 @@ INSERT INTO `calendar_block` (`calendar_block_id`, `start_datetime`, `end_dateti
 (7, '2026-04-04 12:00:00', '2026-04-04 13:00:00', 3),
 (4, '2026-04-02 16:00:00', '2026-04-02 17:00:00', 4),
 (8, '2026-04-05 11:00:00', '2026-04-05 12:00:00', 4),
+(11, '2026-04-07 00:00:00', '2026-04-08 00:00:00', 4),
 (10, '2026-04-02 12:30:00', '2026-04-02 13:00:00', 5),
 (5, '2026-04-03 11:30:00', '2026-04-03 12:30:00', 5);
 
@@ -144,17 +144,17 @@ CREATE TABLE `service` (
 INSERT INTO `service` (`service_id`, `name`, `price`, `duration`, `description`, `image`) VALUES
 (1, 'Haircut', 6500, 40, 'Precision haircut tailored to your style.', 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=1200&q=80'),
 (2, 'Beard trimming', 4500, 25, 'Sharp beard shaping and edge cleanup.', 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80'),
-(3, 'Hair dyeing', 12000, 90, 'Modern coloring with expert consultation.', 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80'),
+(3, 'Hair dyeing', 12000, 90, 'Modern coloring with expert consultation.', 'https://images.unsplash.com/photo-1617391654484-2894196c2cc9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
 (4, 'Hair washing', 2000, 10, 'Relaxing wash with premium salon products.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80'),
 (5, 'Kid Haircut', 5000, 30, 'Gentle, kid-friendly haircut tailored to your child’s style in a calm and comfortable environment.', 'https://images.unsplash.com/photo-1704072650662-76df3af134a7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
-(7, 'Beard Shaping & Line-up', 5000, 30, 'Defined beard contours with sharp, clean lines.', 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80'),
-(8, 'Full Beard Grooming', 6500, 40, 'Complete beard care with trim, shaping, and nourishing finish.', 'https://images.unsplash.com/photo-1585747860715-ebba7e41a0d7?auto=format&fit=crop&w=1200&q=80'),
+(7, 'Beard Shaping & Line-up', 5000, 30, 'Defined beard contours with sharp, clean lines.', 'https://images.unsplash.com/photo-1747352690432-7c90bf17ede1?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+(8, 'Full Beard Grooming', 6500, 40, 'Complete beard care with trim, shaping, and nourishing finish.', 'https://images.unsplash.com/photo-1654097803253-d481b6751f29?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
 (9, 'Fade / Skin Fade', 7000, 45, 'Clean fade blended with precision and modern styling.', 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80'),
-(10, 'Hair Styling', 4000, 20, 'Professional styling and finishing for a polished look.', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80'),
-(11, 'Hair Bleaching', 14000, 100, 'Professional lightening process for bold color results.', 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80'),
+(10, 'Hair Styling', 4000, 20, 'Professional styling and finishing for a polished look.', 'https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+(11, 'Hair Bleaching', 14000, 100, 'Professional lightening process for bold color results.', 'https://images.unsplash.com/photo-1587225438173-701d7edc94f9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
 (12, 'Manicure', 6000, 45, 'Clean nail shaping and hand care with an elegant finish.', 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80'),
-(13, 'Pedicure', 7500, 60, 'Foot and nail care treatment for comfort and appearance.', 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=1200&q=80'),
-(14, 'Facial Treatment', 9000, 60, 'Refreshing facial care for cleaner, healthier-looking skin.', 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80');
+(13, 'Pedicure', 7500, 60, 'Foot and nail care treatment for comfort and appearance.', 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+(14, 'Facial Treatment', 9000, 60, 'Refreshing facial care for cleaner, healthier-looking skin.', 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 
 -- --------------------------------------------------------
 
@@ -334,7 +334,8 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `profile_picture`, `password`, `
 (7, 'Bence', 'bence@gmail.com', 'profile', '$2a$10$rZggb8AKCS3F36najikyp.2Dw5CAIqy6dzMAkkeE.VZ0DESkTwV76', 2),
 (8, 'Kata', 'kata@gmail.com', 'https://plus.unsplash.com/premium_photo-1688572454849-4348982edf7d?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
 (9, 'David', 'david@gmail.com', 'profile', '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
-(10, 'Sofia', 'sofia@gmail.com', 'https://plus.unsplash.com/premium_photo-1690407617542-2f210cf20d7e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3);
+(10, 'Sofia', 'sofia@gmail.com', 'https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3),
+(13, 'teszt', 'teszt@gmail.com', NULL, '$2a$10$P7ajdvWgd4xRvLTet3SNL.bJPZyC1dnyz/lIK4pwmR74JOQ5WC7BK', 2);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -414,13 +415,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT a táblához `calendar_block`
 --
 ALTER TABLE `calendar_block`
-  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT a táblához `role`
@@ -450,7 +451,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Megkötések a kiírt táblákhoz
