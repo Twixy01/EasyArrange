@@ -28,39 +28,28 @@ export const salonApi = {
         return response.data;
     },
 
-    async getAvailableSlots(staffId, selectedDate) {
-        const shifts = await this.getShiftsByStaff(staffId);
-        const selectedDateObj = new Date(selectedDate);
+    async getAvailableSlots(staffId, selectedDate, serviceId) {
+        const response = await Axios.get(`${BASE_URL}/bookings/staff/${staffId}/available-slots`, {
+            params: {
+                selectedDate,
+                serviceId
+            }
+        });
+        return response.data;
+    },
 
-        const shiftOfSelectedDate = shifts.find(
-            shift => shift.day === formatDayOfWeek(selectedDateObj.getDay())
-        );
-
-        if (!shiftOfSelectedDate) {
-            return [];
-        }
-
-        const startOfDay = new Date(`${selectedDate}T${shiftOfSelectedDate.startShift}`);
-        const endOfDay = new Date(`${selectedDate}T${shiftOfSelectedDate.endShift}`);
-
-        const slots = [];
-
-        for (
-            let time = new Date(startOfDay);
-            time < endOfDay;
-            time.setMinutes(time.getMinutes() + 15)
-        ) {
-            slots.push(
-                {
-                    start: formatTime(time),
-                    label: formatTime(time)
-                }
-            );
-        }
-
-        return slots;
+    async createBooking({ staffId, customerId, startDateTime, endDateTime, serviceId }) {
+        const bookingData = {
+            staffId,
+            customerId,
+            startDateTime,
+            endDateTime,
+            serviceId
+        };
+        const response = await Axios.post(`${BASE_URL}/bookings/create`, bookingData);
+        return response.data;
     }
-}
+};
 
 function formatDayOfWeek(day) {
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
