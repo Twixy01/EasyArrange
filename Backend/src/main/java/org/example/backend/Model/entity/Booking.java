@@ -36,11 +36,11 @@ public class Booking {
 
     @Column(name = "start_datetime", nullable = false)
     @NotNull(message = "Start datetime can't be null")
-    private LocalDateTime startDatetime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_datetime", nullable = false)
     @NotNull(message = "End datetime can't be null")
-    private LocalDateTime endDatetime;
+    private LocalDateTime endDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
@@ -98,20 +98,20 @@ public class Booking {
         this.customer = customer;
     }
 
-    public LocalDateTime getStartDatetime() {
-        return startDatetime;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStartDatetime(LocalDateTime startDatetime) {
-        this.startDatetime = startDatetime;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEndDatetime() {
-        return endDatetime;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setEndDatetime(LocalDateTime endDatetime) {
-        this.endDatetime = endDatetime;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public Service getService() {

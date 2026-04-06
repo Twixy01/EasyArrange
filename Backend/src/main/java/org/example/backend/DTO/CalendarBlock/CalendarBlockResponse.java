@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public record CalendarBlockResponse(
         Long calendarBlockId,
-        LocalDateTime startDatetime,
-        LocalDateTime endDatetime,
+        LocalDateTime startDateTime,
+        LocalDateTime endDateTime,
         StaffResponse staff
 ) {
 }

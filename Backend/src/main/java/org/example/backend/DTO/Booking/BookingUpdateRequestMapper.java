@@ -10,8 +10,8 @@ import java.util.function.Function;
 public class BookingUpdateRequestMapper implements BiConsumer<Booking, BookingUpdateRequest> {
     @Override
     public void accept(Booking booking, BookingUpdateRequest bookingUpdateRequest) {
-        booking.setStartDatetime(bookingUpdateRequest.startDateTime());
-        booking.setEndDatetime(bookingUpdateRequest.endDateTime());
+        booking.setStartDateTime(bookingUpdateRequest.startDateTime());
+        booking.setEndDateTime(bookingUpdateRequest.endDateTime());
 
     }
 }

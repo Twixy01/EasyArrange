@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom"
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { useAuth } from '../../hooks/UseAuth'
 
 function NavBar() {
@@ -34,7 +34,7 @@ function NavBar() {
                 <NavLink to="/booking"> Book Now </NavLink>
                 <span className="sep">|</span>
 
-                { isLoggedIn ? (
+                {isLoggedIn ? (
                     <>
                         <NavLink to="/profile"> My profile </NavLink>
                         <span className="sep">|</span>

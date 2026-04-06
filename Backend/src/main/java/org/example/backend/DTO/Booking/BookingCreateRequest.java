@@ -19,10 +19,6 @@ public record BookingCreateRequest (
         LocalDateTime endDateTime,
 
         @NotNull(message = "Service ID must be specified")
-        Long serviceId,
-
-        @NotBlank(message = "Status must not be blank")
-        String status
-
+        Long serviceId
 ){
 }

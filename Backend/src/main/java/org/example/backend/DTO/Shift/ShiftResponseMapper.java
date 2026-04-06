@@ -11,7 +11,7 @@ public class ShiftResponseMapper implements Function<Shift, ShiftResponse> {
     public ShiftResponse apply(Shift shift) {
         return new ShiftResponse(
                 shift.getId(),
-                shift.getDay(),
+                shift.getDay().toString(),
                 shift.getStartShift(),
                 shift.getEndShift()
         );

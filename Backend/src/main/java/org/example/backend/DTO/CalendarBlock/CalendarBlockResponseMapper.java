@@ -18,8 +18,8 @@ public class CalendarBlockResponseMapper implements Function<CalendarBlock, Cale
     public CalendarBlockResponse apply(CalendarBlock calendarBlock) {
         return new CalendarBlockResponse(
                 calendarBlock.getId(),
-                calendarBlock.getStartDatetime(),
-                calendarBlock.getEndDatetime(),
+                calendarBlock.getStartDateTime(),
+                calendarBlock.getEndDateTime(),
                 staffResponseMapper.apply(calendarBlock.getStaff())
         );
     }

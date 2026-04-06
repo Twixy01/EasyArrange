@@ -13,15 +13,22 @@ import java.util.Optional;
 @Repository
 public interface CalendarBlockRepository extends JpaRepository<CalendarBlock, Long> {
 
-    List<CalendarBlock> findAllByOrderByStartDatetimeAsc();
+    List<CalendarBlock> findAllByOrderByStartDateTimeAsc();
 
     List<CalendarBlock> findAllByStaffId(Long staffId);
 
-    @Query("FROM CalendarBlock cb WHERE cb.startDatetime >= :start AND cb.endDatetime <= :end")
+    @Query("FROM CalendarBlock cb WHERE cb.startDateTime >= :start AND cb.endDateTime <= :end")
     List<CalendarBlock> findAllBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("FROM CalendarBlock cb WHERE cb.staff.id = :staffId AND cb.startDatetime >=: start AND cb.endDatetime <=: end")
+    @Query("FROM CalendarBlock cb WHERE cb.staff.id = :staffId AND cb.startDateTime >= :start AND cb.endDateTime <= :end")
     List<CalendarBlock> findAllByStaffBetween(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("""
+        SELECT CASE WHEN COUNT(cb) > 0 THEN true ELSE false END
+        FROM CalendarBlock cb WHERE cb.staff.id = :staffId
+                AND :start < cb.endDateTime
+                AND :end > cb.startDateTime
+    """)
+    boolean existsOverlapping(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 }

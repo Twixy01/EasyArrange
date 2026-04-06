@@ -6,7 +6,7 @@ import java.time.LocalTime;
 
 public record ShiftResponse(
         Long shiftId,
-        ShiftDay day,
+        String day,
         LocalTime startShift,
         LocalTime endShift
 ) {

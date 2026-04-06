@@ -1,5 +1,6 @@
 package org.example.backend.DTO.User;
 
+import org.example.backend.DTO.Role.RoleResponse;
 import org.example.backend.Model.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class UserResponseMapper implements Function<User, UserResponse> {
                 user.getName(),
                 user.getEmail(),
                 user.getProfilePicture(),
-                user.getRole().getName()
+                new RoleResponse(user.getRole().getRoleId(), user.getRole().getName())
         );
     }
 }

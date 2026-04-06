@@ -1,5 +1,6 @@
 package org.example.backend.DTO.User;
 
+import org.example.backend.Model.entity.Role;
 import org.example.backend.Model.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,6 @@ public class UserUpdateRequestMapper implements BiConsumer<UserUpdateRequest, Us
         user.setEmail(request.email());
         // Password will be handled separately in the service layer to ensure it's properly encoded
         user.setProfilePicture(request.profilePicture());
-        // Role will be set in the service layer based on roleId
+        user.setRole(new Role(request.role().roleId(), request.role().name()));
     }
 }

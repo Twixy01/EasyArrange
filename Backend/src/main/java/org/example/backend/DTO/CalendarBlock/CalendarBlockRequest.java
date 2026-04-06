@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 public record CalendarBlockRequest(
         @NotNull(message = "Start datetime can't be null")
-        LocalDateTime startDatetime,
+        LocalDateTime startDateTime,
         @NotNull(message = "End datetime can't be null")
-        LocalDateTime endDatetime,
+        LocalDateTime endDateTime,
         @NotNull(message = "Staff ID can't be null")
         @Positive(message = "Staff ID must be positive")
         Long staffId
@@ -19,6 +19,6 @@ public record CalendarBlockRequest(
     @JsonIgnore
     @AssertTrue(message = "Start datetime must be before end datetime")
     public boolean isDateRangeValid() {
-        return startDatetime == null || endDatetime == null || startDatetime.isBefore(endDatetime);
+        return startDateTime == null || endDateTime == null || startDateTime.isBefore(endDateTime);
     }
 }
