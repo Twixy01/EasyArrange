@@ -2,6 +2,7 @@ package org.example.backend.Controller;
 
 import jakarta.validation.Valid;
 import org.example.backend.DTO.Booking.*;
+import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.BookingStatus;
 import org.example.backend.Service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,6 +53,15 @@ public class BookingRestController {
             @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
         return bookingService.findBookingsBetween(start, end);
+    }
+
+    @GetMapping("/staff/{staffId}/available-slots")
+    public List<AvailableSlotResponse> getAvailableSlots(
+            @PathVariable Long staffId,
+            @RequestParam LocalDate selectedDate,
+            @RequestParam Long serviceId
+    ) {
+        return bookingService.getAvailableSlots(staffId, selectedDate, serviceId);
     }
 
     @GetMapping("/status")

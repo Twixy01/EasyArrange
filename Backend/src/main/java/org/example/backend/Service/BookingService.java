@@ -4,19 +4,15 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.example.backend.DTO.Booking.*;
-import org.example.backend.Model.entity.Booking;
-import org.example.backend.Model.entity.BookingStatus;
-import org.example.backend.Model.entity.Service;
-import org.example.backend.Model.entity.Staff;
-import org.example.backend.Model.entity.User;
-import org.example.backend.Repository.BookingRepository;
-import org.example.backend.Repository.ServiceRepository;
-import org.example.backend.Repository.StaffRepository;
-import org.example.backend.Repository.UserRepository;
+import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
+import org.example.backend.Model.entity.*;
+import org.example.backend.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,13 +28,15 @@ public class BookingService {
     private final BookingCreateRequestMapper bookingCreateRequestMapper;
     private final BookingUpdateRequestMapper bookingUpdateRequestMapper;
     private final BookingResponseMapper bookingResponseMapper;
+    private final StaffShiftRepository staffShiftRepository;
+    private final CalendarBlockRepository calendarBlockRepository;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository,
                           BookingResponseMapper responseMapper,
                           StaffRepository staffRepository,
                           UserRepository userRepository,
-                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper, BookingUpdateRequestMapper bookingUpdateRequestMapper, BookingResponseMapper bookingResponseMapper) {
+                          ServiceRepository serviceRepository, BookingCreateRequestMapper bookingCreateRequestMapper, BookingUpdateRequestMapper bookingUpdateRequestMapper, BookingResponseMapper bookingResponseMapper, StaffShiftRepository staffShiftRepository, CalendarBlockRepository calendarBlockRepository) {
         this.bookingRepository = bookingRepository;
         this.responseMapper = responseMapper;
         this.staffRepository = staffRepository;
@@ -47,6 +45,8 @@ public class BookingService {
         this.bookingCreateRequestMapper = bookingCreateRequestMapper;
         this.bookingUpdateRequestMapper = bookingUpdateRequestMapper;
         this.bookingResponseMapper = bookingResponseMapper;
+        this.staffShiftRepository = staffShiftRepository;
+        this.calendarBlockRepository = calendarBlockRepository;
     }
 
     public List<BookingResponse> findAll() {
@@ -97,6 +97,56 @@ public class BookingService {
         return bookingRepository.findAllByOrderByStartDateTimeDesc().stream()
                 .map(bookingResponseMapper)
                 .collect(Collectors.toList());
+    }
+
+    public List<AvailableSlotResponse> getAvailableSlots(Long staffId, LocalDate selectedDate, Long serviceId) {
+        List<Shift> shifts = staffShiftRepository.findAllShiftsByStaffId(staffId);
+
+        Shift shiftBySelectedDate = shifts.stream()
+                .filter(shift -> shift.getDay().name().equals(selectedDate.getDayOfWeek().name()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No shift found for staff with id " + staffId + " on date " + selectedDate));
+
+        LocalDateTime startOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getStartShift());
+        LocalDateTime endOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getEndShift());
+
+        int serviceDuration = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Service with id " + serviceId + " not found"))
+                .getDuration();
+
+        List<AvailableSlotResponse> slots = new ArrayList<>();
+
+        LocalDateTime current = startOfDay;
+
+        while (current.plusMinutes(serviceDuration).isBefore(endOfDay)
+                || current.plusMinutes(serviceDuration).isEqual(endOfDay)) {
+
+            LocalDateTime end = current.plusMinutes(serviceDuration);
+
+            boolean overlaps = bookingRepository.existsOverlapping(
+                    staffId,
+                    current,
+                    end
+            );
+
+            boolean blocked = calendarBlockRepository.existsOverlapping(
+                    staffId,
+                    current,
+                    end
+            );
+
+            if (!overlaps && !blocked) {
+                slots.add(new AvailableSlotResponse(
+                        current,
+                        end,
+                        current.toLocalTime().toString()
+                ));
+            }
+
+            current = current.plusMinutes(15);
+        }
+
+        return slots;
     }
 
     @Transactional
