@@ -23,45 +23,6 @@ async function fetchJsonOrThrow(url, options) {
   }
 }
 
-export const getServices = async () => {
-  return fetchJsonOrThrow(`${BASE_URL}/services`)
-}
-
-export const getStaff = async () => {
-  return fetchJsonOrThrow(`${BASE_URL}/staff`)
-}
-
-export const getStaffShifts = async () => {
-  return fetchJsonOrThrow(`${BASE_URL}/staff-shifts`)
-}
-
-export const getStaffByService = async (serviceId) => {
-  return fetchJsonOrThrow(`${BASE_URL}/staff-services/service/${serviceId}`)
-}
-
-const getShiftsByStaff = async (staffId) => {
-  return fetchJsonOrThrow(`${BASE_URL}/staff-shifts/staff/${staffId}`)
-}
-
-export const getAvailableSlots = async (staffId, date) => {
-  if (!staffId) return [];
-  const shifts = await getShiftsByStaff(staffId);
-  if (!Array.isArray(shifts)) return [];
-  if (!date) return shifts;
-
-  const selectedDate = new Date(date);
-  const selectedDateString = selectedDate.toDateString();
-
-  // return shifts that start on the selected date
-  const shiftOfSelectedDate = shifts.filter(shift => {
-    if (!shift || !shift.startTime) return false;
-    const shiftDate = new Date(shift.startTime);
-    return shiftDate.toDateString() === selectedDateString;
-  });
-
-  return shiftOfSelectedDate;
-}
-
 export const getUser = async (userId) => {
   return fetchJsonOrThrow(`${BASE_URL}/users/${userId}`)
 }

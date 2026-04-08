@@ -1,14 +1,14 @@
 import { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/UseAuth'
+import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import { getBookingsByCustomer } from '../services/api'
-import { DataContext } from '../context/DataContext'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ProfilePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const { services } = useContext(DataContext)
+  const { services } = useContext(UIStateContext)
   const [bookings, setBookings] = useState([])
   const [loadingBookings, setLoadingBookings] = useState(false)
   const [bookingsError, setBookingsError] = useState(null)

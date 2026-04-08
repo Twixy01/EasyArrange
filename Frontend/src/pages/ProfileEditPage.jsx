@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/UseAuth'
+import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import { updateUser } from '../services/api'
 
