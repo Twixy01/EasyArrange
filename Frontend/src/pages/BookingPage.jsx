@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Card from "../components/common/Card";
 import { useServices } from "../hooks/queries/useServices";
+import { useStaff } from "../hooks/queries/useStaff";
 import { useAvailableStaff } from "../hooks/queries/useAvailableStaff";
 import { useAvailableSlots } from "../hooks/queries/useAvailableSlots";
 import { useCreateBooking } from "../hooks/mutations/useCreateBooking";
@@ -13,6 +14,7 @@ import { useAuth } from "../hooks/useAuth";
 function BookingPage() {
   const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const today = new Date().toISOString().split("T")[0];
   const maxDate = new Date();
@@ -24,11 +26,24 @@ function BookingPage() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [success, setSuccess] = useState("");
 
+  const preselectedStaffId = location.state?.staffId ?? null;
+  const hasPreselectedStaff = Boolean(preselectedStaffId);
+
   const {
     data: services = [],
     isLoading: servicesLoading,
     error: servicesError,
   } = useServices();
+
+  const {
+    data: staff = [],
+    isLoading: allStaffLoading,
+    error: allStaffError,
+  } = useStaff();
+
+  const serviceOptions = hasPreselectedStaff && selectedStaff?.services?.length > 0
+    ? selectedStaff.services
+    : services;
 
   const {
     data: availableStaff = [],
@@ -42,12 +57,19 @@ function BookingPage() {
     error: slotsError,
   } = useAvailableSlots(selectedStaff?.staffId, selectedDate, selectedService?.serviceId);
 
-  const { mutate } = useCreateBooking();
-
   useEffect(() => {
-    setSelectedStaff(null);
-    setSelectedSlot(null);
-  }, [selectedService]);
+    if (!preselectedStaffId || staff.length === 0 || selectedStaff) return;
+
+    const preselectedStaff = staff.find(
+      (member) => Number(member.staffId) === Number(preselectedStaffId)
+    );
+
+    if (!preselectedStaff) return;
+
+    setSelectedStaff(preselectedStaff);
+  }, [preselectedStaffId, staff, selectedStaff]);
+
+  const { mutate } = useCreateBooking();
 
   useEffect(() => {
     setSelectedSlot(null);
@@ -59,6 +81,14 @@ function BookingPage() {
 
   if (servicesError) {
     return <p>Failed to load services.</p>;
+  }
+
+  if (allStaffLoading) {
+    return <p>Loading staff...</p>;
+  }
+
+  if (allStaffError) {
+    return <p>Failed to load staff.</p>;
   }
 
   const handleBooking = async () => {
@@ -101,7 +131,7 @@ function BookingPage() {
             <div className="booking-step">
               <h3>1. Select a service</h3>
               <div className="grid cards-3">
-                {services.map((service) => (
+                {serviceOptions.map((service) => (
                   <Card
                     key={service.serviceId}
                     className={`select-card ${String(selectedService?.serviceId) === String(service.serviceId)
@@ -114,6 +144,15 @@ function BookingPage() {
                       className="select-card-button"
                       onClick={() => {
                         setSelectedService(service);
+                        if (
+                          selectedStaff &&
+                          !selectedStaff.services?.some(
+                            (staffService) => Number(staffService.serviceId) === Number(service.serviceId)
+                          )
+                        ) {
+                          setSelectedStaff(null);
+                        }
+                        setSelectedSlot(null);
                         setSuccess("");
                       }}
                     >
@@ -134,7 +173,31 @@ function BookingPage() {
             <div className="booking-step">
               <h3>2. Choose staff member</h3>
 
-              {!selectedService ? (
+              {hasPreselectedStaff ? (
+                selectedStaff ? (
+                  <Card className="select-card selected">
+                    <div className="staff-inline">
+                      <img
+                        src={selectedStaff.user?.profilePicture}
+                        alt={selectedStaff.user?.name || "Staff member"}
+                      />
+                      <div>
+                        <h4>{selectedStaff.user?.name}</h4>
+                        <p>{selectedStaff.title}</p>
+                        <div className="pill-wrap">
+                          {selectedStaff.services?.map((item) => (
+                            <span key={item.serviceId} className="pill">
+                              {item.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ) : (
+                  <p className="muted">Loading selected staff...</p>
+                )
+              ) : !selectedService ? (
                 <p className="muted">Select a service first.</p>
               ) : staffLoading ? (
                 <p className="muted">Loading available staff...</p>
@@ -157,6 +220,7 @@ function BookingPage() {
                         className="select-card-button"
                         onClick={() => {
                           setSelectedStaff(member);
+                          setSelectedSlot(null);
                           setSuccess("");
                         }}
                       >
@@ -233,7 +297,7 @@ function BookingPage() {
               <h3>Booking summary</h3>
               <p>
                 <strong>Service:</strong>{" "}
-                {services.find((s) => String(s.serviceId) === String(selectedService?.serviceId))?.name ||
+                {services.find((s) => Number(s.serviceId) === Number(selectedService?.serviceId))?.name ||
                   "Not selected"}
               </p>
               <p>

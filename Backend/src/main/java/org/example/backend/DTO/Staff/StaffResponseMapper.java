@@ -1,10 +1,12 @@
 package org.example.backend.DTO.Staff;
 
+import org.example.backend.DTO.Service.ServiceResponse;
 import org.example.backend.DTO.User.UserResponseMapper;
 import org.example.backend.Model.entity.Staff;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffResponseMapper implements Function<Staff, StaffResponse> {
@@ -20,7 +22,17 @@ public class StaffResponseMapper implements Function<Staff, StaffResponse> {
                 staff.getId(),
                 userResponseMapper.apply(staff.getUser()),
                 staff.getTitle(),
-                staff.getBio()
+                staff.getBio(),
+                staff.getServices().stream()
+                        .map(service -> new ServiceResponse(
+                                service.getService().getId(),
+                                service.getService().getName(),
+                                service.getService().getPrice(),
+                                service.getService().getDuration(),
+                                service.getService().getDescription(),
+                                service.getService().getImage()
+                        ))
+                        .collect(Collectors.toList())
         );
     }
 }
