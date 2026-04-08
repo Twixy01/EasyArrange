@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/UseAuth'
 import Card from '../components/common/Card'
@@ -11,7 +11,7 @@ function ProfileEditPage() {
     name: user?.name || '',
     email: user?.email || '',
     profilePicture: user?.profilePicture || '',
-    password: ''
+    currentPassword: ''
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -39,14 +39,15 @@ function ProfileEditPage() {
     e.preventDefault()
     setError(null)
 
-    if (!form.name || !form.email || !form.password) {
-      setError('Name, email and password are required')
+    if (!form.name || !form.email || !form.currentPassword) {
+      setError('Name, email and current password are required')
       return
     }
 
     setSaving(true)
+
     try {
-      const resolvedUserId = user.id ?? user.userId ?? user.user_id
+      const resolvedUserId = user.userId
       if (!resolvedUserId) {
         setError('Cannot determine user id for update')
         setSaving(false)
@@ -56,7 +57,7 @@ function ProfileEditPage() {
       // Map role name to a conservative default id (matching RegisterPage defaultRoleId = 2)
       let roleId = 2
       try {
-        const roleName = user.role || user.roles || null
+        const roleName = user.role.name || null
         if (typeof roleName === 'string' && roleName.toUpperCase().includes('ADMIN')) roleId = 1
       } catch {
         console.debug('role mapping ignored')
@@ -65,9 +66,9 @@ function ProfileEditPage() {
       const payload = {
         name: form.name,
         email: form.email,
-        password: form.password,
+        currentPassword: form.currentPassword,
         profilePicture: form.profilePicture,
-        roleId: roleId
+        role: {roleId: roleId, name: user.role.name}
       }
 
       const updated = await updateUser(resolvedUserId, payload)
@@ -77,8 +78,9 @@ function ProfileEditPage() {
       const newUser = { ...(updated || {}), token: token }
       login(newUser)
       navigate('/profile')
+
     } catch (err) {
-      console.error('Failed to update user', err)
+
       // try to surface backend validation messages if present
       let userMessage = err.message || String(err)
       if (err && err.payload) {
@@ -113,8 +115,8 @@ function ProfileEditPage() {
           </label>
 
           <label>
-            Password
-            <input name="password" type="password" value={form.password} onChange={handleChange} />
+            Current password:
+            <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required/>
           </label>
 
           <label>

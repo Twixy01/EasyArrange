@@ -5,15 +5,16 @@ async function fetchJsonOrThrow(url, options) {
   const text = await res.text();
   if (!res.ok) {
     // try parse JSON body, otherwise include raw text
+    let parsed;
     try {
-      const parsed = JSON.parse(text || '{}')
-      const err = new Error(`HTTP ${res.status} ${res.statusText} - ${JSON.stringify(parsed)}`)
-      err.payload = parsed
-      throw err
+      parsed = JSON.parse(text || '{}')
     } catch {
       const err = new Error(`HTTP ${res.status} ${res.statusText} - ${text}`)
       throw err
     }
+    const err = new Error(`HTTP ${res.status} ${res.statusText} - ${JSON.stringify(parsed)}`)
+    err.payload = parsed
+    throw err
   }
   try {
     return JSON.parse(text || 'null')

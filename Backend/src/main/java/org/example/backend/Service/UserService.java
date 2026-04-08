@@ -90,14 +90,15 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found!"));
 
+        if (!passwordEncoder.matches(userDto.currentPassword(), existingUser.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
         if (!existingUser.getEmail().equals(userDto.email()) && userRepository.emailExists(userDto.email())) {
             throw new IllegalArgumentException("Email already exists!");
         }
 
         userUpdateRequestMapper.accept(userDto,existingUser);
-
-        //set encoded password
-        existingUser.setPassword(passwordEncoder.encode(userDto.password()));
 
         Role role = roleRepository.findById(userDto.role().roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
         existingUser.setRole(role);

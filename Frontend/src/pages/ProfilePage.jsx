@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/UseAuth'
 import Card from '../components/common/Card'
-import ServiceCard from '../components/common/ServiceCard'
 import { getBookingsByCustomer } from '../services/api'
 import { DataContext } from '../context/DataContext'
 
@@ -19,7 +18,7 @@ function ProfilePage() {
     // load bookings only when user changes/is available
     async function loadBookings() {
       if (!user) return
-      const customerId = user.id ?? user.userId ?? user.user_id
+      const customerId = user.userId
       if (!customerId) return
 
       setLoadingBookings(true)
@@ -44,7 +43,7 @@ function ProfilePage() {
       <div className="page profile-page">
         <Card>
           <h2>Not signed in</h2>
-          <p className="muted">Please <a href="/login">log in</a> to see your profile.</p>
+          <p className="muted">Please <Link to="/login">log in</Link> to see your profile.</p>
         </Card>
       </div>
     )
@@ -63,6 +62,9 @@ function ProfilePage() {
     ? services.filter(s => user.serviceIds.includes(s.serviceId))
     : []
 
+  const roleData = user.role
+  const roleLabel = roleData?.name ?? (roleData?.roleId ? `Role #${roleData.roleId}` : null)
+
   return (
     <div className="page profile-page">
       <div style={{ position: 'absolute', right: 12, top: 12 }}>
@@ -71,7 +73,7 @@ function ProfilePage() {
       <Card className="profile-summary">
         <div className="profile-top">
           <img
-            src={user.profilePicture || '/public/avatar-placeholder.png'}
+            src={user.profilePicture || '../assets/avatar-placeholder.png'}
             alt={user.name}
             className="profile-avatar"
             style={{ width: 96, height: 96, borderRadius: 8 }}
@@ -80,7 +82,7 @@ function ProfilePage() {
             <h2>{user.name}</h2>
             <p className="muted">{user.email}</p>
             {/* {user.phone && <p>📞 {user.phone}</p>} */}
-            {user.roles && <p className="muted">Roles: {user.roles.join(', ')}</p>}
+            {roleLabel && <p className="muted">Role: {roleLabel}</p>}
             <div style={{ marginTop: 8 }}>
               <button onClick={handleEdit} className="btn">Edit profile</button>
               <button onClick={handleLogout} className="btn danger" style={{ marginLeft: 8 }}>Logout</button>
@@ -101,7 +103,7 @@ function ProfilePage() {
         {(!services || services.length === 0) && <p className="muted">No services available.</p>}
         <div className="grid cards-3">
           {userServices.map(s => (
-            <ServiceCard key={s.serviceId} service={s} />
+            <Card key={s.serviceId} service={s} />
           ))}
         </div>
       </div>
@@ -119,8 +121,8 @@ function ProfilePage() {
               <div key={b.id} className="booking-row card" style={{ padding: 8, marginBottom: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <div>
-                    <strong>{b.startDatetime ? new Date(b.startDatetime).toLocaleString() : 'Unknown'}</strong>
-                    <div className="muted">With: {b.staff?.user?.name ?? b.staff?.user?.name}</div>
+                    <strong>{b.startDateTime ? new Date(b.startDateTime).toLocaleString() : 'Unknown'}</strong>
+                    <div className="muted">With: {b.staff?.user?.name}</div>
                     <div className="muted">Service: {b.service?.name}</div>
                   </div>
                   <div style={{ alignSelf: 'center' }}>
@@ -131,7 +133,6 @@ function ProfilePage() {
             ))}
           </div>
         )}
-        <p className="muted">{`(Bookings are loaded from the backend /api/bookings/customer/{id} endpoint)`}</p>
       </div>
     </div>
   )

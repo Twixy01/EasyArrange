@@ -4,16 +4,6 @@ import { createContext, useState, useEffect } from 'react'
 
 export const DataContext = createContext()
 
-const FALLBACK_SERVICES = [
-  { serviceId: 1, name: 'Sample Haircut', description: 'A quick trim', price: 2500, duration: 30, image: '/public/hero.png' },
-  { serviceId: 2, name: 'Sample Massage', description: 'Relaxing 60min massage', price: 7000, duration: 60, image: '/public/hero.png' }
-]
-
-const FALLBACK_STAFF = [
-  { staffId: 1, title: 'Stylist', bio: 'Experienced stylist', user: { name: 'Alex', profilePicture: '/public/avatar-placeholder.png' } },
-  { staffId: 2, title: 'Therapist', bio: 'Certified therapist', user: { name: 'Jamie', profilePicture: '/public/avatar-placeholder.png' } }
-]
-
 export function DataProvider({ children }) {
     const [services, setServices] = useState([])
     const [staff, setStaff] = useState([])
