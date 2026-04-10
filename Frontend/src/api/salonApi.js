@@ -3,22 +3,22 @@ import Axios from 'axios';
 const BASE_URL = 'http://localhost:8080/api';
 
 export const salonApi = {
-    async getServices(){
+    async getServices() {
         const response = await Axios.get(`${BASE_URL}/services`);
         return response.data;
     },
 
-    async getStaff(){
+    async getStaff() {
         const response = await Axios.get(`${BASE_URL}/staff`);
         return response.data;
     },
 
-    async getStaffShifts(){
+    async getStaffShifts() {
         const response = await Axios.get(`${BASE_URL}/staff-shifts`);
         return response.data;
     },
 
-    async getStaffByService(serviceId){
+    async getStaffByService(serviceId) {
         const response = await Axios.get(`${BASE_URL}/staff-services/service/${serviceId}`);
         return response.data;
     },
@@ -48,14 +48,6 @@ export const salonApi = {
         };
         const response = await Axios.post(`${BASE_URL}/bookings/create`, bookingData);
         return response.data;
-    }
+    },
+    
 };
-
-function formatDayOfWeek(day) {
-    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-    return days[day];
-}
-
-function formatTime(time) {
-    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}

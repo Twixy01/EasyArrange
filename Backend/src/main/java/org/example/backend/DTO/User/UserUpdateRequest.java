@@ -15,9 +15,8 @@ public record UserUpdateRequest(
         @Email(message = "Invalid email format")
         String email,
 
-        @NotBlank(message = "Password must not be blank")
-        @Size(min = 4, max = 100, message = "Password must be between 8 and 100 characters")
-        String password,
+        @NotBlank(message = "Current password must not be blank")
+        String currentPassword,
 
         String profilePicture,
 
