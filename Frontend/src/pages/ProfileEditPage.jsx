@@ -11,7 +11,9 @@ function ProfileEditPage() {
     name: user?.name || '',
     email: user?.email || '',
     profilePicture: user?.profilePicture || '',
-    currentPassword: ''
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -44,6 +46,21 @@ function ProfileEditPage() {
       return
     }
 
+    if ((form.newPassword && form.newPassword.trim() !== '') || (form.confirmNewPassword && form.confirmNewPassword.trim() !== '')) {
+      if (!form.newPassword || !form.confirmNewPassword) {
+        setError('Please fill both new password fields')
+        return
+      }
+      if (form.newPassword !== form.confirmNewPassword) {
+        setError('New passwords do not match')
+        return
+      }
+      if (form.newPassword.length < 4) {
+        setError('New password must be at least 4 characters')
+        return
+      }
+    }
+
     setSaving(true)
 
     try {
@@ -54,7 +71,6 @@ function ProfileEditPage() {
         return
       }
 
-      // Map role name to a conservative default id (matching RegisterPage defaultRoleId = 2)
       let roleId = 2
       try {
         const roleName = user.role.name || null
@@ -71,9 +87,12 @@ function ProfileEditPage() {
         role: {roleId: roleId, name: user.role.name}
       }
 
+      if (form.newPassword && form.newPassword.trim() !== '') {
+        payload.newPassword = form.newPassword
+      }
+
       const updated = await updateUser(resolvedUserId, payload)
 
-      // Update auth context / localStorage with new user info (preserve token if present)
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token: token }
       login(newUser)
@@ -81,7 +100,6 @@ function ProfileEditPage() {
 
     } catch (err) {
 
-      // try to surface backend validation messages if present
       let userMessage = err.message || String(err)
       if (err && err.payload) {
         const p = err.payload
@@ -117,6 +135,16 @@ function ProfileEditPage() {
           <label>
             Current password:
             <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required/>
+          </label>
+
+          <label>
+            New password:
+            <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
+          </label>
+
+          <label>
+            Confirm new password:
+            <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
           </label>
 
           <label>
