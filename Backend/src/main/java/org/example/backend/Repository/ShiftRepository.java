@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
@@ -19,6 +20,8 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     @Query("FROM Shift s WHERE s.startShift >= :startShift AND s.endShift <= :endShift")
     List<Shift> findAllShiftsBetweenShifts(@Param("startShift") LocalTime startShift, @Param("endShift") LocalTime endShift);
+
+    Optional<Shift> findByDayAndStartShiftAndEndShift(ShiftDay day, LocalTime startShift, LocalTime endShift);
 
     boolean existsByDayAndStartShiftAndEndShift(ShiftDay day, LocalTime startShift, LocalTime endShift);
 

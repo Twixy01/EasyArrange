@@ -63,8 +63,7 @@ public class ShiftService {
         Shift shift = createMapper.apply(request);
 
         validateShiftTimes(shift);
-        if (shiftRepository.existsByDayAndStartShiftAndEndShift(
-                shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
+        if (shiftRepository.existsByDayAndStartShiftAndEndShift(shift.getDay(), shift.getStartShift(), shift.getEndShift())) {
             throw new IllegalArgumentException("Shift with the same day, start time, and end time already exists");
         }
 
