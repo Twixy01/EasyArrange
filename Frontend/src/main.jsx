@@ -6,16 +6,19 @@ import App from './app/App.jsx'
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+const queryStaffClient = new QueryClient()
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </AuthProvider>
+      <QueryClientProvider client={queryStaffClient}>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
 )

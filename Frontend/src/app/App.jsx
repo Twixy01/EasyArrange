@@ -11,6 +11,7 @@ import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
 import ProfilePage from '../pages/ProfilePage'
 import ProfileEditPage from '../pages/ProfileEditPage'
+import ShiftsPage from '../pages/ShiftsPage'
 import { UIStateProvider } from "../context/UIStateContext.jsx";
 import { useContext } from 'react'
 import { UIStateContext } from '../context/UIStateContext.jsx'
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/profile/edit" element={<ProfileEditPage />} />
+                    <Route path="/shifts" element={<ShiftsPage />} />
                 </Routes>
             </UIStateProvider>
         </div>

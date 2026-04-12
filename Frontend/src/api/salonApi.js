@@ -50,4 +50,19 @@ export const salonApi = {
         return response.data;
     },
     
+    async updateShiftForStaffDay({staffId, day, startShift, endShift}){
+        const updateData = {
+            staffId,
+            day,
+            startShift,
+            endShift
+        };
+        const response = await Axios.post(`${BASE_URL}/staff-shifts/update`, updateData);
+        return response.data;
+    },
+
+    async getStaffByUser(userId) {
+        const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`);
+        return response.data;
+    }
 };
