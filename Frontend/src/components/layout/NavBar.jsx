@@ -84,6 +84,7 @@ function NavBar() {
                     <NavLink to="/booking" onClick={closeMenu}>
                         Book Now
                     </NavLink>
+                    {staff ? (<NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>) : null}
 
                     {!isLoggedIn ? (
                         <>

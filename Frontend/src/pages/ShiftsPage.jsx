@@ -7,22 +7,23 @@ import { useAuth } from "../hooks/useAuth";
 import Button from "../components/common/Button";
 import { useUpdateShiftForStaffDay } from "../hooks/mutations/useUpdateShiftForStaffDay";
 import { useEffect, useState } from "react";
+import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 
 export default function ShiftsPage() {
     const { user } = useAuth();
     const { data: staff } = useStaff();
+    const { mutate: updateShiftMutate } = useUpdateShiftForStaffDay();
+    const { mutate: removeShiftMutate } = useDeleteStaffShift();
 
     const currentStaff = staff?.find(s => s.user?.userId === user?.userId);
-    if (user?.role.name !== "STAFF" && user?.role.name !== "ADMIN") return (<p>You do not have permission to view this page.</p>);
 
     const { data: shifts = [], isLoading, error: shiftError } = useShiftsByStaff(currentStaff?.staffId);
 
-    const { mutate: updateShiftMutate } = useUpdateShiftForStaffDay();
+    const [shiftDrafts, setShiftDrafts] = useState({});
 
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
 
-    const [shiftDrafts, setShiftDrafts] = useState({});
 
     useEffect(() => {
         const nextDrafts = {};
@@ -38,13 +39,13 @@ export default function ShiftsPage() {
     }, [shifts]);
 
     const orderedShifts = [
-        { day: "MONDAY", startShift: "", endShift: "" },
-        { day: "TUESDAY", startShift: "", endShift: "" },
-        { day: "WEDNESDAY", startShift: "", endShift: "" },
-        { day: "THURSDAY", startShift: "", endShift: "" },
-        { day: "FRIDAY", startShift: "", endShift: "" },
-        { day: "SATURDAY", startShift: "", endShift: "" },
-        { day: "SUNDAY", startShift: "", endShift: "" },
+        { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
+        { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
+        { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
+        { shiftId: "thursday", day: "THURSDAY", startShift: "", endShift: "" },
+        { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
+        { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
+        { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
     ];
 
     shifts.forEach(shift => {
@@ -73,6 +74,8 @@ export default function ShiftsPage() {
         }
     });
 
+    if (user?.role?.name !== "STAFF" && user?.role?.name !== "ADMIN") return (<p>You do not have permission to view this page.</p>);
+
     if (isLoading) {
         return (
             <section className="section">
@@ -95,6 +98,7 @@ export default function ShiftsPage() {
 
     const updateShift = async (staffId, shift) => {
         const draft = shiftDrafts[shift.shiftId] ?? shift;
+        console.log(`${draft.startShift} - ${draft.endShift} -${shift.day}  staffId: ${staffId}`);
 
         updateShiftMutate(
             {
@@ -108,8 +112,39 @@ export default function ShiftsPage() {
                     setSuccess("Shift updated successfully!");
                     setTimeout(() => setSuccess(""), 3000);
                 },
-                onError: () => {
-                    setError("Failed to update shift.");
+                onError: (err) => {
+                    const backendDetail = err?.response?.data?.detail || err?.response?.data?.error;
+                    setError(backendDetail ? `Failed to update shift: ${backendDetail}` : "Failed to update shift.");
+                    setTimeout(() => setError(""), 3000);
+                }
+            }
+        );
+    }
+
+    const resetShift = (shift) => {
+        setShiftDrafts((currentDrafts) => {
+            const updated = { ...currentDrafts };
+            delete updated[shift.shiftId];
+            return updated;
+        });
+    };
+
+    const removeShift = async (staffId, shiftId) => {
+        if (!confirm("Are you sure you want to remove this shift?")) return;
+
+        removeShiftMutate(
+            {
+                staffId,
+                shiftId
+            },
+            {
+                onSuccess: () => {
+                    setSuccess("Shift removed successfully!");
+                    setTimeout(() => setSuccess(""), 3000);
+                },
+                onError: (err) => {
+                    const backendDetail = err?.response?.data?.detail || err?.response?.data?.error;
+                    setError(backendDetail ? `Failed to remove shift: ${backendDetail}` : "Failed to remove shift.");
                     setTimeout(() => setError(""), 3000);
                 }
             }
@@ -148,14 +183,16 @@ export default function ShiftsPage() {
 
                         return (
                             <Card
-                                key={shift.shiftId}
+                                key={shift.shiftId ?? `day-${shift.day}`}
                                 className={`shift-card ${isModified ? "shift-card-modified" : ""}`}
                             >
                                 <div className="card-body shift-card-body">
                                     <div className="shift-card-top">
                                         <div>
                                             <p className="shift-label">Working day</p>
-                                            <h3 className="shift-day">{shift.day}</h3>
+                                            <h3 className="shift-day">
+                                                {shift.day.charAt(0) + shift.day.slice(1).toLowerCase()}
+                                            </h3>
                                         </div>
 
                                         <div className={`shift-status ${isModified ? "modified" : "synced"}`}>
@@ -171,13 +208,14 @@ export default function ShiftsPage() {
                                                 className="shift-time-input"
                                                 type="time"
                                                 value={shiftDrafts[shift.shiftId]?.startShift ?? shift.startShift}
-                                                onChange={(event) => setShiftDrafts((currentDrafts) => ({
-                                                    ...currentDrafts,
-                                                    [shift.shiftId]: {
-                                                        ...currentDrafts[shift.shiftId],
-                                                        startShift: event.target.value,
-                                                    },
-                                                }))
+                                                onChange={(event) =>
+                                                    setShiftDrafts((currentDrafts) => ({
+                                                        ...currentDrafts,
+                                                        [shift.shiftId]: {
+                                                            ...currentDrafts[shift.shiftId],
+                                                            startShift: event.target.value,
+                                                        },
+                                                    }))
                                                 }
                                             />
                                         </div>
@@ -191,13 +229,13 @@ export default function ShiftsPage() {
                                                 className="shift-time-input"
                                                 type="time"
                                                 value={shiftDrafts[shift.shiftId]?.endShift ?? shift.endShift}
-                                                onChange={(event) => setShiftDrafts((currentDrafts) => ({
+                                                onChange={(event) =>
+                                                    setShiftDrafts((currentDrafts) => ({
                                                         ...currentDrafts,
                                                         [shift.shiftId]: {
                                                             ...currentDrafts[shift.shiftId],
-                                                            endShift: event.target.value
+                                                            endShift: event.target.value,
                                                         },
-
                                                     }))
                                                 }
                                             />
@@ -213,13 +251,29 @@ export default function ShiftsPage() {
                                             </strong>
                                         </div>
 
-                                        <Button
-                                            disabled={!isModified}
-                                            className="btn btn-primary shift-save-btn"
-                                            onClick={() => updateShift(currentStaff?.staffId, shift)}
-                                        >
-                                            {isModified ? "Save changes" : "Up to date"}
-                                        </Button>
+                                        <div className="shift-actions">
+                                            <Button
+                                                disabled={!isModified}
+                                                className="btn btn-primary shift-save-btn"
+                                                onClick={() => updateShift(currentStaff?.staffId, shift)}
+                                            >
+                                                {isModified ? "Save changes" : "Up to date"}
+                                            </Button>
+
+                                            <Button
+                                                className="btn shift-reset-btn"
+                                                onClick={() => resetShift(shift)}
+                                            >
+                                                Reset
+                                            </Button>
+
+                                            <Button
+                                                className="btn shift-remove-btn"
+                                                onClick={() => removeShift(currentStaff?.staffId, shift?.shiftId)}
+                                            >
+                                                Remove
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </Card>

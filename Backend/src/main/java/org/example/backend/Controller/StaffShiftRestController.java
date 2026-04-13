@@ -1,5 +1,6 @@
 package org.example.backend.Controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.example.backend.DTO.Shift.ShiftResponse;
 import org.example.backend.DTO.Staff.StaffResponse;
@@ -59,13 +60,13 @@ public class StaffShiftRestController {
 
     //The updateShiftForStaffDay is responsible for the whole staff shift logic
     @PostMapping("/update")
-    public StaffShiftResponse updateStaffShift(@RequestBody ShiftUpdateRequest shiftUpdateRequest) {
+    public StaffShiftResponse updateStaffShift(@Valid @RequestBody ShiftUpdateRequest shiftUpdateRequest) {
         return staffShiftService.updateShiftForStaffDay(shiftUpdateRequest);
     }
 
     //consider using the update (check the method)
     @PostMapping("/create")
-    public StaffShiftResponse createStaffShift(@RequestBody StaffShiftRequest staffShiftRequest) {
+    public StaffShiftResponse createStaffShift(@Valid @RequestBody StaffShiftRequest staffShiftRequest) {
         return staffShiftService.create(staffShiftRequest);
     }
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,7 @@ public class StaffShiftService {
     @Transactional
     public StaffShiftResponse updateShiftForStaffDay(ShiftUpdateRequest request) {
         Long staffId = request.staffId();
-        ShiftDay day = ShiftDay.valueOf(request.day());
+        ShiftDay day = parseShiftDay(request.day());
         LocalTime startShift = request.startShift();
         LocalTime endShift = request.endShift();
 
@@ -86,8 +87,8 @@ public class StaffShiftService {
         Staff staff = staffRepository.findById(staffId).orElseThrow(() -> new IllegalArgumentException("Staff not found with id: " + staffId));
 
         String roleName = staff.getUser().getRole().getName();
-        if (!roleName.equals("STAFF")) {
-            throw new IllegalArgumentException("User with id: " + staff.getUser().getId() + " is not a staff");
+        if (!canManageStaffShifts(roleName)) {
+            throw new IllegalArgumentException("User with id: " + staff.getUser().getId() + " cannot have shift updates");
         }
 
         Shift targetShift = shiftRepository.findByDayAndStartShiftAndEndShift(day, startShift, endShift)
@@ -125,8 +126,8 @@ public class StaffShiftService {
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with id: " + staffShiftRequest.staffId()));
 
         String roleName = staff.getUser().getRole().getName();
-        if (!roleName.equals("STAFF")) {
-            throw new IllegalArgumentException("User with id: " + staff.getUser().getId() + " is not a staff");
+        if (!canManageStaffShifts(roleName)) {
+            throw new IllegalArgumentException("User with id: " + staff.getUser().getId() + " cannot have shifts");
         }
 
         Shift shift = shiftRepository.findById(staffShiftRequest.shiftId())
@@ -167,5 +168,22 @@ public class StaffShiftService {
         if (!startShift.isBefore(endShift)) {
             throw new IllegalArgumentException("Shift start time must be before end time");
         }
+    }
+
+    private ShiftDay parseShiftDay(String rawDay) {
+        try {
+            return ShiftDay.valueOf(rawDay.trim().toUpperCase());
+        } catch (RuntimeException ex) {
+            throw new IllegalArgumentException("Day must be one of: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY");
+        }
+    }
+
+    private boolean canManageStaffShifts(String roleName) {
+        if (roleName == null) {
+            return false;
+        }
+
+        String normalizedRole = roleName.trim().toUpperCase(Locale.ROOT);
+        return normalizedRole.equals("STAFF") || normalizedRole.equals("ADMIN");
     }
 }

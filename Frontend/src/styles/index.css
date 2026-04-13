@@ -767,7 +767,7 @@ textarea {
 }
 
 .shift-field label {
-    font-weight: 700;
+  font-weight: 700;
   color: var(--text-soft);
   font-size: 0.92rem;
 }
@@ -806,6 +806,12 @@ textarea {
   border-top: 1px solid var(--border);
 }
 
+.shift-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .shift-summary {
   display: grid;
   gap: 0.25rem;
@@ -839,8 +845,8 @@ textarea {
   }
 
   .shift-card-footer {
-    flex-direction: row;
     align-items: center;
+    flex-direction: row;
     justify-content: space-between;
   }
 
@@ -848,4 +854,83 @@ textarea {
     width: auto;
     min-width: 170px;
   }
+
+  .shift-actions {
+    justify-content: flex-end;
+  }
+}
+
+.shift-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 700;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.shift-cancel-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), transparent);
+  opacity: 0;
+  transition: 0.25s ease;
+}
+
+.shift-cancel-btn:hover {
+  color: #fecaca;
+  border-color: var(--danger);
+  transform: translateY(-1px);
+}
+
+.shift-cancel-btn:hover::before {
+  opacity: 1;
+}
+
+.shift-cancel-btn:active {
+  transform: scale(0.97);
+}
+.shift-save-btn {
+  min-width: 170px;
+}
+
+.shift-reset-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font-weight: 700;
+  transition: 0.25s ease;
+}
+
+.shift-reset-btn:hover {
+  color: var(--text);
+  border-color: var(--primary);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.shift-remove-btn {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  font-weight: 700;
+  transition: 0.25s ease;
+}
+
+.shift-remove-btn:hover {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+.shift-remove-btn:active,
+.shift-reset-btn:active {
+  transform: scale(0.98);
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,6 +40,22 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("Bad request");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Malformed request body"
+        );
+        problemDetail.setTitle("Bad request");
+
+        Throwable mostSpecificCause = ex.getMostSpecificCause();
+        if (mostSpecificCause != null && mostSpecificCause.getMessage() != null) {
+            problemDetail.setProperty("error", mostSpecificCause.getMessage());
+        }
+
         return problemDetail;
     }
 
