@@ -15,6 +15,7 @@ import ShiftsPage from '../pages/ShiftsPage'
 import { UIStateProvider } from "../context/UIStateContext.jsx";
 import { useContext } from 'react'
 import { UIStateContext } from '../context/UIStateContext.jsx'
+import Footer from '../components/layout/Footer.jsx'
 
 function DataErrorBanner() {
     const { error, loadingServices, loadingStaff } = useContext(UIStateContext)
@@ -48,6 +49,7 @@ function App() {
                     <Route path="/shifts" element={<ShiftsPage />} />
                 </Routes>
             </UIStateProvider>
+            <Footer />
         </div>
     )
 }
