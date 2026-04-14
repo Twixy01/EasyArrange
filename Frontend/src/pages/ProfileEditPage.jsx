@@ -20,11 +20,15 @@ function ProfileEditPage() {
 
   if (!user) {
     return (
-      <div className="page">
-        <Card>
-          <h2>Please log in to edit your profile</h2>
-        </Card>
-      </div>
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Please log in to edit your profile</h2>
+            </div>
+          </Card>
+        </div>
+      </section>
     )
   }
 
@@ -117,50 +121,65 @@ function ProfileEditPage() {
   }
 
   return (
-    <div className="page profile-edit-page">
-      <Card>
-        <h2>Edit Profile</h2>
-        <p className="muted">Note: For security the current password is required to save changes.</p>
-        <form onSubmit={handleSubmit} className="form">
-          <label>
-            Name
-            <input name="name" value={form.name} onChange={handleChange} />
-          </label>
+    <section className="section">
+      <div className="container">
+        <div className="page profile-edit-page">
+          <Card className="form-card">
+            <div className="card-body">
+              <h2 style={{ marginTop: 0 }}>Edit Profile</h2>
+              <p className="muted">For security the current password is required to save changes. To change your password, enter a new password and confirm it.</p>
 
-          <label>
-            Email
-            <input name="email" type="email" value={form.email} onChange={handleChange} />
-          </label>
+              <form onSubmit={handleSubmit} className="form">
+                <div className="form-grid">
+                  <div className="field">
+                    <label>Name</label>
+                    <input name="name" value={form.name} onChange={handleChange} />
+                  </div>
 
-          <label>
-            Current password:
-            <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required/>
-          </label>
+                  <div className="field">
+                    <label>Email</label>
+                    <input name="email" type="email" value={form.email} onChange={handleChange} />
+                  </div>
 
-          <label>
-            New password:
-            <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
-          </label>
+                  {/* phone intentionally commented out for now */}
+                  {/* <div className="field">
+                    <label>Phone</label>
+                    <input name="phone" value={form.phone || ''} onChange={handleChange} />
+                  </div> */}
 
-          <label>
-            Confirm new password:
-            <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
-          </label>
+                  <div className="field">
+                    <label>Profile picture URL</label>
+                    <input name="profilePicture" value={form.profilePicture} onChange={handleChange} />
+                  </div>
 
-          <label>
-            Profile picture URL
-            <input name="profilePicture" value={form.profilePicture} onChange={handleChange} />
-          </label>
+                  <div className="field">
+                    <label>Current password</label>
+                    <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required />
+                  </div>
 
-          {error && <p className="muted">{error}</p>}
+                  <div className="field">
+                    <label>New password</label>
+                    <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
+                  </div>
 
-          <div style={{ marginTop: 12 }}>
-            <button type="button" onClick={handleCancel} className="btn secondary">Cancel</button>
-            <button type="submit" className="btn" style={{ marginLeft: 8 }} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
-          </div>
-        </form>
-      </Card>
-    </div>
+                  <div className="field">
+                    <label>Confirm new password</label>
+                    <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
+                  </div>
+                </div>
+
+                {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
+
+                <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                  <button type="button" onClick={handleCancel} className="btn btn-secondary">Cancel</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save changes'}</button>
+                </div>
+              </form>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </section>
   )
 }
 
