@@ -10,7 +10,9 @@ function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
+  // default role: customer
   const defaultRoleId = 2
+  const defaultRoleName = 'customer'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,10 +31,17 @@ function RegisterPage() {
     setIsLoading(true)
 
     try {
+      const payload = {
+        name,
+        email,
+        password,
+        role: { roleId: defaultRoleId, name: defaultRoleName }
+      }
+
       const res = await fetch('http://localhost:8080/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, roleId: defaultRoleId })
+        body: JSON.stringify(payload)
       })
 
       if (!res.ok) {

@@ -9,12 +9,11 @@ async function fetchJsonOrThrow(url, options) {
     try {
       parsed = JSON.parse(text || '{}')
     } catch {
-      const err = new Error(`HTTP ${res.status} ${res.statusText} - ${text}`)
-      throw err
+      throw new Error(`HTTP ${res.status} ${res.statusText} - ${text}`)
     }
-    const err = new Error(`HTTP ${res.status} ${res.statusText} - ${JSON.stringify(parsed)}`)
-    err.payload = parsed
-    throw err
+    const e = new Error(`HTTP ${res.status} ${res.statusText} - ${JSON.stringify(parsed)}`)
+    e.payload = parsed
+    throw e
   }
   try {
     return JSON.parse(text || 'null')
@@ -42,4 +41,30 @@ export const updateUser = async (userId, userPayload) => {
     body: JSON.stringify(userPayload)
   }
   return fetchJsonOrThrow(`${BASE_URL}/users/${userId}`, options)
+}
+
+//update a booking by id with the given payload (BookingUpdateRequest shape)
+export const updateBooking = async (bookingId, bookingPayload) => {
+  const token = (() => { try { return localStorage.getItem('token') } catch { return null } })();
+  const options = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify(bookingPayload)
+  }
+  return fetchJsonOrThrow(`${BASE_URL}/bookings/${bookingId}`, options)
+}
+
+//cancel (delete) a booking by id
+export const cancelBooking = async (bookingId) => {
+  const token = (() => { try { return localStorage.getItem('token') } catch { return null } })();
+  const options = {
+    method: 'DELETE',
+    headers: {
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
+  }
+  return fetchJsonOrThrow(`${BASE_URL}/bookings/${bookingId}`, options)
 }

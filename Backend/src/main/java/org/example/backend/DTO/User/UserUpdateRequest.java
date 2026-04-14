@@ -18,6 +18,9 @@ public record UserUpdateRequest(
         @NotBlank(message = "Current password must not be blank")
         String currentPassword,
 
+        @Size(min = 4, max = 100, message = "Password must be between 4 and 100 characters")
+        String newPassword,
+
         String profilePicture,
 
         @NotNull(message = "Role must be specified")

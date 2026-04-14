@@ -11,18 +11,24 @@ function ProfileEditPage() {
     name: user?.name || '',
     email: user?.email || '',
     profilePicture: user?.profilePicture || '',
-    currentPassword: ''
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
   if (!user) {
     return (
-      <div className="page">
-        <Card>
-          <h2>Please log in to edit your profile</h2>
-        </Card>
-      </div>
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Please log in to edit your profile</h2>
+            </div>
+          </Card>
+        </div>
+      </section>
     )
   }
 
@@ -44,6 +50,21 @@ function ProfileEditPage() {
       return
     }
 
+    if ((form.newPassword && form.newPassword.trim() !== '') || (form.confirmNewPassword && form.confirmNewPassword.trim() !== '')) {
+      if (!form.newPassword || !form.confirmNewPassword) {
+        setError('Please fill both new password fields')
+        return
+      }
+      if (form.newPassword !== form.confirmNewPassword) {
+        setError('New passwords do not match')
+        return
+      }
+      if (form.newPassword.length < 4) {
+        setError('New password must be at least 4 characters')
+        return
+      }
+    }
+
     setSaving(true)
 
     try {
@@ -54,7 +75,6 @@ function ProfileEditPage() {
         return
       }
 
-      // Map role name to a conservative default id (matching RegisterPage defaultRoleId = 2)
       let roleId = 2
       try {
         const roleName = user.role.name || null
@@ -71,9 +91,12 @@ function ProfileEditPage() {
         role: {roleId: roleId, name: user.role.name}
       }
 
+      if (form.newPassword && form.newPassword.trim() !== '') {
+        payload.newPassword = form.newPassword
+      }
+
       const updated = await updateUser(resolvedUserId, payload)
 
-      // Update auth context / localStorage with new user info (preserve token if present)
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token: token }
       login(newUser)
@@ -81,7 +104,6 @@ function ProfileEditPage() {
 
     } catch (err) {
 
-      // try to surface backend validation messages if present
       let userMessage = err.message || String(err)
       if (err && err.payload) {
         const p = err.payload
@@ -99,40 +121,65 @@ function ProfileEditPage() {
   }
 
   return (
-    <div className="page profile-edit-page">
-      <Card>
-        <h2>Edit Profile</h2>
-        <p className="muted">Note: For security the current password is required to save changes.</p>
-        <form onSubmit={handleSubmit} className="form">
-          <label>
-            Name
-            <input name="name" value={form.name} onChange={handleChange} />
-          </label>
+    <section className="section">
+      <div className="container">
+        <div className="page profile-edit-page">
+          <Card className="form-card">
+            <div className="card-body">
+              <h2 style={{ marginTop: 0 }}>Edit Profile</h2>
+              <p className="muted">For security the current password is required to save changes. To change your password, enter a new password and confirm it.</p>
 
-          <label>
-            Email
-            <input name="email" type="email" value={form.email} onChange={handleChange} />
-          </label>
+              <form onSubmit={handleSubmit} className="form">
+                <div className="form-grid">
+                  <div className="field">
+                    <label>Name</label>
+                    <input name="name" value={form.name} onChange={handleChange} />
+                  </div>
 
-          <label>
-            Current password:
-            <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required/>
-          </label>
+                  <div className="field">
+                    <label>Email</label>
+                    <input name="email" type="email" value={form.email} onChange={handleChange} />
+                  </div>
 
-          <label>
-            Profile picture URL
-            <input name="profilePicture" value={form.profilePicture} onChange={handleChange} />
-          </label>
+                  {/* phone intentionally commented out for now */}
+                  {/* <div className="field">
+                    <label>Phone</label>
+                    <input name="phone" value={form.phone || ''} onChange={handleChange} />
+                  </div> */}
 
-          {error && <p className="muted">{error}</p>}
+                  <div className="field">
+                    <label>Profile picture URL</label>
+                    <input name="profilePicture" value={form.profilePicture} onChange={handleChange} />
+                  </div>
 
-          <div style={{ marginTop: 12 }}>
-            <button type="button" onClick={handleCancel} className="btn secondary">Cancel</button>
-            <button type="submit" className="btn" style={{ marginLeft: 8 }} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
-          </div>
-        </form>
-      </Card>
-    </div>
+                  <div className="field">
+                    <label>Current password</label>
+                    <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required />
+                  </div>
+
+                  <div className="field">
+                    <label>New password</label>
+                    <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
+                  </div>
+
+                  <div className="field">
+                    <label>Confirm new password</label>
+                    <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
+                  </div>
+                </div>
+
+                {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
+
+                <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                  <button type="button" onClick={handleCancel} className="btn btn-secondary">Cancel</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save changes'}</button>
+                </div>
+              </form>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </section>
   )
 }
 
