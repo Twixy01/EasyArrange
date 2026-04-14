@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import { getBookingsByCustomer } from '../services/api'
@@ -15,7 +15,6 @@ function ProfilePage() {
   const [showDebug, setShowDebug] = useState(false)
 
   useEffect(() => {
-    // load bookings only when user changes/is available
     async function loadBookings() {
       if (!user) return
       const customerId = user.userId

@@ -100,6 +100,10 @@ public class UserService {
 
         userUpdateRequestMapper.accept(userDto,existingUser);
 
+        if (userDto.newPassword() != null && !userDto.newPassword().trim().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userDto.newPassword().trim()));
+        }
+
         Role role = roleRepository.findById(userDto.role().roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
         existingUser.setRole(role);
 
