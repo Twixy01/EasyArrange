@@ -1,3 +1,4 @@
+/* Consolidated root and single-background setup */
 :root {
   --bg: #0b1020;
   --bg-soft: #11172b;
@@ -34,22 +35,57 @@
   --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
 }
 
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+/* Make root elements full height so the background covers the viewport */
+html, body, #root { height: 100% !important; }
+
+/* Single continuous background on body (decorative gradients + base color) */
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  min-width: 320px;
+  background: radial-gradient(circle at top left, rgba(139,92,246,0.18), transparent 30%),
+              radial-gradient(circle at top right, rgba(245,158,11,0.14), transparent 30%),
+              var(--bg) !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Ensure app wrapper/root don't add another background layer */
+#root, .main-content, .page, .section, .hero, .muted-section {
+  background: transparent !important;
+  min-height: 100%;
+}
+
+/* Apply the decorative background to the app root only (single background layer) */
+#root {
+  background:
+    radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.14), transparent 30%),
+    var(--bg);
+}
+
+/* Ensure .main-content doesn't duplicate the background */
+.main-content {
+  background: transparent;
+  min-height: 100vh;
+}
+
+/* Make sure the root elements take full height so .main-content can cover the viewport without showing differing backgrounds */
+html, body, #root {
+  height: 100%;
 }
 
 body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 30%),
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.14), transparent 30%),
-    var(--bg);
+  "Segoe UI", sans-serif;
+  /* keep the body base color only; the decorative gradients are applied to .main-content so there's a single background container */
+  background-color: var(--bg);
   color: var(--text);
   min-width: 320px;
 }
@@ -85,6 +121,12 @@ textarea {
 
 .muted-section {
   background: linear-gradient(180deg, transparent, var(--surface), transparent);
+}
+
+/* Ensure profile pages visually match the app background and don't show a split band */
+.profile-section,
+.profile-edit-page {
+  background: transparent !important;
 }
 
 .narrow {
@@ -583,6 +625,18 @@ textarea {
   gap: 1rem;
 }
 
+/* Ensure the app wrapper and page containers are transparent so the global background is continuous */
+.main-content,
+.page {
+  background: transparent;
+}
+
+/* Remove duplicate gradient here: keep .main-content transparent so the body is the single background layer */
+.main-content {
+  background: transparent;
+  min-height: 100vh;
+}
+
 @media (min-width: 640px) {
   .hero-actions {
     flex-direction: row;
@@ -933,4 +987,16 @@ textarea {
 .shift-remove-btn:active,
 .shift-reset-btn:active {
   transform: scale(0.98);
+}
+
+/* Ensure the app wrapper and page containers are transparent so the global background is continuous */
+.main-content,
+.page {
+  background: transparent;
+}
+
+/* Remove duplicate gradient here: keep .main-content transparent so the body is the single background layer */
+.main-content {
+  background: transparent;
+  min-height: 100vh;
 }
