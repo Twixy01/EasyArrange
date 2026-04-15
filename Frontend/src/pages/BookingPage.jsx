@@ -57,6 +57,9 @@ function BookingPage() {
     error: slotsError,
   } = useAvailableSlots(selectedStaff?.staffId, selectedDate, selectedService?.serviceId);
 
+  const { mutate } = useCreateBooking();
+
+
   useEffect(() => {
     if (!preselectedStaffId || staff.length === 0 || selectedStaff) return;
 
@@ -68,8 +71,6 @@ function BookingPage() {
 
     setSelectedStaff(preselectedStaff);
   }, [preselectedStaffId, staff, selectedStaff]);
-
-  const { mutate } = useCreateBooking();
 
   useEffect(() => {
     setSelectedSlot(null);
@@ -108,7 +109,7 @@ function BookingPage() {
         onSuccess: () => {
           setSuccess("Your appointment has been booked successfully.");
           setSelectedSlot(null);
-          setTimeout(() => navigate("/"), 1000);
+          setTimeout(() => navigate("/profile"), 1000);
         },
         onError: () => {
           setSuccess("");
@@ -290,6 +291,10 @@ function BookingPage() {
                 </div>
               )}
             </div>
+            <Button 
+              variant="secondary"
+              className="booking-summary-jump"
+              onClick={() => {window.scrollTo(0, 0)}}>Go to confirmation 🔝</Button>
           </div>
 
           <aside className="booking-sidebar">

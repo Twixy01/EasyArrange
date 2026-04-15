@@ -1,5 +1,5 @@
 import '../App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import NavBar from '../components/layout/NavBar'
 import Home from '../pages/Home'
 import StaffPage from '../pages/StaffPage'
@@ -13,7 +13,7 @@ import ProfilePage from '../pages/ProfilePage'
 import ProfileEditPage from '../pages/ProfileEditPage'
 import ShiftsPage from '../pages/ShiftsPage'
 import { UIStateProvider } from "../context/UIStateContext.jsx";
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { UIStateContext } from '../context/UIStateContext.jsx'
 import Footer from '../components/layout/Footer.jsx'
 
@@ -29,9 +29,20 @@ function DataErrorBanner() {
     )
 }
 
+function ScrollToTop() {
+    const { pathname } = useLocation()
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [pathname])
+
+    return null
+}
+
 function App() {
     return (
         <div className="main-content">
+            <ScrollToTop />
             <NavBar />
             <UIStateProvider>
                 <DataErrorBanner />

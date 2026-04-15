@@ -552,6 +552,13 @@ textarea {
   top: 100px;
 }
 
+.booking-summary-jump {
+  display: block;
+  margin-top: 0.25rem;
+  width: fit-content;
+  align-self: flex-start;
+}
+
 .protected-box {
   margin-top: 1rem;
   padding: 1rem;
@@ -697,6 +704,12 @@ textarea {
   .footer-inner {
     grid-template-columns: 1fr auto;
     align-items: center;
+  }
+}
+
+@media (max-width: 899px) {
+  .booking-summary-jump {
+    display: none;
   }
 }
 
