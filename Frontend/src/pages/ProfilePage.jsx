@@ -2,7 +2,7 @@ import {useEffect, useState, useContext} from 'react'
 import {useNavigate, Link} from 'react-router-dom'
 import {useAuth} from '../hooks/useAuth'
 import Card from '../components/common/Card'
-import {getBookingsByCustomer, updateBooking} from '../services/api'
+import {getBookingsByCustomer, updateBooking, cancelBooking} from '../services/api'
 import {UIStateContext} from '../context/UIStateContext'
 
 function ProfilePage() {
@@ -128,7 +128,17 @@ function ProfilePage() {
                                                 // backend BookingResponse uses `bookingId` as the identifier
                                                 const bookingId = b.bookingId ?? b.id
                                                 const statusClass = b.status ? (`status-badge ${String(b.status).toLowerCase().replace(/\s+/g, '_')}`) : 'status-badge'
-                                                const canCancel = bookingId && String(b.status).toUpperCase() === 'BOOKED'
+
+                                                // compute whether this booking starts within the next 24 hours
+                                                const startsAt = b.startDateTime ? new Date(b.startDateTime) : null
+                                                const msUntil = startsAt ? (startsAt.getTime() - Date.now()) : null
+                                                const within24h = msUntil != null ? (msUntil <= 24 * 60 * 60 * 1000) : false
+                                                const minutesUntil = msUntil != null ? Math.ceil(msUntil / 60000) : null
+                                                const hoursUntil = minutesUntil != null ? Math.floor(minutesUntil / 60) : null
+
+                                                // only allow cancel when booking is BOOKED and it's not within the next 24 hours
+                                                const canCancel = bookingId && String(b.status).toUpperCase() === 'BOOKED' && !within24h
+
                                                 return (
                                                     <div key={b.__bkKey ?? `bk-${idx}`} className="booking-item">
                                                         <div style={{
@@ -138,10 +148,13 @@ function ProfilePage() {
                                                         }}>
                                                             <div>
                                                                 <strong>{b.startDateTime ? new Date(b.startDateTime).toLocaleString() : 'Unknown'}</strong>
-                                                                <div
-                                                                    className="muted">With: {b.staff?.user?.name || '—'}</div>
-                                                                <div
-                                                                    className="muted">Service: {b.service?.name || '—'}</div>
+                                                                <div className="muted">With: {b.staff?.user?.name || '—'}</div>
+                                                                <div className="muted">Service: {b.service?.name || '—'}</div>
+                                                                {startsAt && (
+                                                                    <div className="muted" style={{marginTop: 4}}>
+                                                                        Starts in: {hoursUntil != null ? `${hoursUntil}h ${minutesUntil % 60}m` : '—'}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             <div style={{
                                                                 alignSelf: 'center',
@@ -155,7 +168,8 @@ function ProfilePage() {
                                                                 {canCancel && (
                                                                     <button
                                                                         className="btn btn-secondary"
-                                                                        disabled={cancelingIds.has(bookingId)}
+                                                                        disabled={cancelingIds.has(bookingId) || within24h}
+                                                                        title={within24h ? 'Cannot cancel within 24 hours of the appointment' : undefined}
                                                                         onClick={async () => {
                                                                             if (!bookingId) {
                                                                                 setBookingsError('Invalid booking id')
@@ -167,21 +181,17 @@ function ProfilePage() {
                                                                             // mark as canceling
                                                                             setCancelingIds(prev => new Set(prev).add(bookingId))
                                                                             try {
-                                                                                // prepare update payload - backend requires startDateTime, endDateTime, serviceId, status
-                                                                                const payload = {
-                                                                                    startDateTime: b.startDateTime,
-                                                                                    endDateTime: b.endDateTime || b.startDateTime, // fallback if end missing
-                                                                                    serviceId: b.service?.serviceId || b.serviceId,
-                                                                                    status: 'CANCELLED'
-                                                                                }
-                                                                                await updateBooking(bookingId, payload)
+                                                                                // call DELETE cancellation endpoint
+                                                                                await cancelBooking(bookingId)
                                                                                 // refresh bookings from server so UI matches server state
                                                                                 await loadBookings()
                                                                                 setBookingSuccess('Booking cancelled')
                                                                                 setTimeout(() => setBookingSuccess(null), 3000)
                                                                             } catch (err) {
                                                                                 console.error('Failed to cancel booking', err)
-                                                                                setBookingsError('Failed to cancel booking')
+                                                                                // show server message when provided
+                                                                                const serverMessage = err?.payload?.detail || err?.payload?.message || err?.message || 'Failed to cancel booking'
+                                                                                setBookingsError(serverMessage)
                                                                             } finally {
                                                                                 // remove from canceling set
                                                                                 setCancelingIds(prev => {
@@ -194,6 +204,24 @@ function ProfilePage() {
                                                                     >
                                                                         {cancelingIds.has(bookingId) ? 'Cancelling...' : 'Cancel'}
                                                                     </button>
+                                                                )}
+                                                                {/* show hint when cancellation is blocked due to 24-hour rule */}
+                                                                {!canCancel && String(b.status).toUpperCase() === 'BOOKED' && within24h && (
+                                                                    <div className="muted" style={{marginTop: 6, fontSize: '0.9rem'}}>Cannot cancel within 24 hours of the appointment.</div>
+                                                                )}
+                                                                {String(b.status).toUpperCase() === 'CANCELLED' && (
+                                                                    <button
+                                                                        className="btn btn-danger"
+                                                                        onClick={() => {
+                                                                            if (!bookingId) return
+                                                                            const ok = window.confirm('Remove this cancelled booking from the page? This will not delete it from the server.')
+                                                                            if (!ok) return
+                                                                            // remove locally from UI only
+                                                                            setBookings(prev => prev.filter(it => (it.bookingId ?? it.id) !== bookingId))
+                                                                            setBookingSuccess('Booking removed from the page')
+                                                                            setTimeout(() => setBookingSuccess(null), 3000)
+                                                                        }}
+                                                                    >Remove</button>
                                                                 )}
                                                             </div>
                                                         </div>

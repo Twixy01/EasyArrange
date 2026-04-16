@@ -1,8 +1,17 @@
 const BASE_URL = 'http://localhost:8080/api';
 
 async function fetchJsonOrThrow(url, options) {
-  const res = await fetch(url, options);
-  const text = await res.text();
+  let res;
+  let text;
+  try {
+    res = await fetch(url, options);
+  } catch (netErr) {
+    const e = new Error(`Network error: ${netErr?.message || netErr}`);
+    e.payload = { detail: netErr?.message || String(netErr) };
+    throw e;
+  }
+
+  text = await res.text();
   if (!res.ok) {
     // try parse JSON body, otherwise include raw text
     let parsed;
@@ -67,4 +76,16 @@ export const cancelBooking = async (bookingId) => {
     }
   }
   return fetchJsonOrThrow(`${BASE_URL}/bookings/${bookingId}`, options)
+}
+
+// permanently remove a cancelled booking (admin/owner action)
+export const cancelHardBooking = async (bookingId) => {
+  const token = (() => { try { return localStorage.getItem('token') } catch { return null } })();
+  const options = {
+    method: 'DELETE',
+    headers: {
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
+  }
+  return fetchJsonOrThrow(`${BASE_URL}/bookings/${bookingId}/hard`, options)
 }
