@@ -2,8 +2,9 @@ import {useEffect, useState, useContext} from 'react'
 import {useNavigate, Link} from 'react-router-dom'
 import {useAuth} from '../hooks/useAuth'
 import Card from '../components/common/Card'
-import {getBookingsByCustomer, updateBooking} from '../services/api'
+import {getBookingsByCustomer, cancelBooking} from '../services/api'
 import {UIStateContext} from '../context/UIStateContext'
+import avatarPlaceholder from '../assets/avatar-placeholder.png'
 
 function ProfilePage() {
     const {user, logout} = useAuth()
@@ -15,8 +16,27 @@ function ProfilePage() {
     const [cancelingIds, setCancelingIds] = useState(new Set())
     const [bookingSuccess, setBookingSuccess] = useState(null)
     const [showDebug, setShowDebug] = useState(false)
+    //bookings that the user has removed from the UI (persisted in localStorage)
+    const [removedBookings, setRemovedBookings] = useState(() => {
+        try {
+            const raw = localStorage.getItem('removedBookings')
+            if (!raw) return new Set()
+            const arr = JSON.parse(raw)
+            return new Set((arr || []).map(String))
+        } catch {
+            return new Set()
+        }
+    })
 
-    // reusable loader so we can refresh after cancel
+    const persistRemovedBookings = (set) => {
+        try {
+            localStorage.setItem('removedBookings', JSON.stringify(Array.from(set)))
+        } catch {
+            // ignore persistence errors
+        }
+    }
+
+    //reusable loader so we can refresh after cancel
     async function loadBookings() {
         if (!user) return
         const customerId = user.userId
@@ -27,12 +47,17 @@ function ProfilePage() {
         try {
             const b = await getBookingsByCustomer(customerId)
             const list = Array.isArray(b) ? b : []
-            // normalize and add a stable key for React lists
+            //normalize and add a stable key for React lists
             const normalized = list.map((it, idx) => ({
                 ...it,
                 __bkKey: it.bookingId ?? it.id ?? `bk-${idx}`
             }))
-            setBookings(normalized)
+            //filter out bookings the user has removed locally
+            const filtered = normalized.filter(it => {
+                const id = it.bookingId ?? it.id
+                return !removedBookings.has(String(id))
+            })
+            setBookings(filtered)
         } catch (err) {
             console.warn('Failed to load bookings for user', err)
             setBookingsError('Failed to load bookings')
@@ -44,8 +69,17 @@ function ProfilePage() {
 
     useEffect(() => {
         loadBookings()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
+
+    //when removedBookings changes persist it and also filter current bookings in-memory
+    useEffect(() => {
+        persistRemovedBookings(removedBookings)
+        if (bookings && bookings.length > 0) {
+            setBookings(prev => prev.filter(it => !removedBookings.has(String(it.bookingId ?? it.id))))
+        }
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [removedBookings])
 
     if (!user) {
         return (
@@ -88,7 +122,7 @@ function ProfilePage() {
                         <Card className="profile-summary">
                             <div className="card-body" style={{display: 'flex', gap: 16, alignItems: 'center'}}>
                                 <img
-                                    src={user.profilePicture || '../assets/avatar-placeholder.png'}
+                                    src={user.profilePicture || avatarPlaceholder}
                                     alt={user.name}
                                     className="profile-avatar"
                                     style={{width: 96, height: 96, borderRadius: 8, objectFit: 'cover'}}
@@ -125,10 +159,20 @@ function ProfilePage() {
                                     {!loadingBookings && bookings.length > 0 && (
                                         <div className="booking-list">
                                             {bookings.map((b, idx) => {
-                                                // backend BookingResponse uses `bookingId` as the identifier
+                                                //backend BookingResponse uses `bookingId` as the identifier
                                                 const bookingId = b.bookingId ?? b.id
                                                 const statusClass = b.status ? (`status-badge ${String(b.status).toLowerCase().replace(/\s+/g, '_')}`) : 'status-badge'
-                                                const canCancel = bookingId && String(b.status).toUpperCase() === 'BOOKED'
+
+                                                //compute whether this booking starts within the next 24 hours
+                                                const startsAt = b.startDateTime ? new Date(b.startDateTime) : null
+                                                const msUntil = startsAt ? (startsAt.getTime() - Date.now()) : null
+                                                const within24h = msUntil != null ? (msUntil <= 24 * 60 * 60 * 1000) : false
+                                                const minutesUntil = msUntil != null ? Math.ceil(msUntil / 60000) : null
+                                                const hoursUntil = minutesUntil != null ? Math.floor(minutesUntil / 60) : null
+
+                                                //only allow cancel when booking is BOOKED and it's not within the next 24 hours
+                                                const canCancel = bookingId && String(b.status).toUpperCase() === 'BOOKED' && !within24h
+
                                                 return (
                                                     <div key={b.__bkKey ?? `bk-${idx}`} className="booking-item">
                                                         <div style={{
@@ -138,10 +182,13 @@ function ProfilePage() {
                                                         }}>
                                                             <div>
                                                                 <strong>{b.startDateTime ? new Date(b.startDateTime).toLocaleString() : 'Unknown'}</strong>
-                                                                <div
-                                                                    className="muted">With: {b.staff?.user?.name || '—'}</div>
-                                                                <div
-                                                                    className="muted">Service: {b.service?.name || '—'}</div>
+                                                                <div className="muted">With: {b.staff?.user?.name || '—'}</div>
+                                                                <div className="muted">Service: {b.service?.name || '—'}</div>
+                                                                {startsAt && (
+                                                                    <div className="muted" style={{marginTop: 4}}>
+                                                                        Starts in: {hoursUntil != null ? `${hoursUntil}h ${minutesUntil % 60}m` : '—'}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             <div style={{
                                                                 alignSelf: 'center',
@@ -155,7 +202,8 @@ function ProfilePage() {
                                                                 {canCancel && (
                                                                     <button
                                                                         className="btn btn-secondary"
-                                                                        disabled={cancelingIds.has(bookingId)}
+                                                                        disabled={cancelingIds.has(bookingId) || within24h}
+                                                                        title={within24h ? 'Cannot cancel within 24 hours of the appointment' : undefined}
                                                                         onClick={async () => {
                                                                             if (!bookingId) {
                                                                                 setBookingsError('Invalid booking id')
@@ -164,26 +212,22 @@ function ProfilePage() {
                                                                             setBookingsError(null)
                                                                             const ok = window.confirm('Are you sure you want to cancel this booking?')
                                                                             if (!ok) return
-                                                                            // mark as canceling
+                                                                            //mark as canceling
                                                                             setCancelingIds(prev => new Set(prev).add(bookingId))
                                                                             try {
-                                                                                // prepare update payload - backend requires startDateTime, endDateTime, serviceId, status
-                                                                                const payload = {
-                                                                                    startDateTime: b.startDateTime,
-                                                                                    endDateTime: b.endDateTime || b.startDateTime, // fallback if end missing
-                                                                                    serviceId: b.service?.serviceId || b.serviceId,
-                                                                                    status: 'CANCELLED'
-                                                                                }
-                                                                                await updateBooking(bookingId, payload)
-                                                                                // refresh bookings from server so UI matches server state
+                                                                                //call DELETE cancellation endpoint
+                                                                                await cancelBooking(bookingId)
+                                                                                //refresh bookings from server so UI matches server state
                                                                                 await loadBookings()
                                                                                 setBookingSuccess('Booking cancelled')
                                                                                 setTimeout(() => setBookingSuccess(null), 3000)
                                                                             } catch (err) {
                                                                                 console.error('Failed to cancel booking', err)
-                                                                                setBookingsError('Failed to cancel booking')
+                                                                                //show server message when provided
+                                                                                const serverMessage = err?.payload?.detail || err?.payload?.message || err?.message || 'Failed to cancel booking'
+                                                                                setBookingsError(serverMessage)
                                                                             } finally {
-                                                                                // remove from canceling set
+                                                                                //remove from canceling set
                                                                                 setCancelingIds(prev => {
                                                                                     const s = new Set(prev)
                                                                                     s.delete(bookingId)
@@ -194,6 +238,31 @@ function ProfilePage() {
                                                                     >
                                                                         {cancelingIds.has(bookingId) ? 'Cancelling...' : 'Cancel'}
                                                                     </button>
+                                                                )}
+                                                                {/* show hint when cancellation is blocked due to 24-hour rule */}
+                                                                {!canCancel && String(b.status).toUpperCase() === 'BOOKED' && within24h && (
+                                                                    <div className="muted" style={{marginTop: 6, fontSize: '0.9rem'}}>Cannot cancel within 24 hours of the appointment.</div>
+                                                                )}
+                                                                {String(b.status).toUpperCase() === 'CANCELLED' && (
+                                                                    <button
+                                                                        className="btn btn-danger"
+                                                                        onClick={() => {
+                                                                            if (!bookingId) return
+                                                                            const ok = window.confirm('Remove this cancelled booking from the page? This will not delete it from the server.')
+                                                                            if (!ok) return
+                                                                            //persist removal locally so it won't show after reload
+                                                                            setRemovedBookings(prev => {
+                                                                                const s = new Set(prev)
+                                                                                s.add(String(bookingId))
+                                                                                persistRemovedBookings(s)
+                                                                                return s
+                                                                            })
+                                                                            //also remove from current UI
+                                                                            setBookings(prev => prev.filter(it => (String(it.bookingId ?? it.id) !== String(bookingId))))
+                                                                            setBookingSuccess('Booking removed from the page')
+                                                                            setTimeout(() => setBookingSuccess(null), 3000)
+                                                                        }}
+                                                                    >Remove</button>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -219,7 +288,8 @@ function ProfilePage() {
                                     user,
                                     servicesCount: Array.isArray(services) ? services.length : services,
                                     bookingsCount: bookings.length,
-                                    bookings
+                                    bookings,
+                                    removedCount: removedBookings ? Array.from(removedBookings).length : 0
                                 }, null, 2)}</pre>
                             </div>
                         </Card>

@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
+import { useStaffByUser } from '../hooks/queries/useStaffByUser';
 
 export const AuthContext = createContext(null)
 
@@ -11,6 +12,8 @@ export function AuthProvider({ children }) {
       return null
     }
   })
+  
+  const { data: staff } = useStaffByUser(user?.userId)
 
   useEffect(() => {
     console.debug('[AuthProvider] mounted - initial user:', user)
@@ -49,6 +52,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
+    staff,
     isLoggedIn: Boolean(user),
     login,
     logout

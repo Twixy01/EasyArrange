@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-
+import SectionHeader from '../components/common/SectionHeader'
+import Button from '../components/common/Button'
 
 function RegisterPage() {
   const [name, setName] = useState('')
@@ -68,54 +69,66 @@ function RegisterPage() {
   }
 
   return (
-    <div className="register-page">
-      <h1>Create an account</h1>
-      {error && <div className="error" role="alert">{error}</div>}
-
-      <form className="register-form" onSubmit={handleSubmit} noValidate>
-        <label htmlFor="name">Username</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          placeholder="Your name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
+    <section className="section">
+      <div className="container narrow">
+        <SectionHeader
+          eyebrow="Create account"
+          title="Join the salon experience"
+          description="Register to manage bookings and your personal profile."
+          center
         />
+        {error && <div className="error" role="alert">{error}</div>}
 
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="you@company.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
+        <form className="register-form" onSubmit={handleSubmit} noValidate>
+          <div className="field">
+            <label htmlFor="name">Username</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="Your name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
+          </div>
 
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="At least 4 characters"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          minLength={4}
-        />
+          <div className="field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Creating account...' : 'Register'}
-        </button>
-      </form>
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="At least 4 characters"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={4}
+            />
+          </div>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Register'}
+          </Button>
+        </form>
 
-      <p>
-        Already have an account? <Link to="/login">Log in</Link>
-      </p>
-    </div>
+        <p>
+          Already have an account? <Link to="/login">Log in</Link>
+        </p>
+      </div>
+    </section>
   )
 }
 

@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../hooks/UseAuth'
+import { useAuth } from '../hooks/useAuth'
+import SectionHeader from '../components/common/SectionHeader'
+import Button from '../components/common/Button'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
@@ -83,43 +85,53 @@ function LoginPage() {
   }
 
   return (
-    <div className="login-page">
-      <h1>Log in</h1>
-      {error && <div className="error" role="alert">{error}</div>}
+    <section className="section">
+      <div className="container narrow">
+        <SectionHeader
+          eyebrow="Welcome back"
+          title="Login to continue"
+          description="Bookings can only be submitted by authenticated users."
+          center
+          />
+        <form className="form-card" onSubmit={handleSubmit} noValidate>
+          {error && <div className="form-error" role="alert">{error}</div>}
+          <div className="field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-      <form className="login-form" onSubmit={handleSubmit} noValidate>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="you@company.com"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="At least 4 characters"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={4}
+            />
+          </div>
 
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="At least 4 characters"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          minLength={4}
-        />
+          <Button type="submit" className="full-width" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </Button>
+        </form>
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
-    </div>
+        <p className="form-footer">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+      </div>
+    </section>
   )
 }
 

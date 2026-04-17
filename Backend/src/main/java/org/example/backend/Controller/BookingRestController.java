@@ -84,4 +84,9 @@ public class BookingRestController {
     public void delete(@PathVariable("id") Long id) {
         bookingService.remove(id);
     }
+
+    @DeleteMapping("/{id}/hard")
+    public void hardDelete(@PathVariable("id") Long id) {
+        bookingService.hardRemove(id);
+    }
 }
