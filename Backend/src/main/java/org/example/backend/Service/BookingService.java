@@ -69,10 +69,25 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
-        return bookingRepository.findAllByCustomerId(customerId).stream()
-                .map(bookingResponseMapper)
+        List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
+                .map(booking -> {
+                    BookingStatus status = booking.getStatus();
+                    if (status == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
+                        status = BookingStatus.COMPLETED;
+                    }
+                    BookingUpdateRequest request = new BookingUpdateRequest(
+                            booking.getStartDateTime(),
+                            booking.getEndDateTime(),
+                            booking.getService().getId(),
+                            status.name()
+                    );
+                    return update(booking.getId(), request);
+                })
                 .collect(Collectors.toList());
+
+        return bookings;
     }
 
     public List<BookingResponse> findBookingsBetween(LocalDateTime start, LocalDateTime end) {
@@ -118,9 +133,14 @@ public class BookingService {
 
         LocalDateTime current = startOfDay;
 
+        LocalDateTime now = LocalDateTime.now().plusHours(3); //You can book a slot at least 3 hours in advance
         while (current.plusMinutes(serviceDuration).isBefore(endOfDay)
                 || current.plusMinutes(serviceDuration).isEqual(endOfDay)) {
 
+            if (current.isBefore(now)) {
+                current = current.plusMinutes(15);
+                continue; // Skip past time slots
+            }
             LocalDateTime end = current.plusMinutes(serviceDuration);
 
             boolean overlaps = bookingRepository.existsOverlapping(

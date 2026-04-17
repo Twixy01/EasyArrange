@@ -4,6 +4,7 @@ import {useAuth} from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import {getBookingsByCustomer, cancelBooking} from '../services/api'
 import {UIStateContext} from '../context/UIStateContext'
+import avatarPlaceholder from '../assets/avatar-placeholder.png'
 
 function ProfilePage() {
     const {user, logout} = useAuth()
@@ -121,7 +122,7 @@ function ProfilePage() {
                         <Card className="profile-summary">
                             <div className="card-body" style={{display: 'flex', gap: 16, alignItems: 'center'}}>
                                 <img
-                                    src={user.profilePicture || '../assets/avatar-placeholder.png'}
+                                    src={user.profilePicture || avatarPlaceholder}
                                     alt={user.name}
                                     className="profile-avatar"
                                     style={{width: 96, height: 96, borderRadius: 8, objectFit: 'cover'}}

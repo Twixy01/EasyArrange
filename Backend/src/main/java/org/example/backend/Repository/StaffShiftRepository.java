@@ -1,9 +1,6 @@
 package org.example.backend.Repository;
 
-import org.example.backend.Model.entity.Shift;
-import org.example.backend.Model.entity.Staff;
-import org.example.backend.Model.entity.StaffShift;
-import org.example.backend.Model.entity.StaffShiftId;
+import org.example.backend.Model.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StaffShiftRepository extends JpaRepository<StaffShift, StaffShiftId> {
@@ -28,5 +26,7 @@ public interface StaffShiftRepository extends JpaRepository<StaffShift, StaffShi
             @Param("endShift") LocalTime endShift
     );
 
+    @Query("SELECT ss FROM StaffShift ss WHERE ss.staff.id = :staffId AND ss.shift.day = :day")
+    Optional<StaffShift> findStaffShiftByStaffAndShiftDay(@Param("staffId")Long staffId, @Param("day") ShiftDay day);
 
 }
