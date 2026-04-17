@@ -23,7 +23,7 @@ function NavBar() {
     return (
         <header className="navbar">
             <div className="container navbar-inner">
-                
+
                 <Link to="/" className="brand" onClick={closeMenu}>
                     <span className="brand-mark">✦</span>
                     <span>EasyArrange</span>
@@ -35,7 +35,12 @@ function NavBar() {
                     <NavLink to="/about"> About Us </NavLink>
                     <NavLink to="/contact"> Contact </NavLink>
                     <NavLink to="/booking"> Book Now </NavLink>
-                    {staff ? (<NavLink to="/shifts"> My Shifts </NavLink>) : null}
+                    {staff ? (
+                        <>
+                            <NavLink to="/shifts"> My Shifts </NavLink>
+                            <NavLink to="/time-off"> Time Off </NavLink>
+                        </>
+                    ) : null}
                 </nav>
 
                 <div className="navbar-actions">
@@ -84,7 +89,12 @@ function NavBar() {
                     <NavLink to="/booking" onClick={closeMenu}>
                         Book Now
                     </NavLink>
-                    {staff ? (<NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>) : null}
+                    {staff ? (
+                        <>
+                            <NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>
+                            <NavLink to="/time-off" onClick={closeMenu}> Time Off </NavLink>
+                        </>
+                    ) : null}
 
                     {!isLoggedIn ? (
                         <>

@@ -17,7 +17,8 @@ public class CalendarBlockResponseMapper implements Function<CalendarBlock, Cale
     @Override
     public CalendarBlockResponse apply(CalendarBlock calendarBlock) {
         return new CalendarBlockResponse(
-                calendarBlock.getId(),
+                calendarBlock.getCalendarBlockId(),
+                calendarBlock.getTitle(),
                 calendarBlock.getStartDateTime(),
                 calendarBlock.getEndDateTime(),
                 staffResponseMapper.apply(calendarBlock.getStaff())

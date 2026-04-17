@@ -1,9 +1,6 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -25,32 +22,26 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "staff_id", nullable = false)
-    @NotNull(message = "Staff can't be null")
     private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "customer_id", nullable = false)
-    @NotNull(message = "Customer can't be null")
     private User customer;
 
     @Column(name = "start_datetime", nullable = false)
-    @NotNull(message = "Start datetime can't be null")
     private LocalDateTime startDateTime;
 
     @Column(name = "end_datetime", nullable = false)
-    @NotNull(message = "End datetime can't be null")
     private LocalDateTime endDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "service_id", nullable = false)
-    @NotNull(message = "Service can't be null")
     private Service service;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @NotNull(message = "Status can't be null")
     private BookingStatus status = BookingStatus.BOOKED;
 
     public boolean isCancelled() {

@@ -69,12 +69,20 @@ public class CalendarBlockService {
 
     @Transactional
     public CalendarBlockResponse create(CalendarBlockRequest calendarBlockDto) {
+        if (calendarBlockRepository.existsCalendarBlockByStaffIdStartDateTimeAndEndDateTime(
+                calendarBlockDto.staffId(),
+                calendarBlockDto.startDateTime(),
+                calendarBlockDto.endDateTime()
+        )) {
+            throw new IllegalArgumentException("Calendar block already exists for staff with this start and end time");
+        }
+
         Staff staff = staffRepository.findById(calendarBlockDto.staffId())
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with id: " + calendarBlockDto.staffId()));
 
         String roleName = staff.getUser().getRole().getName();
-        if (!roleName.equals("STAFF")) {
-            throw new IllegalArgumentException("User with id: " + calendarBlockDto.staffId() + " does not have STAFF role");
+        if (!roleName.equals("STAFF") && !roleName.equals("ADMIN")) {
+            throw new IllegalArgumentException("User with id: " + calendarBlockDto.staffId() + " does not have STAFF or ADMIN role");
         }
 
         CalendarBlock calendarBlock = new CalendarBlock();

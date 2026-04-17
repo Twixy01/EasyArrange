@@ -10,14 +10,11 @@ import { useEffect, useState } from "react";
 import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 
 export default function ShiftsPage() {
-    const { user } = useAuth();
-    const { data: staff } = useStaff();
+    const { user, staff } = useAuth();
     const { mutate: updateShiftMutate } = useUpdateShiftForStaffDay();
     const { mutate: removeShiftMutate } = useDeleteStaffShift();
 
-    const currentStaff = staff?.find(s => s.user?.userId === user?.userId);
-
-    const { data: shifts = [], isLoading, error: shiftError } = useShiftsByStaff(currentStaff?.staffId);
+    const { data: shifts = [], isLoading, error: shiftError } = useShiftsByStaff(staff?.staffId);
 
     const [shiftDrafts, setShiftDrafts] = useState({});
 
@@ -98,7 +95,6 @@ export default function ShiftsPage() {
 
     const updateShift = async (staffId, shift) => {
         const draft = shiftDrafts[shift.shiftId] ?? shift;
-        console.log(`${draft.startShift} - ${draft.endShift} -${shift.day}  staffId: ${staffId}`);
 
         updateShiftMutate(
             {
@@ -255,7 +251,7 @@ export default function ShiftsPage() {
                                             <Button
                                                 disabled={!isModified}
                                                 className="btn btn-primary shift-save-btn"
-                                                onClick={() => updateShift(currentStaff?.staffId, shift)}
+                                                onClick={() => updateShift(staff?.staffId, shift)}
                                             >
                                                 {isModified ? "Save changes" : "Up to date"}
                                             </Button>
@@ -269,7 +265,7 @@ export default function ShiftsPage() {
 
                                             <Button
                                                 className="btn shift-remove-btn"
-                                                onClick={() => removeShift(currentStaff?.staffId, shift?.shiftId)}
+                                                onClick={() => removeShift(staff?.staffId, shift?.shiftId)}
                                             >
                                                 Remove
                                             </Button>
