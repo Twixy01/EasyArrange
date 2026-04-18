@@ -69,5 +69,14 @@ export const salonApi = {
     async getStaffByUser(userId) {
         const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`);
         return response.data;
+    },
+
+    async getBookingsByCustomer(customerId) {
+        const response = await Axios.get(`${BASE_URL}/bookings/customer/${customerId}`);
+        return response.data;
+    },
+    async cancelBooking(bookingId) {
+        const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
+        return response.data;
     }
 };
