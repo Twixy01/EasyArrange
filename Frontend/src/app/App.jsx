@@ -12,6 +12,7 @@ import RegisterPage from '../pages/RegisterPage'
 import ProfilePage from '../pages/ProfilePage'
 import ProfileEditPage from '../pages/ProfileEditPage'
 import ShiftsPage from '../pages/ShiftsPage'
+import CalendarBlockPage from '../pages/CalendarBlockPage'
 import { UIStateProvider } from "../context/UIStateContext.jsx";
 import { useContext, useEffect } from 'react'
 import { UIStateContext } from '../context/UIStateContext.jsx'
@@ -58,6 +59,7 @@ function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/profile/edit" element={<ProfileEditPage />} />
                     <Route path="/shifts" element={<ShiftsPage />} />
+                    <Route path="/time-off" element={<CalendarBlockPage />} />
                 </Routes>
             </UIStateProvider>
             <Footer />

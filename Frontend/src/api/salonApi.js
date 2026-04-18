@@ -71,10 +71,22 @@ export const salonApi = {
         return response.data;
     },
 
+    async createCalendarBlock({ title, startDateTime, endDateTime, staffId }) {
+        const calendarBlockData = {
+            title,
+            startDateTime,
+            endDateTime,
+            staffId
+        };
+        const response = await Axios.post(`${BASE_URL}/calendar-blocks/create`, calendarBlockData);
+        return response.data;
+    },
+    
     async getBookingsByCustomer(customerId) {
         const response = await Axios.get(`${BASE_URL}/bookings/customer/${customerId}`);
         return response.data;
     },
+    
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
         return response.data;

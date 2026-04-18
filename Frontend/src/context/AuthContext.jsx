@@ -12,9 +12,9 @@ export function AuthProvider({ children }) {
       return null
     }
   })
-  
 
-  const shouldFetchStaff = user?.role === 'STAFF' || user?.role === 'ADMIN';
+  const roleName =  user?.role?.name;
+  const shouldFetchStaff = roleName === 'STAFF' || roleName === 'ADMIN';
 
   const { data: staff } = useStaffByUser(
     shouldFetchStaff ? user.userId : null

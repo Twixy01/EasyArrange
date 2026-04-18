@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 public class CalendarBlockRequestMapper implements BiConsumer<CalendarBlockRequest, CalendarBlock> {
     @Override
     public void accept(CalendarBlockRequest calendarBlockRequest, CalendarBlock calendarBlock) {
+        calendarBlock.setTitle(calendarBlockRequest.title());
         calendarBlock.setStartDateTime(calendarBlockRequest.startDateTime());
         calendarBlock.setEndDateTime(calendarBlockRequest.endDateTime());
 

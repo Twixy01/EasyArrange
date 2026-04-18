@@ -1,9 +1,6 @@
 package org.example.backend.Model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -19,28 +16,28 @@ public class CalendarBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "calendar_block_id", nullable = false)
-    private Long id;
+    private Long calendarBlockId;
+
+    @Column(name = "title", nullable = false)
+    private String title;
 
     @Column(name = "start_datetime", nullable = false)
-    @NotNull(message = "Start datetime can't be null")
     private LocalDateTime startDateTime;
 
     @Column(name = "end_datetime", nullable = false)
-    @NotNull(message = "End datetime can't be null")
     private LocalDateTime endDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
-    @NotNull(message = "Staff can't be null")
     private Staff staff;
 
-    public Long getId() {
-        return id;
+    public Long getCalendarBlockId() {
+        return calendarBlockId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCalendarBlockId(Long calendarBlockId) {
+        this.calendarBlockId = calendarBlockId;
     }
 
     public LocalDateTime getStartDateTime() {
@@ -67,4 +64,11 @@ public class CalendarBlock {
         this.staff = staff;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

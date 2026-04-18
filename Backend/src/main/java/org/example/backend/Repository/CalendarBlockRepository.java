@@ -31,4 +31,12 @@ public interface CalendarBlockRepository extends JpaRepository<CalendarBlock, Lo
     """)
     boolean existsOverlapping(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("""
+        SELECT CASE WHEN COUNT(cb) > 0 THEN true ELSE false END
+        FROM CalendarBlock cb WHERE cb.staff.id = :staffId
+                AND cb.startDateTime = :start
+                AND cb.endDateTime = :end
+    """)
+    boolean existsCalendarBlockByStaffIdStartDateTimeAndEndDateTime(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
+
 }
