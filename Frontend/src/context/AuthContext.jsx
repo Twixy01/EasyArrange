@@ -13,7 +13,12 @@ export function AuthProvider({ children }) {
     }
   })
   
-  const { data: staff } = useStaffByUser(user?.userId)
+
+  const shouldFetchStaff = user?.role === 'STAFF' || user?.role === 'ADMIN';
+
+  const { data: staff } = useStaffByUser(
+    shouldFetchStaff ? user.userId : null
+  );
 
   useEffect(() => {
     console.debug('[AuthProvider] mounted - initial user:', user)
