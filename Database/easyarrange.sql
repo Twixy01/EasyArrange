@@ -3,10 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Ápr 06. 12:34
+-- Létrehozás ideje: 2026. Ápr 18. 21:29
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -20,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `easyarrange`
 --
+CREATE DATABASE IF NOT EXISTS `easyarrange` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_hungarian_ci;
+USE `easyarrange`;
 
 -- --------------------------------------------------------
 
@@ -49,25 +52,41 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`
 (4, 5, 9, '2026-03-30 14:00:00', '2026-03-30 14:30:00', 5, 'BOOKED'),
 (5, 3, 5, '2026-03-31 09:00:00', '2026-03-31 09:45:00', 12, 'COMPLETED'),
 (6, 2, 7, '2026-03-31 11:00:00', '2026-03-31 11:45:00', 9, 'COMPLETED'),
-(7, 1, 6, '2026-03-31 16:00:00', '2026-03-31 17:40:00', 11, 'BOOKED'),
+(7, 1, 6, '2026-03-31 16:00:00', '2026-03-31 17:40:00', 11, 'COMPLETED'),
 (8, 4, 9, '2026-03-31 17:00:00', '2026-03-31 17:30:00', 7, 'BOOKED'),
 (9, 5, 5, '2026-04-01 09:30:00', '2026-04-01 10:10:00', 1, 'COMPLETED'),
-(10, 2, 6, '2026-04-01 12:00:00', '2026-04-01 13:30:00', 3, 'BOOKED'),
-(11, 4, 7, '2026-04-01 15:00:00', '2026-04-01 15:40:00', 8, 'BOOKED'),
+(10, 2, 6, '2026-04-01 12:00:00', '2026-04-01 13:30:00', 3, 'COMPLETED'),
+(11, 4, 7, '2026-04-01 15:00:00', '2026-04-01 15:40:00', 8, 'COMPLETED'),
 (12, 3, 9, '2026-04-01 16:00:00', '2026-04-01 17:00:00', 14, 'BOOKED'),
 (13, 1, 5, '2026-04-02 09:00:00', '2026-04-02 09:20:00', 10, 'COMPLETED'),
 (14, 5, 6, '2026-04-02 10:00:00', '2026-04-02 10:25:00', 2, 'COMPLETED'),
-(15, 2, 7, '2026-04-02 13:30:00', '2026-04-02 14:00:00', 5, 'BOOKED'),
+(15, 2, 7, '2026-04-02 13:30:00', '2026-04-02 14:00:00', 5, 'COMPLETED'),
 (16, 4, 9, '2026-04-02 14:30:00', '2026-04-02 15:15:00', 9, 'BOOKED'),
 (17, 3, 5, '2026-04-03 09:00:00', '2026-04-03 10:00:00', 13, 'BOOKED'),
-(18, 1, 6, '2026-04-03 10:30:00', '2026-04-03 12:00:00', 3, 'BOOKED'),
-(19, 2, 7, '2026-04-03 14:00:00', '2026-04-03 14:40:00', 1, 'BOOKED'),
+(18, 1, 6, '2026-04-03 10:30:00', '2026-04-03 12:00:00', 3, 'COMPLETED'),
+(19, 2, 7, '2026-04-03 14:00:00', '2026-04-03 14:40:00', 1, 'COMPLETED'),
 (20, 5, 9, '2026-04-03 15:00:00', '2026-04-03 15:20:00', 10, 'CANCELLED'),
 (21, 4, 5, '2026-04-04 09:00:00', '2026-04-04 09:25:00', 2, 'BOOKED'),
-(22, 2, 6, '2026-04-04 11:30:00', '2026-04-04 12:15:00', 9, 'BOOKED'),
-(23, 5, 7, '2026-04-04 12:30:00', '2026-04-04 13:00:00', 5, 'BOOKED'),
+(22, 2, 6, '2026-04-04 11:30:00', '2026-04-04 12:15:00', 9, 'COMPLETED'),
+(23, 5, 7, '2026-04-04 12:30:00', '2026-04-04 13:00:00', 5, 'COMPLETED'),
 (24, 1, 9, '2026-04-05 10:00:00', '2026-04-05 11:30:00', 3, 'BOOKED'),
-(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'BOOKED');
+(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'BOOKED'),
+(36, 3, 3, '2026-04-07 09:00:00', '2026-04-07 10:00:00', 14, 'COMPLETED'),
+(37, 3, 3, '2026-04-07 10:00:00', '2026-04-07 11:30:00', 3, 'COMPLETED'),
+(38, 2, 3, '2026-04-08 09:00:00', '2026-04-08 09:40:00', 1, 'CANCELLED'),
+(39, 1, 10, '2026-04-08 09:15:00', '2026-04-08 09:55:00', 1, 'BOOKED'),
+(40, 3, 15, '2026-04-14 09:00:00', '2026-04-14 10:30:00', 3, 'BOOKED'),
+(41, 1, 15, '2026-04-15 09:00:00', '2026-04-15 10:40:00', 11, 'CANCELLED'),
+(42, 4, 3, '2026-04-14 19:15:00', '2026-04-14 19:40:00', 2, 'COMPLETED'),
+(43, 1, 3, '2026-04-15 10:45:00', '2026-04-15 11:25:00', 1, 'COMPLETED'),
+(44, 1, 3, '2026-04-16 09:00:00', '2026-04-16 09:40:00', 1, 'CANCELLED'),
+(45, 1, 3, '2026-04-16 16:30:00', '2026-04-16 17:10:00', 1, 'COMPLETED'),
+(46, 4, 3, '2026-04-18 17:15:00', '2026-04-18 17:25:00', 4, 'COMPLETED'),
+(47, 4, 3, '2026-04-19 10:00:00', '2026-04-19 10:25:00', 2, 'BOOKED'),
+(48, 4, 3, '2026-04-24 09:00:00', '2026-04-24 09:30:00', 7, 'CANCELLED'),
+(49, 4, 3, '2026-04-23 10:00:00', '2026-04-23 10:40:00', 1, 'CANCELLED'),
+(50, 5, 16, '2026-04-19 11:00:00', '2026-04-19 11:25:00', 2, 'BOOKED'),
+(51, 4, 16, '2026-04-21 11:00:00', '2026-04-21 11:25:00', 2, 'CANCELLED');
 
 -- --------------------------------------------------------
 
@@ -78,27 +97,11 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`
 DROP TABLE IF EXISTS `calendar_block`;
 CREATE TABLE `calendar_block` (
   `calendar_block_id` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `start_datetime` datetime NOT NULL,
   `end_datetime` datetime NOT NULL,
   `staff_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
-
---
--- A tábla adatainak kiíratása `calendar_block`
---
-
-INSERT INTO `calendar_block` (`calendar_block_id`, `start_datetime`, `end_datetime`, `staff_id`) VALUES
-(1, '2026-03-30 13:00:00', '2026-03-30 14:00:00', 1),
-(6, '2026-04-04 10:30:00', '2026-04-04 11:30:00', 1),
-(2, '2026-03-31 15:00:00', '2026-03-31 16:00:00', 2),
-(9, '2026-04-05 12:30:00', '2026-04-05 13:00:00', 2),
-(3, '2026-04-01 12:00:00', '2026-04-01 13:30:00', 3),
-(7, '2026-04-04 12:00:00', '2026-04-04 13:00:00', 3),
-(4, '2026-04-02 16:00:00', '2026-04-02 17:00:00', 4),
-(8, '2026-04-05 11:00:00', '2026-04-05 12:00:00', 4),
-(11, '2026-04-07 00:00:00', '2026-04-08 00:00:00', 4),
-(10, '2026-04-02 12:30:00', '2026-04-02 13:00:00', 5),
-(5, '2026-04-03 11:30:00', '2026-04-03 12:30:00', 5);
 
 -- --------------------------------------------------------
 
@@ -175,12 +178,19 @@ CREATE TABLE `shift` (
 --
 
 INSERT INTO `shift` (`shift_id`, `day`, `start_shift`, `end_shift`) VALUES
+(16, 'MONDAY', '07:00:00', '10:00:00'),
+(20, 'MONDAY', '07:00:00', '12:00:00'),
+(22, 'MONDAY', '08:00:00', '10:00:00'),
 (1, 'MONDAY', '09:00:00', '18:00:00'),
+(19, 'MONDAY', '10:00:00', '11:00:00'),
 (2, 'TUESDAY', '09:00:00', '18:00:00'),
+(18, 'TUESDAY', '10:00:00', '18:00:00'),
+(21, 'TUESDAY', '10:00:00', '23:00:00'),
 (3, 'WEDNESDAY', '09:00:00', '18:00:00'),
 (4, 'THURSDAY', '09:00:00', '18:00:00'),
 (5, 'FRIDAY', '09:00:00', '18:00:00'),
 (6, 'SATURDAY', '09:00:00', '14:00:00'),
+(23, 'SATURDAY', '09:00:00', '18:00:00'),
 (7, 'SUNDAY', '10:00:00', '14:00:00');
 
 -- --------------------------------------------------------
@@ -277,7 +287,6 @@ INSERT INTO `staff_shift` (`staff_id`, `shift_id`) VALUES
 (1, 5),
 (1, 6),
 (1, 7),
-(2, 1),
 (2, 2),
 (2, 3),
 (2, 4),
@@ -291,13 +300,13 @@ INSERT INTO `staff_shift` (`staff_id`, `shift_id`) VALUES
 (3, 5),
 (3, 6),
 (3, 7),
-(4, 1),
-(4, 2),
 (4, 3),
 (4, 4),
 (4, 5),
-(4, 6),
 (4, 7),
+(4, 16),
+(4, 21),
+(4, 23),
 (5, 1),
 (5, 2),
 (5, 3),
@@ -327,15 +336,16 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `profile_picture`, `password`, `role_id`) VALUES
-(3, 'Peter', 'peter@gmail.com', 'https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dhttps://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$ZgM5/hHebKqYNJXfeU6.4Oa9hitXQD6oafy74YLMAoO7HvaJC/n1C', 1),
+(3, 'Peter', 'peter@gmail.com', 'https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dhttps://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$9mwbhK7NknzqZa.JqvTehOvIWC9IdOFGaVcog6t95f0ZUaMQ.aJsS', 1),
 (4, 'Milan', 'milan@gmail.com', 'https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$hDowIUWT9wH7Ijdr78/nnuv/Bc/arzyDJvATxdFfq.IDPXojUNS/i', 3),
-(5, 'Elek', 'elek@gmail.com', 'profile', '$2a$10$muUAaM9HS6Aq.VNJBnrJaeruHzW24hgYlBm2c1SuR20j/71RnfNfe', 2),
-(6, 'Anna', 'anna@gmail.com', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$np7X0HLTmdELFoOVA/.Df.pliYehAotzPcW5tKmyprPKQPBvkVp5i', 2),
-(7, 'Bence', 'bence@gmail.com', 'profile', '$2a$10$rZggb8AKCS3F36najikyp.2Dw5CAIqy6dzMAkkeE.VZ0DESkTwV76', 2),
+(5, 'Elek', 'elek@gmail.com', NULL, '$2a$10$muUAaM9HS6Aq.VNJBnrJaeruHzW24hgYlBm2c1SuR20j/71RnfNfe', 2),
+(6, 'Anna', 'anna@gmail.com', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$np7X0HLTmdELFoOVA/.Df.pliYehAotzPcW5tKmyprPKQPBvkVp5i', 3),
+(7, 'Bence', 'bence@gmail.com', NULL, '$2a$10$rZggb8AKCS3F36najikyp.2Dw5CAIqy6dzMAkkeE.VZ0DESkTwV76', 2),
 (8, 'Kata', 'kata@gmail.com', 'https://plus.unsplash.com/premium_photo-1688572454849-4348982edf7d?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
-(9, 'David', 'david@gmail.com', 'profile', '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
+(9, 'David', 'david@gmail.com', NULL, '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
 (10, 'Sofia', 'sofia@gmail.com', 'https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3),
-(13, 'teszt', 'teszt@gmail.com', NULL, '$2a$10$P7ajdvWgd4xRvLTet3SNL.bJPZyC1dnyz/lIK4pwmR74JOQ5WC7BK', 2);
+(15, 'Dalma12', 'dalma@gmail.com', 'https://m.media-amazon.com/images/M/MV5BMjM4MzE0MGItY2U4OS00MTU5LTgwNWUtYzMxZjMzMTQ5Yjg1XkEyXkFqcGc@._V1_.jpg', '$2a$10$ExlJpH3oxzZGNrmlEB7jN.YNaslYQQQMx.G9ubVglPb7vIHl5gU66', 2),
+(16, 'TesztElek', 'tesztelek@gmail.com', NULL, '$2a$10$yz4hJqDOkPeknGvxjqVM0eLrqDEWa8YIR.0Q3vngJBtHFANGDaRby', 2);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -415,13 +425,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT a táblához `calendar_block`
 --
 ALTER TABLE `calendar_block`
-  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `calendar_block_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT a táblához `role`
@@ -439,7 +449,7 @@ ALTER TABLE `service`
 -- AUTO_INCREMENT a táblához `shift`
 --
 ALTER TABLE `shift`
-  MODIFY `shift_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `shift_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT a táblához `staff`
@@ -451,51 +461,8 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- Megkötések a kiírt táblákhoz
---
-
---
--- Megkötések a táblához `booking`
---
-ALTER TABLE `booking`
-  ADD CONSTRAINT `fk_booking_customer` FOREIGN KEY (`customer_id`) REFERENCES `user` (`user_id`),
-  ADD CONSTRAINT `fk_booking_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`),
-  ADD CONSTRAINT `fk_booking_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`);
-
---
--- Megkötések a táblához `calendar_block`
---
-ALTER TABLE `calendar_block`
-  ADD CONSTRAINT `fk_calendar_block_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE;
-
---
--- Megkötések a táblához `staff`
---
-ALTER TABLE `staff`
-  ADD CONSTRAINT `fk_staff_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
-
---
--- Megkötések a táblához `staff_service`
---
-ALTER TABLE `staff_service`
-  ADD CONSTRAINT `fk_staff_service_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_staff_service_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Megkötések a táblához `staff_shift`
---
-ALTER TABLE `staff_shift`
-  ADD CONSTRAINT `fk_staff_shift_shift` FOREIGN KEY (`shift_id`) REFERENCES `shift` (`shift_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_staff_shift_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Megkötések a táblához `user`
---
-ALTER TABLE `user`
-  ADD CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
