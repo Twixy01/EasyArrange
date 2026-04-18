@@ -69,17 +69,37 @@ public class BookingService {
     public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
         List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
                 .map(booking -> {
-                    BookingStatus status = booking.getStatus();
-                    if (status == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
-                        status = BookingStatus.COMPLETED;
+                    BookingStatus currentStatus = booking.getStatus();
+                    BookingStatus computedStatus = currentStatus;
+                    if (currentStatus == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
+                        computedStatus = BookingStatus.COMPLETED;
                     }
-                    BookingUpdateRequest request = new BookingUpdateRequest(
-                            booking.getStartDateTime(),
-                            booking.getEndDateTime(),
-                            booking.getService().getId(),
-                            status.name()
-                    );
-                    return update(booking.getId(), request);
+
+                    // If booking is already CANCELLED, don't attempt to call update() because update()
+                    // enforces cancellation rules (and may throw when re-applying CANCELLED). Just map directly.
+                    if (currentStatus == BookingStatus.CANCELLED) {
+                        return bookingResponseMapper.apply(booking);
+                    }
+
+                    // If computed status differs and it's safe to update (e.g., BOOKED -> COMPLETED), perform update
+                    if (computedStatus != currentStatus) {
+                        BookingUpdateRequest request = new BookingUpdateRequest(
+                                booking.getStartDateTime(),
+                                booking.getEndDateTime(),
+                                booking.getService().getId(),
+                                computedStatus.name()
+                        );
+                        try {
+                            return update(booking.getId(), request);
+                        } catch (Exception e) {
+                            // If updating fails (for example due to validation), log and fall back to mapping the existing booking
+                            System.err.println("Warning: failed to auto-update booking id=" + booking.getId() + ": " + e.getMessage());
+                            return bookingResponseMapper.apply(booking);
+                        }
+                    }
+
+                    // No update required, return mapped response
+                    return bookingResponseMapper.apply(booking);
                 })
                 .collect(Collectors.toList());
 

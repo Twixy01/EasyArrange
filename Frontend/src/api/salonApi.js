@@ -49,7 +49,7 @@ export const salonApi = {
         const response = await Axios.post(`${BASE_URL}/bookings/create`, bookingData);
         return response.data;
     },
-    
+
     async updateShiftForStaffDay({staffId, day, startShift, endShift}){
         const updateData = {
             staffId,
@@ -66,9 +66,19 @@ export const salonApi = {
         return response.data;
     },
 
+    // Robust getStaffByUser: accept all statuses and translate 400/404 to `null` (means "not a staff")
     async getStaffByUser(userId) {
-        const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`);
-        return response.data;
+        const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`, { validateStatus: () => true });
+        // success ---> return data
+        if (response.status >= 200 && response.status < 300) {
+            return response.data;
+        }
+        //treat not-found or validation as "no staff" for this user
+        if (response.status === 404 || response.status === 400) return null;
+        //other statuses are unexpected ---> throw so callers can handle
+        const e = new Error(`Server error: ${response.status} ${response.statusText}`);
+        e.response = response;
+        throw e;
     },
 
     async createCalendarBlock({ title, startDateTime, endDateTime, staffId }) {
@@ -81,12 +91,12 @@ export const salonApi = {
         const response = await Axios.post(`${BASE_URL}/calendar-blocks/create`, calendarBlockData);
         return response.data;
     },
-    
+
     async getBookingsByCustomer(customerId) {
         const response = await Axios.get(`${BASE_URL}/bookings/customer/${customerId}`);
         return response.data;
     },
-    
+
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
         return response.data;
