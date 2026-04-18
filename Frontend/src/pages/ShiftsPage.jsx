@@ -23,17 +23,35 @@ export default function ShiftsPage() {
 
 
     useEffect(() => {
-        const nextDrafts = {};
+        if (user?.role?.name !== "STAFF" && user?.role?.name !== "ADMIN") return;
 
-        shifts.forEach((shift) => {
-            nextDrafts[shift.shiftId] = {
-                startShift: shift.startShift,
-                endShift: shift.endShift,
-            };
+        setShiftDrafts((currentDrafts) => {
+            const nextDrafts = {};
+
+            shifts.forEach((shift) => {
+                nextDrafts[shift.shiftId] = {
+                    startShift: shift.startShift,
+                    endShift: shift.endShift,
+                };
+            });
+
+            const currentKeys = Object.keys(currentDrafts);
+            const nextKeys = Object.keys(nextDrafts);
+
+            if (currentKeys.length !== nextKeys.length) return nextDrafts;
+
+            for (const key of nextKeys) {
+                if (
+                    currentDrafts[key]?.startShift !== nextDrafts[key].startShift ||
+                    currentDrafts[key]?.endShift !== nextDrafts[key].endShift
+                ) {
+                    return nextDrafts;
+                }
+            }
+
+            return currentDrafts;
         });
-
-        setShiftDrafts(nextDrafts);
-    }, [shifts]);
+    }, [shifts, user?.role?.name]);
 
     const orderedShifts = [
         { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },

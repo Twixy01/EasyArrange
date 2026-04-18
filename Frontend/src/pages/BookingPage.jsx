@@ -27,6 +27,7 @@ function BookingPage() {
   const [success, setSuccess] = useState("");
 
   const preselectedStaffId = location.state?.staffId ?? null;
+  const preselectedServiceFromState = location.state?.service ?? null;
   const hasPreselectedStaff = Boolean(preselectedStaffId);
 
   const {
@@ -34,6 +35,28 @@ function BookingPage() {
     isLoading: servicesLoading,
     error: servicesError,
   } = useServices();
+
+  useEffect(() => {
+    if (!preselectedServiceFromState) return;
+
+    if (!selectedService || String(selectedService.serviceId) !== String(preselectedServiceFromState.serviceId)) {
+      setTimeout(() => {
+        setSelectedService(preselectedServiceFromState);
+        setSelectedStaff(null);
+        setSelectedSlot(null);
+        setSuccess("");
+      }, 0);
+    }
+
+    if (services.length > 0) {
+      const matched = services.find(
+        (s) => String(s.serviceId) === String(preselectedServiceFromState.serviceId)
+      );
+      if (matched && String(matched.serviceId) !== String(selectedService?.serviceId)) {
+        setTimeout(() => setSelectedService(matched), 0);
+      }
+    }
+  }, [preselectedServiceFromState, services, selectedService]);
 
   const {
     data: staff = [],
@@ -43,13 +66,21 @@ function BookingPage() {
 
   const serviceOptions = hasPreselectedStaff && selectedStaff?.services?.length > 0
     ? selectedStaff.services
-    : services;
+    : (services && services.length > 0 ? services : (preselectedServiceFromState ? [preselectedServiceFromState] : []));
 
   const {
     data: availableStaff = [],
     isLoading: staffLoading,
     error: staffError,
   } = useAvailableStaff(selectedService?.serviceId);
+
+  useEffect(() => {
+    if (!selectedService) return;
+    if (!availableStaff || availableStaff.length === 0) return;
+    if (selectedStaff) return; // user already selected
+
+    setTimeout(() => setSelectedStaff(availableStaff[0]), 0);
+  }, [availableStaff, selectedService, selectedStaff]);
 
   const {
     data: slots = [],
@@ -69,18 +100,18 @@ function BookingPage() {
 
     if (!preselectedStaff) return;
 
-    setSelectedStaff(preselectedStaff);
+    setTimeout(() => setSelectedStaff(preselectedStaff), 0);
   }, [preselectedStaffId, staff, selectedStaff]);
 
   useEffect(() => {
-    setSelectedSlot(null);
+    setTimeout(() => setSelectedSlot(null), 0);
   }, [selectedStaff, selectedDate]);
 
-  if (servicesLoading) {
+  if (servicesLoading && !preselectedServiceFromState) {
     return <p>Loading services...</p>;
   }
 
-  if (servicesError) {
+  if (servicesError && !preselectedServiceFromState) {
     return <p>Failed to load services.</p>;
   }
 
@@ -263,13 +294,12 @@ function BookingPage() {
 
             <div className="booking-step">
               <h3>4. Choose available time slot</h3>
-
               {!selectedStaff ? (
                 <p className="muted">Select a staff member first.</p>
               ) : slotsLoading ? (
                 <p className="muted">Loading available slots...</p>
               ) : slotsError ? (
-                <p className="muted">Failed to load time slots.</p>
+                <p className="muted">{slotsError.details}</p>
               ) : slots.length === 0 ? (
                 <p className="muted">No available slots for the current selection.</p>
               ) : (

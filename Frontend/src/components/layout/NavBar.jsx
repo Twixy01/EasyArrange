@@ -5,14 +5,12 @@ import { useAuth } from '../../hooks/useAuth'
 function NavBar() {
     const [open, setOpen] = useState(false);
     const { isLoggedIn, user, staff, logout } = useAuth()
+    const roleName = typeof user?.role === "string" ? user.role : user?.role?.name;
+    const canManageStaffSchedule = roleName === "STAFF" || roleName === "ADMIN";
 
     const closeMenu = () => setOpen(false);
 
     const navigate = useNavigate()
-
-    // useEffect(() => {
-    //     console.debug('[NavBar] auth changed - isLoggedIn:', isLoggedIn, 'user:', user, 'staff:', staff)
-    // }, [isLoggedIn, user, staff])
 
     const handleLogout = (e) => {
         e.preventDefault()
@@ -35,7 +33,7 @@ function NavBar() {
                     <NavLink to="/about"> About Us </NavLink>
                     <NavLink to="/contact"> Contact </NavLink>
                     <NavLink to="/booking"> Book Now </NavLink>
-                    {staff ? (
+                    {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts"> My Shifts </NavLink>
                             <NavLink to="/time-off"> Time Off </NavLink>
@@ -89,7 +87,7 @@ function NavBar() {
                     <NavLink to="/booking" onClick={closeMenu}>
                         Book Now
                     </NavLink>
-                    {staff ? (
+                    {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>
                             <NavLink to="/time-off" onClick={closeMenu}> Time Off </NavLink>

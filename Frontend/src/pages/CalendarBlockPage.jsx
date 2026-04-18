@@ -18,7 +18,6 @@ export default function CalendarBlockPage() {
   const [isAllDay, setIsAllDay] = useState(true);
   const [selectedStartDateTime, setSelectedStartDateTime] = useState(minDateTime1);
   const [selectedEndDateTime, setSelectedEndDateTime] = useState(minDateTime2);
-  console.log("Selected start:", selectedStartDateTime, "Selected end:", selectedEndDateTime);
   const { mutate: createCalendarBlock, } = useCreateCalendarBlock();
   
   const previewText = useMemo(() => {

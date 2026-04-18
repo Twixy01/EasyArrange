@@ -1,14 +1,11 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.*;
 import org.example.backend.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Validated
 @org.springframework.stereotype.Service
 public class BookingService {
 
@@ -170,7 +166,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse create(@NotNull @Valid BookingCreateRequest bookingRequest) {
+    public BookingResponse create(BookingCreateRequest bookingRequest) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -201,7 +197,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse update(@Valid Long id, BookingUpdateRequest bookingRequest) {
+    public BookingResponse update(Long id, BookingUpdateRequest bookingRequest) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -227,8 +223,27 @@ public class BookingService {
 
 
     @Transactional
+    public void cancel(Long id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("Booking not found with id: " + id));
+
+        LocalDateTime now = LocalDateTime.now();
+        // Block cancellation if booking.startDateTime is not after now + 24 hours
+        if (!booking.getStartDateTime().isAfter(now.plusHours(24))) {
+            throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
+        }
+
+        //mark it as CANCELLED and persist the status
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+    }
+
+    @Transactional
     public void remove(Long id) {
-        bookingRepository.deleteById(id);
+        Booking booking = bookingRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("Booking not found with id: " + id));
+
+        bookingRepository.deleteById(booking.getId());
     }
 
 }
