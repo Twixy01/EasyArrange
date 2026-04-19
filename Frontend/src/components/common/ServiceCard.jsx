@@ -30,7 +30,7 @@ export default function ServiceCard({ service }) {
       {description && <p className="muted">{description}</p>}
       <div className="service-meta">
         {displayDuration != null && <span>{displayDuration} min</span>}
-        {price != null && <span style={{ marginLeft: 8 }}>€{price}</span>}
+        {price != null && <span style={{ marginLeft: 8 }}>{price} Ft</span>}
       </div>
 
       <div style={{ marginTop: 12 }}>

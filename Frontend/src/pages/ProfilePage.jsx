@@ -91,10 +91,10 @@ function ProfilePage() {
         }
     }
 
-    // --- NEW: prepare sorted bookings and helper for display ---
+    //sorting bookings by status
     const getStatusOrder = (status) => {
         const s = String(status || '').toUpperCase().trim()
-        // order: ongoing, booked, completed, cancelled, others
+        //order: ongoing, booked, completed, cancelled, others
         if (s === 'ONGOING' || s === 'IN_PROGRESS') return 0
         if (s === 'BOOKED' || s === 'SCHEDULED') return 1
         if (s === 'COMPLETED' || s === 'DONE') return 2
@@ -106,7 +106,7 @@ function ProfilePage() {
         const oa = getStatusOrder(a.status)
         const ob = getStatusOrder(b.status)
         if (oa !== ob) return oa - ob
-        // fallback: earlier start first
+        //fallback: earlier start first
         const ta = a.startDateTime ? new Date(a.startDateTime).getTime() : Number.POSITIVE_INFINITY
         const tb = b.startDateTime ? new Date(b.startDateTime).getTime() : Number.POSITIVE_INFINITY
         return ta - tb
@@ -125,7 +125,7 @@ function ProfilePage() {
         return `${hours}h ${minutes}m`
     }
 
-    // format date as YYYY.MM.DD HH:MM (local time)
+    //format date as YYYY.MM.DD HH:MM (local time)
     const formatDisplayDate = (iso) => {
         if (!iso) return 'Unknown'
         const d = new Date(iso)
@@ -137,7 +137,6 @@ function ProfilePage() {
         const min = String(d.getMinutes()).padStart(2, '0')
         return `${yyyy}.${mm}.${dd} ${hh}:${min}`
     }
-    // --- END new helpers ---
 
     return (
         <section className="section profile-section">
@@ -210,7 +209,7 @@ function ProfilePage() {
                                                                 <div
                                                                     className="muted">With: {b.staff?.user?.name || '—'}</div>
                                                                 <div
-                                                                    className="muted">Service: {b.service?.name || '—'}</div>
+                                                                    className="muted">Service: {b.service?.name ? `${b.service.name} | ${b.service?.price != null ? ` ${b.service.price} Ft` : ''}` : '—'}</div>
                                                                 {startsAt && getStatusOrder(b.status) === 1 && (
                                                                     <div className="muted" style={{marginTop: 4}}>
                                                                         Starts in: {formatTimeUntil(msUntil)}
@@ -272,7 +271,7 @@ function ProfilePage() {
                                     servicesCount: 'n/a',
                                     bookingsCount: bookings.length,
                                     bookings
-                                }, null, 2)}</pre
+                                }, null, 2)}</pre>
                             </div>
                         </Card>
                     )}
