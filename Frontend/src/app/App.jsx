@@ -13,7 +13,7 @@ import ProfilePage from '../pages/ProfilePage'
 import ProfileEditPage from '../pages/ProfileEditPage'
 import ShiftsPage from '../pages/ShiftsPage'
 import CalendarBlockPage from '../pages/CalendarBlockPage'
-import ManageStaffs from '../pages/ManageStaffs'
+// import ManageStaffs from '../pages/ManageStaffs'
 import ManageServices from '../pages/ManageServices'
 import ManageUsers from '../pages/ManageUsers'
 import { UIStateProvider } from "../context/UIStateContext.jsx";
@@ -63,7 +63,7 @@ function App() {
                     <Route path="/profile/edit" element={<ProfileEditPage />} />
                     <Route path="/shifts" element={<ShiftsPage />} />
                     <Route path="/time-off" element={<CalendarBlockPage />} />
-                    <Route path="/admin/staffs" element={<ManageStaffs />} />
+                    {/* <Route path="/admin/staffs" element={<ManageStaffs />} /> */}
                     <Route path="/admin/services" element={<ManageServices />} />
                     <Route path="/admin/users" element={<ManageUsers />} />
                 </Routes>

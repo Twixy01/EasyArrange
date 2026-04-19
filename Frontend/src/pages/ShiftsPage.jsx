@@ -11,6 +11,7 @@ import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 
 export default function ShiftsPage() {
     const { user, staff } = useAuth();
+    const roleNameUpper = user?.role?.name ? String(user.role.name).toUpperCase() : null;
     const { mutate: updateShiftMutate } = useUpdateShiftForStaffDay();
     const { mutate: removeShiftMutate } = useDeleteStaffShift();
 
@@ -23,7 +24,7 @@ export default function ShiftsPage() {
 
 
     useEffect(() => {
-        if (user?.role?.name !== "STAFF" && user?.role?.name !== "ADMIN") return;
+        if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return;
 
         setShiftDrafts((currentDrafts) => {
             const nextDrafts = {};
@@ -51,7 +52,7 @@ export default function ShiftsPage() {
 
             return currentDrafts;
         });
-    }, [shifts, user?.role?.name]);
+    }, [shifts, roleNameUpper]);
 
     const orderedShifts = [
         { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
@@ -89,7 +90,7 @@ export default function ShiftsPage() {
         }
     });
 
-    if (user?.role?.name !== "STAFF" && user?.role?.name !== "ADMIN") return (<p>You do not have permission to view this page.</p>);
+    if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (<p>You do not have permission to view this page.</p>);
 
     if (isLoading) {
         return (

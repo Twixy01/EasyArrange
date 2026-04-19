@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -44,7 +45,14 @@ public class BookingRestController {
 
     @GetMapping("/customer/{customerId}")
     public List<BookingResponse> getByCustomer(@PathVariable("customerId") Long customerId) {
-        return bookingService.findBookingsByCustomerId(customerId);
+        try {
+            return bookingService.findBookingsByCustomerId(customerId);
+        } catch (Exception ex) {
+            // defensive: if something goes wrong while computing/updating bookings, don't fail the GET
+            System.err.println("Error while fetching bookings for customer " + customerId + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     @GetMapping("/between")

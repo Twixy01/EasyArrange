@@ -9,7 +9,7 @@ import { salonApi } from '../api/salonApi'
 
 function ManageServices() {
     const { user } = useAuth()
-    const isAdmin = !!(user && user.role && String(user.role.name).toLowerCase() === 'admin')
+    const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
     const { data: services = [], isLoading, error } = useServices()
     const queryClient = useQueryClient()
