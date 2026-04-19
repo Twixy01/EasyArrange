@@ -136,7 +136,11 @@ public class BookingService {
         Shift shiftBySelectedDate = shifts.stream()
                 .filter(shift -> shift.getDay().name().equals(selectedDate.getDayOfWeek().name()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No shift found for staff with id " + staffId + " on date " + selectedDate));
+                .orElse(null);
+
+        if (shiftBySelectedDate == null) {
+            return List.of();
+        }
 
         LocalDateTime startOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getStartShift());
         LocalDateTime endOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getEndShift());
