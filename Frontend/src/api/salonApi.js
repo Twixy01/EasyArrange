@@ -100,5 +100,10 @@ export const salonApi = {
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
         return response.data;
+    },
+
+    async getUsers() {
+        const response = await Axios.get(`${BASE_URL}/users`);
+        return response.data;
     }
 };

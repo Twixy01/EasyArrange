@@ -6,5 +6,8 @@ export function useStaffByUser(userId) {
         queryKey: ["staffByUser", userId],
         queryFn: () => salonApi.getStaffByUser(userId),
         enabled: !!userId,
+        retry: false,
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 5 // 5 minutes
     })
 }

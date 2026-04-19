@@ -1,7 +1,7 @@
-import {useState} from 'react'
-import {useNavigate, Link} from 'react-router-dom'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
-import {useAuth} from '../hooks/useAuth'
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import {cancelBooking} from '../services/api'
@@ -15,6 +15,9 @@ function ProfilePage() {
     const [bookingSuccess, setBookingSuccess] = useState(null)
 
     const customerId = user?.userId
+
+    // stable snapshot of "now" for this render to satisfy purity rule
+    // const now = useMemo(() => Date.now(), [])
 
     const {
         data: bookings = [],
@@ -72,7 +75,7 @@ function ProfilePage() {
 
 
     const roleData = user.role
-    const roleLabel = roleData?.name ?? (roleData?.roleId ? `Role #${roleData.roleId}` : null)
+    const roleLabel = roleData?.name ? String(roleData.name).toUpperCase() : (roleData?.roleId ? `Role #${roleData.roleId}` : null)
 
     const handleCancelBooking = async (bookingId) => {
         if (!bookingId) {
