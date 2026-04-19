@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import Button from '../components/common/Button'
@@ -14,6 +14,9 @@ function ProfilePage() {
     const queryClient = useQueryClient()
     const [bookingSuccess, setBookingSuccess] = useState(null)
     const customerId = user?.userId
+
+    // stable snapshot of "now" for this render to satisfy purity rule
+    const now = useMemo(() => Date.now(), [])
 
     const {
         data: bookings = [],
@@ -125,7 +128,7 @@ function ProfilePage() {
 
                                                 //compute whether this booking starts within the next 24 hours
                                                 const startsAt = b.startDateTime ? new Date(b.startDateTime) : null
-                                                const msUntil = startsAt ? (startsAt.getTime() - Date.now()) : null
+                                                const msUntil = startsAt ? (startsAt.getTime() - now) : null
                                                 const within24h = msUntil != null ? (msUntil <= 24 * 60 * 60 * 1000) : false
                                                 const minutesUntil = msUntil != null ? Math.ceil(msUntil / 60000) : null
                                                 const hoursUntil = minutesUntil != null ? Math.floor(minutesUntil / 60) : null

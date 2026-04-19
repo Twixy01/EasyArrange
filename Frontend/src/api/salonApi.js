@@ -67,8 +67,14 @@ export const salonApi = {
     },
 
     async getStaffByUser(userId) {
-        const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`);
-        return response.data;
+        try {
+            const response = await Axios.get(`${BASE_URL}/staff/user/${userId}`);
+            return response.data;
+        } catch (err) {
+            // if user is not a staff, the backend may return 400/404 — return null so callers can handle absence
+            if (err?.response?.status === 400 || err?.response?.status === 404) return null
+            throw err
+        }
     },
 
     async createCalendarBlock({ title, startDateTime, endDateTime, staffId }) {
@@ -89,6 +95,11 @@ export const salonApi = {
     
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
+        return response.data;
+    },
+
+    async getUsers() {
+        const response = await Axios.get(`${BASE_URL}/users`);
         return response.data;
     }
 };

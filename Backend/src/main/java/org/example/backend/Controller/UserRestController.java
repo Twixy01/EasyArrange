@@ -7,6 +7,8 @@ import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +30,14 @@ public class UserRestController {
 
     @GetMapping()
     public List<UserResponse> getUsers() {
-        return userService.findAll();
+        //get current authenticated username (typically email)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = auth != null ? auth.getName() : null;
+
+        //retrieve all users and filter out the currently logged-in user (by email)
+        return userService.findAll().stream()
+                .filter(u -> currentEmail == null || !currentEmail.equals(u.email()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}")
@@ -65,6 +74,11 @@ public class UserRestController {
     @PutMapping("/{userId}")
     public UserResponse updateUser(@Valid @PathVariable("userId") @Positive Long userId, @Valid @RequestBody UserUpdateRequest userDto) {
         return userService.update(userId, userDto);
+    }
+
+    @PutMapping("/admin/{userId}")
+    public UserResponse updateUserAsAdmin(@Valid @PathVariable("userId") @Positive Long userId, @Valid @RequestBody AdminUserUpdateRequest adminDto) {
+        return userService.updateAsAdmin(userId, adminDto);
     }
 
     @DeleteMapping("/{userId}")

@@ -1,12 +1,15 @@
 import { Link, NavLink, useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from '../../hooks/useAuth'
 
 function NavBar() {
     const [open, setOpen] = useState(false);
-    const { isLoggedIn, user, staff, logout } = useAuth()
-    const roleName = typeof user?.role === "string" ? user.role : user?.role?.name;
-    const canManageStaffSchedule = roleName === "STAFF" || roleName === "ADMIN";
+    const { isLoggedIn, user, logout } = useAuth()
+    // ...normalize role name to handle string or object and make checks case-insensitive...
+    const roleNameRaw = typeof user?.role === "string" ? user.role : user?.role?.name;
+    const roleName = roleNameRaw ? String(roleNameRaw).toLowerCase() : null;
+    const canManageStaffSchedule = roleName === 'staff' || roleName === 'admin';
+    const isAdmin = roleName === 'admin';
 
     const closeMenu = () => setOpen(false);
 
@@ -33,12 +36,20 @@ function NavBar() {
                     <NavLink to="/about"> About Us </NavLink>
                     <NavLink to="/contact"> Contact </NavLink>
                     <NavLink to="/booking"> Book Now </NavLink>
+
                     {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts"> My Shifts </NavLink>
                             <NavLink to="/time-off"> Time Off </NavLink>
                         </>
                     ) : null}
+
+                    {isAdmin && (
+                        <div className="admin-links" style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
+                            <NavLink to="/admin/users" style={{ color: 'gold', fontWeight: 600 }}>Manage Users</NavLink>
+                            <NavLink to="/admin/services" style={{ color: 'gold', fontWeight: 600 }}>Manage Services</NavLink>
+                        </div>
+                    )}
                 </nav>
 
                 <div className="navbar-actions">
@@ -87,6 +98,14 @@ function NavBar() {
                     <NavLink to="/booking" onClick={closeMenu}>
                         Book Now
                     </NavLink>
+
+                    {isAdmin && (
+                        <>
+                            <NavLink to="/admin/users" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Users </NavLink>
+                            <NavLink to="/admin/services" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Services </NavLink>
+                        </>
+                    )}
+
                     {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>
