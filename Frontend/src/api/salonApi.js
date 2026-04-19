@@ -90,5 +90,19 @@ export const salonApi = {
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
         return response.data;
+    },
+
+    async getOverlappingBookings(staffId, start, end){
+        const response = await Axios.get(`${BASE_URL}/bookings/staff/${staffId}/overlaps`, {
+            params: {
+                start,
+                end
+            }
+        })
+         return response.data;
+     },
+    async getCalendarBlocksByStaff(staffId) {
+        const response = await Axios.get(`${BASE_URL}/calendar-blocks/staff/${staffId}`);
+        return response.data;
     }
 };

@@ -35,7 +35,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b ORDER BY b.startDateTime DESC")
     List<Booking> findAllByOrderByStartDateTimeDesc();
 
-    @Query("FROM Booking b WHERE b.staff.id = :staffId AND :start < b.endDateTime AND :end > b.startDateTime")
+    @Query("""
+            FROM Booking b WHERE b.staff.id = :staffId
+            AND :start < b.endDateTime
+            AND :end > b.startDateTime
+    """)
     List<Booking> findAllOverlaps(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
 
     @Query("""

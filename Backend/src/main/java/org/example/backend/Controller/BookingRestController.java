@@ -1,5 +1,6 @@
 package org.example.backend.Controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
@@ -68,6 +69,15 @@ public class BookingRestController {
     public List<BookingResponse> getByStatus(@RequestParam("status") String status) {
         BookingStatus bookingStatus = BookingStatus.valueOf(status);
         return bookingService.findBookingsByStatus(bookingStatus);
+    }
+
+    @GetMapping("/staff/{staffId}/overlaps")
+    public List<BookingResponse> getOverlaps(
+            @PathVariable Long staffId,
+            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+    ) {
+        return bookingService.findOverlappingBookings(staffId, start, end);
     }
 
     @PostMapping("/create")

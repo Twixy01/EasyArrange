@@ -38,5 +38,4 @@ public interface CalendarBlockRepository extends JpaRepository<CalendarBlock, Lo
                 AND cb.endDateTime = :end
     """)
     boolean existsCalendarBlockByStaffIdStartDateTimeAndEndDateTime(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
-
 }

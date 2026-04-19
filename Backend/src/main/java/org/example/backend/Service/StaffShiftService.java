@@ -161,12 +161,12 @@ public class StaffShiftService {
     }
 
     private void validateShiftTimes(LocalTime startShift, LocalTime endShift) {
-        if (startShift.plusHours(1).isAfter(endShift)) {
-            throw new IllegalArgumentException("Shift must be at least 1 hour long");
-        }
-
         if (!startShift.isBefore(endShift)) {
             throw new IllegalArgumentException("Shift start time must be before end time");
+        }
+
+        if (startShift.plusHours(1).isAfter(endShift)) {
+            throw new IllegalArgumentException("Shift must be at least 1 hour long");
         }
     }
 

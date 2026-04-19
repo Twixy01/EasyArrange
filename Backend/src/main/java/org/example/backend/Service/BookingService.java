@@ -110,6 +110,16 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    public List<BookingResponse> findOverlappingBookings(Long staffId, LocalDateTime start, LocalDateTime end) {
+        if (!start.isBefore(end)) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
+        }
+
+        return bookingRepository.findAllOverlaps(staffId, start, end).stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
+    }
+
     public List<AvailableSlotResponse> getAvailableSlots(Long staffId, LocalDate selectedDate, Long serviceId) {
         List<Shift> shifts = staffShiftRepository.findAllShiftsByStaffId(staffId);
 
