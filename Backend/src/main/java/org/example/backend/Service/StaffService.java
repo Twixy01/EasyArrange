@@ -10,6 +10,8 @@ import org.example.backend.Repository.StaffRepository;
 import org.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +45,7 @@ public class StaffService {
 
     public StaffResponse findStaffByUserId(Long id){
         Optional<Staff> staff = staffRepository.findStaffByUserId(id);
-        return staff.map(staffResponseMapper).orElseThrow(() -> new IllegalArgumentException("Staff Not Found By UserId!"));
+        return staff.map(staffResponseMapper).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found for user id: " + id));
     }
 
     public boolean existsByUserId(Long userId) {

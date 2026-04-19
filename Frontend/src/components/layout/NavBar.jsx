@@ -5,11 +5,11 @@ import { useAuth } from '../../hooks/useAuth'
 function NavBar() {
     const [open, setOpen] = useState(false);
     const { isLoggedIn, user, logout } = useAuth()
-    // ...normalize role name to handle string or object and make checks case-insensitive...
+
     const roleNameRaw = typeof user?.role === "string" ? user.role : user?.role?.name;
-    const roleName = roleNameRaw ? String(roleNameRaw).toLowerCase() : null;
-    const canManageStaffSchedule = roleName === 'staff' || roleName === 'admin';
-    const isAdmin = roleName === 'admin';
+    const roleNameUpper = roleNameRaw ? String(roleNameRaw).toUpperCase() : null;
+    const canManageStaffSchedule = roleNameUpper === 'STAFF' || roleNameUpper === 'ADMIN';
+    const isAdmin = roleNameUpper === 'ADMIN';
 
     const closeMenu = () => setOpen(false);
 

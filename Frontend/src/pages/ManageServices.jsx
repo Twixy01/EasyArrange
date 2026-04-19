@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 
 function ManageServices() {
     const { user } = useAuth()
-    const isAdmin = !!(user && user.role && String(user.role.name).toLowerCase() === 'admin')
+    const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
     if (!user) {
         return (

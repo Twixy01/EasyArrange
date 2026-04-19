@@ -8,7 +8,7 @@ import { updateUser, deleteUser, adminUpdateUser } from '../services/api'
 
 function ManageUsers() {
     const { user } = useAuth()
-    const isAdmin = !!(user && user.role && String(user.role.name).toLowerCase() === 'admin')
+    const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
     const { data: users = [], isLoading, error } = useUsers()
     const queryClient = useQueryClient()
@@ -35,9 +35,9 @@ function ManageUsers() {
         })
         // ensure at least common roles if none found
         if (map.size === 0) {
-            map.set('customer', { roleId: null, name: 'customer' })
-            map.set('staff', { roleId: null, name: 'staff' })
-            map.set('admin', { roleId: null, name: 'admin' })
+            map.set('CUSTOMER', { roleId: null, name: 'CUSTOMER' })
+            map.set('STAFF', { roleId: null, name: 'STAFF' })
+            map.set('ADMIN', { roleId: null, name: 'ADMIN' })
         }
         return Array.from(map.values())
     }, [displayedUsers])
@@ -155,7 +155,7 @@ function ManageUsers() {
             roleObj = { roleId: Number(editValues.role.roleId), name: editValues.role.name }
         } else if (editValues.role && editValues.role.name) {
             // no roleId available; try to find matching role from availableRoles
-            const match = availableRoles.find(r => String(r.name).toLowerCase() === String(editValues.role.name).toLowerCase())
+            const match = availableRoles.find(r => String(r.name).toUpperCase() === String(editValues.role.name).toUpperCase())
             roleObj = match && match.roleId ? { roleId: match.roleId, name: match.name } : { roleId: null, name: editValues.role.name }
         }
 
