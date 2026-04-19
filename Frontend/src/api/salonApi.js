@@ -49,7 +49,7 @@ export const salonApi = {
         const response = await Axios.post(`${BASE_URL}/bookings/create`, bookingData);
         return response.data;
     },
-    
+
     async updateShiftForStaffDay({staffId, day, startShift, endShift}){
         const updateData = {
             staffId,
@@ -87,12 +87,12 @@ export const salonApi = {
         const response = await Axios.post(`${BASE_URL}/calendar-blocks/create`, calendarBlockData);
         return response.data;
     },
-    
+
     async getBookingsByCustomer(customerId) {
         const response = await Axios.get(`${BASE_URL}/bookings/customer/${customerId}`);
         return response.data;
     },
-    
+
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
         return response.data;
@@ -100,6 +100,23 @@ export const salonApi = {
 
     async getUsers() {
         const response = await Axios.get(`${BASE_URL}/users`);
+        return response.data;
+    },
+
+    // --- Service management (admin) ---
+    async createService(servicePayload) {
+        // expects { name, description, durationMinutes, price }
+        const response = await Axios.post(`${BASE_URL}/services`, servicePayload);
+        return response.data;
+    },
+
+    async updateService(serviceId, servicePayload) {
+        const response = await Axios.put(`${BASE_URL}/services/${serviceId}`, servicePayload);
+        return response.data;
+    },
+
+    async deleteService(serviceId) {
+        const response = await Axios.delete(`${BASE_URL}/services/${serviceId}`);
         return response.data;
     }
 };

@@ -1,11 +1,14 @@
 package org.example.backend.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.*;
 import org.example.backend.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated
 @org.springframework.stereotype.Service
 public class BookingService {
 
@@ -69,17 +73,31 @@ public class BookingService {
     public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
         List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
                 .map(booking -> {
-                    BookingStatus status = booking.getStatus();
-                    if (status == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
-                        status = BookingStatus.COMPLETED;
+                    BookingStatus currentStatus = booking.getStatus();
+                    BookingStatus computedStatus = currentStatus;
+                    if (currentStatus == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
+                        computedStatus = BookingStatus.COMPLETED;
                     }
-                    BookingUpdateRequest request = new BookingUpdateRequest(
-                            booking.getStartDateTime(),
-                            booking.getEndDateTime(),
-                            booking.getService().getId(),
-                            status.name()
-                    );
-                    return update(booking.getId(), request);
+
+                    // If booking is already CANCELLED, don't attempt to call update() because update()
+                    // enforces cancellation rules (and may throw when re-applying CANCELLED). Just map directly.
+                    if (currentStatus == BookingStatus.CANCELLED) {
+                        return bookingResponseMapper.apply(booking);
+                    }
+
+                    // If computed status differs and it's safe to update (e.g., BOOKED -> COMPLETED), perform update
+                    if (computedStatus != currentStatus) {
+                        BookingUpdateRequest request = new BookingUpdateRequest(
+                                booking.getStartDateTime(),
+                                booking.getEndDateTime(),
+                                booking.getService().getId(),
+                                computedStatus.name()
+                        );
+                        return update(booking.getId(), request);
+                    }
+
+                    // No update required, return mapped response
+                    return bookingResponseMapper.apply(booking);
                 })
                 .collect(Collectors.toList());
 
@@ -166,7 +184,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse create(BookingCreateRequest bookingRequest) {
+    public BookingResponse create(@NotNull @Valid BookingCreateRequest bookingRequest) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -197,7 +215,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse update(Long id, BookingUpdateRequest bookingRequest) {
+    public BookingResponse update(@Valid Long id, BookingUpdateRequest bookingRequest) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -209,6 +227,18 @@ public class BookingService {
         Booking existing = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
+        // If the client attempts to cancel the booking, enforce the 24-hour rule against
+        // the currently stored start datetime to prevent bypassing by changing startDateTime
+        if (BookingStatus.CANCELLED.name().equals(bookingRequest.status())) {
+            LocalDateTime originalStart = existing.getStartDateTime();
+            LocalDateTime now = LocalDateTime.now();
+            // Block cancellation if the stored start is not after now + 24 hours (i.e. start <= now+24h)
+            if (!originalStart.isAfter(now.plusHours(24))) {
+                throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
+            }
+        }
+
+        // apply updates from request
         bookingUpdateRequestMapper.accept(existing, bookingRequest);
 
         Service service = serviceRepository.findById(bookingRequest.serviceId())
@@ -223,7 +253,7 @@ public class BookingService {
 
 
     @Transactional
-    public void cancel(Long id) {
+    public void remove(Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
@@ -233,17 +263,21 @@ public class BookingService {
             throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
         }
 
-        //mark it as CANCELLED and persist the status
+        // Instead of hard-deleting the booking, mark it as CANCELLED and persist the status
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void hardRemove(Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
-        bookingRepository.deleteById(booking.getId());
+        if (booking.getStatus() != BookingStatus.CANCELLED) {
+            throw new IllegalArgumentException("Only cancelled bookings can be removed permanently");
+        }
+
+        bookingRepository.deleteById(id);
     }
 
 }

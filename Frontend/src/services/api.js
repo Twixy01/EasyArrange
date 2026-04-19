@@ -88,6 +88,40 @@ export const api = {
                 headers: getAuthHeaders()
             })
         );
+    },
+
+    // --- Service management wrappers ---
+    async createService(servicePayload) {
+        // backend expects POST /api/services/create
+        return request(() =>
+            Axios.post(`${BASE_URL}/services/create`, servicePayload, { headers: getAuthHeaders(true) })
+        );
+    },
+
+    async updateService(serviceId, servicePayload) {
+        return request(() =>
+            Axios.put(`${BASE_URL}/services/${serviceId}`, servicePayload, { headers: getAuthHeaders(true) })
+        );
+    },
+
+    async deleteService(serviceId) {
+        return request(() =>
+            Axios.delete(`${BASE_URL}/services/${serviceId}`, { headers: getAuthHeaders() })
+        );
+    },
+
+    // --- Staff-Service management ---
+    async createStaffService(payload) {
+        // payload: { staffId, serviceId }
+        return request(() =>
+            Axios.post(`${BASE_URL}/staff-services/create`, payload, { headers: getAuthHeaders(true) })
+        );
+    },
+
+    async deleteStaffService(staffId, serviceId) {
+        return request(() =>
+            Axios.delete(`${BASE_URL}/staff-services/${staffId}/${serviceId}`, { headers: getAuthHeaders() })
+        );
     }
 };
 
@@ -97,3 +131,12 @@ export const adminUpdateUser = (userId, userPayload) => api.adminUpdateUser(user
 export const updateBooking = (bookingId, bookingPayload) => api.updateBooking(bookingId, bookingPayload);
 export const cancelBooking = (bookingId) => api.cancelBooking(bookingId);
 export const deleteUser = (userId) => api.deleteUser(userId);
+
+// service exports
+export const createService = (payload) => api.createService(payload);
+export const updateService = (serviceId, payload) => api.updateService(serviceId, payload);
+export const deleteService = (serviceId) => api.deleteService(serviceId);
+
+// staff-service exports
+export const createStaffService = (payload) => api.createStaffService(payload);
+export const deleteStaffService = (staffId, serviceId) => api.deleteStaffService(staffId, serviceId);

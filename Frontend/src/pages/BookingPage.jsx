@@ -39,7 +39,10 @@ function BookingPage() {
   useEffect(() => {
     if (!preselectedServiceFromState) return;
 
+    // If not yet set or a different service was passed, set it immediately so dependent
+    // hooks (e.g. available staff) can fetch right away.
     if (!selectedService || String(selectedService.serviceId) !== String(preselectedServiceFromState.serviceId)) {
+      // defer state updates to avoid cascading render lint warning
       setTimeout(() => {
         setSelectedService(preselectedServiceFromState);
         setSelectedStaff(null);
@@ -48,6 +51,8 @@ function BookingPage() {
       }, 0);
     }
 
+    // If the full services list is available, try to replace the selectedService with the
+    // canonical object from `services` (ensures consistent shape across the app).
     if (services.length > 0) {
       const matched = services.find(
         (s) => String(s.serviceId) === String(preselectedServiceFromState.serviceId)
@@ -79,6 +84,7 @@ function BookingPage() {
     if (!availableStaff || availableStaff.length === 0) return;
     if (selectedStaff) return; // user already selected
 
+    // defer to avoid lint rule about setState in effect
     setTimeout(() => setSelectedStaff(availableStaff[0]), 0);
   }, [availableStaff, selectedService, selectedStaff]);
 
@@ -87,9 +93,6 @@ function BookingPage() {
     isLoading: slotsLoading,
     error: slotsError,
   } = useAvailableSlots(selectedStaff?.staffId, selectedDate, selectedService?.serviceId);
-
-  const { mutate } = useCreateBooking();
-
 
   useEffect(() => {
     if (!preselectedStaffId || staff.length === 0 || selectedStaff) return;
@@ -100,10 +103,14 @@ function BookingPage() {
 
     if (!preselectedStaff) return;
 
+    // defer to avoid lint rule
     setTimeout(() => setSelectedStaff(preselectedStaff), 0);
   }, [preselectedStaffId, staff, selectedStaff]);
 
+  const { mutate } = useCreateBooking();
+
   useEffect(() => {
+    // avoid lint rule by deferring state update
     setTimeout(() => setSelectedSlot(null), 0);
   }, [selectedStaff, selectedDate]);
 
@@ -140,10 +147,7 @@ function BookingPage() {
         onSuccess: () => {
           setSuccess("Your appointment has been booked successfully.");
           setSelectedSlot(null);
-          setTimeout(() => navigate("/profile"), 1000);
-        },
-        onError: () => {
-          setSuccess("");
+          setTimeout(() => navigate("/"), 1000);
         }
       }
     );
@@ -321,10 +325,6 @@ function BookingPage() {
                 </div>
               )}
             </div>
-            <Button 
-              variant="secondary"
-              className="booking-summary-jump"
-              onClick={() => {window.scrollTo(0, 0)}}>Go to confirmation 🔝</Button>
           </div>
 
           <aside className="booking-sidebar">
