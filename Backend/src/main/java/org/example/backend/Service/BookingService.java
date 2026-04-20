@@ -1,6 +1,6 @@
 package org.example.backend.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.*;
@@ -69,17 +69,37 @@ public class BookingService {
     public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
         List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
                 .map(booking -> {
-                    BookingStatus status = booking.getStatus();
-                    if (status == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
-                        status = BookingStatus.COMPLETED;
+                    BookingStatus currentStatus = booking.getStatus();
+                    BookingStatus computedStatus = currentStatus;
+                    if (currentStatus == BookingStatus.BOOKED && booking.getEndDateTime().isBefore(LocalDateTime.now())) {
+                        computedStatus = BookingStatus.COMPLETED;
                     }
-                    BookingUpdateRequest request = new BookingUpdateRequest(
-                            booking.getStartDateTime(),
-                            booking.getEndDateTime(),
-                            booking.getService().getId(),
-                            status.name()
-                    );
-                    return update(booking.getId(), request);
+
+                    // If booking is already CANCELLED, don't attempt to call update() because update()
+                    // enforces cancellation rules (and may throw when re-applying CANCELLED). Just map directly.
+                    if (currentStatus == BookingStatus.CANCELLED) {
+                        return bookingResponseMapper.apply(booking);
+                    }
+
+                    // If computed status differs and it's safe to update (e.g., BOOKED -> COMPLETED), perform update
+                    if (computedStatus != currentStatus) {
+                        BookingUpdateRequest request = new BookingUpdateRequest(
+                                booking.getStartDateTime(),
+                                booking.getEndDateTime(),
+                                booking.getService().getId(),
+                                computedStatus.name()
+                        );
+                        try {
+                            return update(booking.getId(), request);
+                        } catch (Exception e) {
+                            // If updating fails (for example due to validation), log and fall back to mapping the existing booking
+                            System.err.println("Warning: failed to auto-update booking id=" + booking.getId() + ": " + e.getMessage());
+                            return bookingResponseMapper.apply(booking);
+                        }
+                    }
+
+                    // No update required, return mapped response
+                    return bookingResponseMapper.apply(booking);
                 })
                 .collect(Collectors.toList());
 
@@ -110,9 +130,10 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<BookingResponse> findOverlappingBookings(Long staffId, LocalDateTime start, LocalDateTime end) {
         if (!start.isBefore(end)) {
-            throw new IllegalArgumentException("Start datetime must be before end datetime");
+            return List.of();
         }
 
         return bookingRepository.findAllOverlaps(staffId, start, end).stream()
@@ -126,7 +147,11 @@ public class BookingService {
         Shift shiftBySelectedDate = shifts.stream()
                 .filter(shift -> shift.getDay().name().equals(selectedDate.getDayOfWeek().name()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No shift found for staff with id " + staffId + " on date " + selectedDate));
+                .orElse(null);
+
+        if (shiftBySelectedDate == null) {
+            return List.of();
+        }
 
         LocalDateTime startOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getStartShift());
         LocalDateTime endOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getEndShift());

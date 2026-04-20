@@ -1,8 +1,11 @@
 package org.example.backend.Exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,6 +27,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -135,13 +140,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
-        ProblemDetail pd = createProblemDetail(
-                HttpStatus.NOT_ACCEPTABLE,
-                "Not acceptable",
-                "The requested response format is not supported."
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(pd);
+        // No body avoids a second conversion failure when the client Accept header is too restrictive.
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -212,14 +212,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
+    public ResponseEntity<?> handleUnexpected(Exception ex) {
+        log.error("Unhandled exception", ex);
+
+        // If content negotiation is the failure itself, return status-only to avoid recursive handler failure.
+        if (ex instanceof HttpMediaTypeNotAcceptableException) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+
         ProblemDetail pd = createProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal server error",
                 "An unexpected error occurred."
         );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(pd);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(pd);
     }
 
     private ProblemDetail createProblemDetail(HttpStatus status, String title, String detail) {

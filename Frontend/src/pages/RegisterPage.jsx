@@ -11,9 +11,9 @@ function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  // default role: customer
+  // default role: CUSTOMER
   const defaultRoleId = 2
-  const defaultRoleName = 'customer'
+  const defaultRoleName = 'CUSTOMER'
 
   const handleSubmit = async (e) => {
     e.preventDefault()

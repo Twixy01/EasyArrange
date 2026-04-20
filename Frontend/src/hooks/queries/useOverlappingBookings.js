@@ -5,6 +5,9 @@ export function useOverlappingBookings(staffId, startDateTime, endDateTime) {
   return useQuery({
     queryKey: ['overlappingBookings', staffId, startDateTime, endDateTime],
     queryFn: () => salonApi.getOverlappingBookings(staffId, startDateTime, endDateTime),
-    enabled: !!staffId && !!startDateTime && !!endDateTime
+    enabled: !!staffId && !!startDateTime && !!endDateTime,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 }

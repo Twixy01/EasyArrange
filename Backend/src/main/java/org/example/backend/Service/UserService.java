@@ -113,6 +113,32 @@ public class UserService {
     }
 
     @Transactional
+    public UserResponse updateAsAdmin(Long userId, AdminUserUpdateRequest adminDto) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found!"));
+
+        if (!existingUser.getEmail().equals(adminDto.email()) && userRepository.emailExists(adminDto.email())) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
+
+        // apply name, email, profilePicture and role
+        existingUser.setName(adminDto.name());
+        existingUser.setEmail(adminDto.email());
+        existingUser.setProfilePicture(adminDto.profilePicture());
+
+        if (adminDto.newPassword() != null && !adminDto.newPassword().trim().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(adminDto.newPassword().trim()));
+        }
+
+        Role role = roleRepository.findById(adminDto.role().roleId()).orElseThrow(() -> new IllegalArgumentException("Role not found!"));
+        existingUser.setRole(role);
+
+        userRepository.save(existingUser);
+
+        return userResponseMapper.apply(existingUser);
+    }
+
+    @Transactional
     public void remove(Long userId) {
         userRepository.deleteById(userId);
     }

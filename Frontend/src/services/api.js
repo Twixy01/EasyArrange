@@ -58,6 +58,14 @@ export const api = {
         );
     },
 
+    async adminUpdateUser(userId, userPayload) {
+        return request(() =>
+            Axios.put(`${BASE_URL}/users/admin/${userId}`, userPayload, {
+                headers: getAuthHeaders(true)
+            })
+        );
+    },
+
     async updateBooking(bookingId, bookingPayload) {
         return request(() =>
             Axios.put(`${BASE_URL}/bookings/${bookingId}`, bookingPayload, {
@@ -72,10 +80,20 @@ export const api = {
                 headers: getAuthHeaders()
             })
         );
+    },
+
+    async deleteUser(userId) {
+        return request(() =>
+            Axios.delete(`${BASE_URL}/users/${userId}`, {
+                headers: getAuthHeaders()
+            })
+        );
     }
 };
 
 export const getUser = (userId) => api.getUser(userId);
 export const updateUser = (userId, userPayload) => api.updateUser(userId, userPayload);
+export const adminUpdateUser = (userId, userPayload) => api.adminUpdateUser(userId, userPayload);
 export const updateBooking = (bookingId, bookingPayload) => api.updateBooking(bookingId, bookingPayload);
 export const cancelBooking = (bookingId) => api.cancelBooking(bookingId);
+export const deleteUser = (userId) => api.deleteUser(userId);

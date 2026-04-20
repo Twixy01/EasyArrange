@@ -36,7 +36,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByOrderByStartDateTimeDesc();
 
     @Query("""
-            FROM Booking b WHERE b.staff.id = :staffId
+            SELECT DISTINCT b FROM Booking b
+            JOIN FETCH b.staff s
+            JOIN FETCH s.user
+            LEFT JOIN FETCH s.services ss
+            LEFT JOIN FETCH ss.service
+            JOIN FETCH b.customer
+            JOIN FETCH b.service
+            WHERE b.staff.id = :staffId
             AND :start < b.endDateTime
             AND :end > b.startDateTime
     """)
