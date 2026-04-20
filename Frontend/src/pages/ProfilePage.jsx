@@ -143,6 +143,8 @@ function ProfilePage() {
 
     return (
         <section className="section profile-section">
+            {bookingSuccess &&
+                                        <div className="form-success" style={{marginTop: 8}}>{bookingSuccess}</div>}
             <div className="container">
                 <div className="page profile-page">
 
@@ -159,7 +161,7 @@ function ProfilePage() {
                                     <h2 style={{margin: 0}}>{user.name}</h2>
                                     <p className="muted" style={{marginTop: 6}}>{user.email}</p>
                                     {/* phone is intentionally commented out until needed */}
-                                    {/* {user.phone && <p>📞 {user.phone}</p>} */}
+                                    {user.phoneNumber && <p>📞 {user.phoneNumber}</p>}
                                     {roleLabel && <p className="muted">Role: {roleLabel}</p>}
 
                                     <div style={{marginTop: 12}}>
@@ -255,8 +257,6 @@ function ProfilePage() {
                                             })}
                                         </div>
                                     )}
-                                    {bookingSuccess &&
-                                        <div className="form-success" style={{marginTop: 8}}>{bookingSuccess}</div>}
                                 </div>
                             </Card>
 

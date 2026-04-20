@@ -18,14 +18,12 @@ public class StaffServiceJunction {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
-    @NotNull(message = "Staff cannot be null")
     private Staff staff;
 
     @MapsId("serviceId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "service_id", nullable = false)
-    @NotNull(message = "Service cannot be null")
     private Service service;
 
     public StaffServiceId getId() {

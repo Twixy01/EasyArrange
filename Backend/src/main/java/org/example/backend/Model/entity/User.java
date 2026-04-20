@@ -20,13 +20,10 @@ public class User {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
-    @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name must not exceed 50 characters")
     private String name;
 
     @Column(name = "email", nullable = false)
-    @NotBlank(message = "Email must not be blank")
-    @Email(message = "Email must be a valid email address")
     @Size(max = 255, message = "Email must not exceed 255 characters")
     private String email;
 
@@ -34,13 +31,11 @@ public class User {
     private String profilePicture;
 
     @Column(name = "password", nullable = false)
-    @NotBlank(message = "Password must not be blank")
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @NotNull(message = "Role cannot be null")
     private Role role;
 
     @OneToMany(mappedBy = "customer")
@@ -48,6 +43,10 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Staff staff;
+
+    @Size(max = 12)
+    @Column(name = "phone_number", nullable = false, length = 12)
+    private String phoneNumber;
 
     public Long getId() {
         return id;
@@ -111,6 +110,14 @@ public class User {
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override

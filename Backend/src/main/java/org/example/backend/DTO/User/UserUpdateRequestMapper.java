@@ -13,6 +13,7 @@ public class UserUpdateRequestMapper implements BiConsumer<UserUpdateRequest, Us
     public void accept(UserUpdateRequest request, User user) {
         user.setName(request.name());
         user.setEmail(request.email());
+        user.setPhoneNumber(request.phoneNumber());
         // Password will be handled separately in the service layer to ensure it's properly encoded
         user.setProfilePicture(request.profilePicture());
         user.setRole(new Role(request.role().roleId(), request.role().name()));

@@ -13,6 +13,7 @@ public class UserRegistrationRequestMapper implements Function<UserRegistrationR
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email());
+        user.setPhoneNumber(request.phoneNumber());
         // Password will be handled separately in the service layer to ensure it's properly encoded
         user.setRole(new Role(request.role().roleId(), request.role().name()));
         return user;

@@ -6,6 +6,7 @@ public record UserResponse(
         Long userId,
         String name,
         String email,
+        String phoneNumber,
         String profilePicture,
         RoleResponse role
 ) {

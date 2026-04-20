@@ -16,7 +16,6 @@ public class Role {
     private Long roleId;
 
     @Column(name = "name", nullable = false, length = 100)
-    @NotBlank(message = "Role name can't be blank")
     private String name;
 
     @OneToMany(mappedBy = "role")

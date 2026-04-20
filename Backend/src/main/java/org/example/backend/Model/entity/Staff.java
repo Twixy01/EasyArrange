@@ -24,7 +24,6 @@ public class Staff {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "User cannot be null")
     private User user;
 
     @Size(max = 255)

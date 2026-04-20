@@ -56,4 +56,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                 AND :end > b.startDateTime
     """)
     boolean existsOverlapping(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END
+        FROM Booking b WHERE b.staff.id = :staffId
+                AND b.startDateTime = :start
+                AND b.endDateTime = :end
+    """)
+    boolean existsByStaffIdAndStartDateTimeAndEndDateTime(Long staffId, LocalDateTime start, LocalDateTime end);
 }

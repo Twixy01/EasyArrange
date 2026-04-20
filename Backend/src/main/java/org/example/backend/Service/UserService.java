@@ -121,9 +121,10 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists!");
         }
 
-        // apply name, email, profilePicture and role
+        // apply name, email, phoneNumber, profilePicture and role
         existingUser.setName(adminDto.name());
         existingUser.setEmail(adminDto.email());
+        existingUser.setPhoneNumber(adminDto.phoneNumber());
         existingUser.setProfilePicture(adminDto.profilePicture());
 
         if (adminDto.newPassword() != null && !adminDto.newPassword().trim().isEmpty()) {

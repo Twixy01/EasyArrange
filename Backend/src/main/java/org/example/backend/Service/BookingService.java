@@ -164,7 +164,7 @@ public class BookingService {
 
         LocalDateTime current = startOfDay;
 
-        LocalDateTime now = LocalDateTime.now().plusHours(3); //You can book a slot at least 3 hours in advance
+        LocalDateTime now = LocalDateTime.now().plusHours(3); //You can book a time slot maximum 3 hours in advance
         while (current.plusMinutes(serviceDuration).isBefore(endOfDay)
                 || current.plusMinutes(serviceDuration).isEqual(endOfDay)) {
 
@@ -210,6 +210,9 @@ public class BookingService {
             throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
 
+        if (bookingRepository.existsByStaffIdAndStartDateTimeAndEndDateTime(bookingRequest.staffId(), start, end)){
+            throw new IllegalArgumentException("Booking already exists for staff id " + bookingRequest.staffId() + " at the specified time");
+        }
         Booking booking = bookingCreateRequestMapper.apply(bookingRequest);
 
         Staff staff = staffRepository.findById(bookingRequest.staffId())
