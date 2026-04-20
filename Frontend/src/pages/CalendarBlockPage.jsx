@@ -1,13 +1,17 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useContext } from "react";
 import { useAuth } from "../hooks/useAuth";
 import SectionHeader from "../components/common/SectionHeader";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import { useCreateCalendarBlock } from "../hooks/mutations/useCreateCalendarBlock";
+import { useDeleteCalendarBlock } from "../hooks/mutations/useDeleteCalendarBlock";
 import { useOverlappingBookings } from "../hooks/queries/useOverlappingBookings";
 import { useCalendarBlocksByStaff } from "../hooks/queries/useCalendarBlocksByStaff";
+import { UIStateContext } from "../context/UIStateContext.jsx";
 
 export default function CalendarBlockPage() {
+  const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
+
   const { staff } = useAuth();
   const staffId = useMemo(() => staff?.staffId, [staff]);
 
@@ -20,7 +24,9 @@ export default function CalendarBlockPage() {
   const [isAllDay, setIsAllDay] = useState(true);
   const [selectedStartDateTime, setSelectedStartDateTime] = useState(minDateTime1);
   const [selectedEndDateTime, setSelectedEndDateTime] = useState(minDateTime2);
+  const [deletingCalendarBlockId, setDeletingCalendarBlockId] = useState(null);
   const { mutate: createCalendarBlock, isError: createCalendarBlockError } = useCreateCalendarBlock();
+  const { mutateAsync: deleteCalendarBlock, isError: deleteCalendarBlockError, isLoading: isDeletingCalendarBlock } = useDeleteCalendarBlock();
   const { data: overlappingBookings = [], isError: overlappingError, isLoading: overlappingLoading } = useOverlappingBookings(staffId, selectedStartDateTime, selectedEndDateTime)
   const { data: calendarBlocks = [], isError: calendarBlockError } = useCalendarBlocksByStaff(staffId)
 
@@ -67,6 +73,10 @@ export default function CalendarBlockPage() {
 
   const saveDisabled = !staffId || overlappingLoading || overlappingError || overlappingBookings.length > 0
 
+  const resetDateTime = () => {
+    setSelectedStartDateTime(minDateTime1);
+  }
+
   const saveBlock = async ({ title, selectedStartDateTime, selectedEndDateTime, staffId }) => {
     await createCalendarBlock(
       {
@@ -77,19 +87,39 @@ export default function CalendarBlockPage() {
       },
       {
         onSuccess: () => {
-          alert("Calendar block created successfully!");
+          onSuccess("Calendar block created successfully!");
           setTitle("Time off");
           setIsAllDay(true);
           setSelectedStartDateTime(minDateTime1);
           setSelectedEndDateTime(minDateTime2);
         },
         onError: (error) => {
-          console.error("Error creating calendar block:", error.response?.data);
-          alert("Failed to create calendar block. Please try again.");
+          showError(error.response?.data?.detail || error.response?.data?.message || "Failed to create calendar block. Please try again.");
         }
       }
     )
   };
+
+  const handleDeleteCalendarBlock = async (calendarBlockId) => {
+    if (!calendarBlockId) {
+      alert('Calendar block id missing, cannot remove')
+      return
+    }
+
+    const ok = window.confirm('Are you sure you want to remove this time off block?')
+    if (!ok) return
+
+    try {
+      setDeletingCalendarBlockId(calendarBlockId)
+      await deleteCalendarBlock(calendarBlockId)
+    } catch (err) {
+      console.error('Failed to delete calendar block', err?.response ?? err)
+      const serverMessage = err?.payload?.detail || err?.payload?.message || err?.message || 'Failed to remove time off block'
+      alert(serverMessage)
+    } finally {
+      setDeletingCalendarBlockId(null)
+    }
+  }
 
   return (
     <section className="section calendar-block-page">
@@ -172,7 +202,7 @@ export default function CalendarBlockPage() {
                 </div>
 
                 <div className="calendar-block-actions">
-                  <Button className="btn btn-secondary">Reset</Button>
+                  <Button className="btn btn-secondary" onClick={resetDateTime}>Reset</Button>
                   <Button
                     disabled={saveDisabled}
                     className="btn btn-primary"
@@ -182,11 +212,7 @@ export default function CalendarBlockPage() {
                   </Button>
                 </div>
 
-                {createCalendarBlockError && (
-                  <div className="form-error" style={{ marginTop: 12 }}>
-                    Failed to create calendar block. Please try again.
-                  </div>
-                )}
+                {createCalendarBlockError && showError("Failed to create calendar block. Please try again.")}
               </div>
             </Card>
           </div>
@@ -198,23 +224,17 @@ export default function CalendarBlockPage() {
                 <p className="muted">
                   New time blocks should be checked against existing bookings before saving.
                 </p>
-                {overlappingLoading && (
-                  <div className="calendar-info-pill neutral">
-                    Checking for conflicts...
-                  </div>
-                )}
+                {overlappingLoading && showLoading("Checking for conflicts...")}
 
-                {!overlappingLoading && overlappingError && (
-                  <div className="form-error">
-                    Failed to load booking conflicts.
-                  </div>
-                )}
+                {!overlappingLoading && overlappingError && showError("Failed to load booking conflicts.")}
 
-                {!overlappingLoading && !overlappingError && overlappingBookings.length === 0 && (
-                  <div className="calendar-info-pill neutral">
-                    No booking conflicts found for the selected time.
-                  </div>
-                )}
+
+                {
+                  !overlappingLoading &&
+                  !overlappingError &&
+                  overlappingBookings.length === 0 &&
+                  showError("No booking conflicts found for the selected time.")
+                }
 
                 {!overlappingLoading && !overlappingError && overlappingBookings.length > 0 && (
                   <div>
@@ -241,8 +261,6 @@ export default function CalendarBlockPage() {
                               alignItems: 'flex-end',
                               gap: 8
                             }}>
-                  
-                              
                             </div>
                           </div>
                         </div>
@@ -285,8 +303,13 @@ export default function CalendarBlockPage() {
                               alignItems: 'flex-end',
                               gap: 8
                             }}>
-                  
-                              
+                              <Button
+                                className="btn-secondary"
+                                disabled={isDeletingCalendarBlock && deletingCalendarBlockId === block.calendarBlockId}
+                                onClick={() => handleDeleteCalendarBlock(block.calendarBlockId)}
+                              >
+                                {isDeletingCalendarBlock && deletingCalendarBlockId === block.calendarBlockId ? 'Removing...' : 'Remove'}
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -294,9 +317,9 @@ export default function CalendarBlockPage() {
                     })}
                   </div>
                 ) : (
-                <p className="muted">
-                  You currently have no blocked time off.
-                </p>
+                  <p className="muted">
+                    You currently have no blocked time off.
+                  </p>
                 )}
               </div>
             </Card>

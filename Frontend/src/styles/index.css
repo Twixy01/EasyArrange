@@ -1233,3 +1233,127 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     top: 100px;
   }
 }
+
+/* Notification*/
+.floating-notification {
+  position: fixed;
+  top: 92px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 1rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  animation: slideInToast 0.25s ease;
+}
+
+.floating-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.floating-notification-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.floating-notification-text {
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.floating-notification-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s ease;
+}
+
+.floating-notification-close:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.floating-notification.success {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #dcfce7;
+}
+
+.floating-notification.success .floating-notification-icon {
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
+}
+
+.floating-notification.error {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fecaca;
+}
+
+.floating-notification.error .floating-notification-icon {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.floating-notification.loading {
+  background: rgba(124, 58, 237, 0.16);
+  border-color: rgba(124, 58, 237, 0.3);
+  color: #ede9fe;
+}
+
+.floating-notification.loading .floating-notification-icon {
+  background: rgba(124, 58, 237, 0.22);
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: white;
+  border-radius: 999px;
+  animation: spinToast 0.8s linear infinite;
+}
+
+@keyframes spinToast {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideInToast {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .floating-notification {
+    top: 84px;
+    left: 12px;
+    right: 12px;
+    min-width: unset;
+    max-width: unset;
+  }
+}

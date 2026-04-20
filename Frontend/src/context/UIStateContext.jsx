@@ -1,36 +1,84 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useServices } from '../hooks/queries/useServices'
-import { useStaff } from '../hooks/queries/useStaff'
-import { createContext } from 'react'
+import { createContext, useCallback, useMemo, useRef, useState } from "react";
 
-export const UIStateContext = createContext()
-
-function getErrorMessage(err) {
-    if (!err) return null
-    if (typeof err === 'string') return err
-    if (err?.message) return err.message
-    return String(err)
-}
+export const UIStateContext = createContext();
 
 export function UIStateProvider({ children }) {
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    type: "",
+    message: "",
+  });
 
-    const {data: services, error: servicesError, isLoading: loadingServices} = useServices()
-    const {data: staff, error: staffError, isLoading: loadingStaff} = useStaff()
+  const timeoutRef = useRef(null);
 
-    const errors = [
-        getErrorMessage(servicesError),
-        getErrorMessage(staffError)
-    ].filter(Boolean)
-
-    const error = errors.length > 0 ? errors.join(' | ') : null
-
-    const value = {
-        services,
-        staff,
-        error,
-        loadingServices,
-        loadingStaff
+  const hideNotification = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
 
-    return <UIStateContext.Provider value={value}>{children}</UIStateContext.Provider>;
+    setNotification({
+      isVisible: false,
+      type: "",
+      message: "",
+    });
+  }, []);
+
+  const showNotification = useCallback((type, message, duration = 3000) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    setNotification({
+      isVisible: true,
+      type,
+      message,
+    });
+
+    if (type !== "loading") {
+      timeoutRef.current = setTimeout(() => {
+        setNotification({
+          isVisible: false,
+          type: "",
+          message: "",
+        });
+        timeoutRef.current = null;
+      }, duration);
+    }
+  }, []);
+
+  const showSuccess = useCallback((message, duration) => {
+    showNotification("success", message, duration);
+  }, [showNotification]);
+
+  const showError = useCallback((message, duration = 4000) => {
+    showNotification("error", message, duration);
+  }, [showNotification]);
+
+  const showLoading = useCallback((message = "Loading...") => {
+    showNotification("loading", message);
+  }, [showNotification]);
+
+  const value = useMemo(() => ({
+    notification,
+    showNotification,
+    showSuccess,
+    showError,
+    showLoading,
+    hideNotification,
+  }), [
+    notification,
+    showNotification,
+    showSuccess,
+    showError,
+    showLoading,
+    hideNotification,
+  ]);
+
+  return (
+    <UIStateContext.Provider value={value}>
+      {children}
+    </UIStateContext.Provider>
+  );
 }
