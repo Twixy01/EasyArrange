@@ -12,9 +12,10 @@ export function AuthProvider({ children }) {
       if (parsed) {
         if (parsed.email) parsed.email = String(parsed.email).toLowerCase()
         if (typeof parsed.role === 'string') {
-          parsed.role = { name: String(parsed.role) }
+          // normalize role to UPPERCASE to match database conventions
+          parsed.role = { name: String(parsed.role).toUpperCase() }
         } else if (parsed.role && parsed.role.name) {
-          parsed.role.name = String(parsed.role.name)
+          parsed.role.name = String(parsed.role.name).toUpperCase()
         }
       }
       return parsed
@@ -23,9 +24,10 @@ export function AuthProvider({ children }) {
     }
   })
 
+  // ensure we compare role names in UPPERCASE throughout the app
   const roleRaw = typeof user?.role === 'string' ? user.role : user?.role?.name
-  const roleNameLower = roleRaw ? String(roleRaw).toLowerCase() : null
-  const shouldFetchStaff = roleNameLower === 'staff'
+  const roleNameUpper = roleRaw ? String(roleRaw).toUpperCase() : null
+  const shouldFetchStaff = roleNameUpper === 'STAFF'
 
   const { data: staff } = useStaffByUser(
     shouldFetchStaff && user && user.userId ? user.userId : null
@@ -41,9 +43,10 @@ export function AuthProvider({ children }) {
           if (parsed) {
             if (parsed.email) parsed.email = String(parsed.email).toLowerCase()
             if (typeof parsed.role === 'string') {
-              parsed.role = { name: String(parsed.role) }
+              // normalize to UPPERCASE
+              parsed.role = { name: String(parsed.role).toUpperCase() }
             } else if (parsed.role && parsed.role.name) {
-              parsed.role.name = String(parsed.role.name)
+              parsed.role.name = String(parsed.role.name).toUpperCase()
             }
           }
           console.debug('[AuthProvider] storage event - new user:', parsed)
@@ -63,9 +66,10 @@ export function AuthProvider({ children }) {
     const normalized = { ...userData }
     if (normalized.email) normalized.email = String(normalized.email).toLowerCase()
     if (typeof normalized.role === 'string') {
-      normalized.role = { name: String(normalized.role) }
+      // store role name as UPPERCASE
+      normalized.role = { name: String(normalized.role).toUpperCase() }
     } else if (normalized.role && normalized.role.name) {
-      normalized.role = { ...normalized.role, name: String(normalized.role.name) }
+      normalized.role = { ...normalized.role, name: String(normalized.role.name).toUpperCase() }
     }
     setUser(normalized)
     try { localStorage.setItem('user', JSON.stringify(normalized)) } catch { /* ignore */ }

@@ -10,10 +10,9 @@ function ProfileEditPage() {
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    phoneNumber: user?.phoneNumber || user?.phone || '',
     profilePicture: user?.profilePicture || '',
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    currentPassword: ''
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -50,21 +49,6 @@ function ProfileEditPage() {
       return
     }
 
-    if ((form.newPassword && form.newPassword.trim() !== '') || (form.confirmNewPassword && form.confirmNewPassword.trim() !== '')) {
-      if (!form.newPassword || !form.confirmNewPassword) {
-        setError('Please fill both new password fields')
-        return
-      }
-      if (form.newPassword !== form.confirmNewPassword) {
-        setError('New passwords do not match')
-        return
-      }
-      if (form.newPassword.length < 4) {
-        setError('New password must be at least 4 characters')
-        return
-      }
-    }
-
     setSaving(true)
 
     try {
@@ -86,13 +70,10 @@ function ProfileEditPage() {
       const payload = {
         name: form.name,
         email: form.email,
+        phoneNumber: form.phoneNumber,
         currentPassword: form.currentPassword,
         profilePicture: form.profilePicture,
         role: {roleId: roleId, name: user.role.name}
-      }
-
-      if (form.newPassword && form.newPassword.trim() !== '') {
-        payload.newPassword = form.newPassword
       }
 
       const updated = await updateUser(resolvedUserId, payload)
@@ -127,7 +108,7 @@ function ProfileEditPage() {
           <Card className="form-card">
             <div className="card-body">
               <h2 style={{ marginTop: 0 }}>Edit Profile</h2>
-              <p className="muted">For security the current password is required to save changes. To change your password, enter a new password and confirm it.</p>
+              <p className="muted">For security the current password is required to save changes. To change your password, go to the password change section.</p>
 
               <form onSubmit={handleSubmit} className="form">
                 <div className="form-grid">
@@ -141,11 +122,10 @@ function ProfileEditPage() {
                     <input name="email" type="email" value={form.email} onChange={handleChange} />
                   </div>
 
-                  {/* phone intentionally commented out for now */}
-                  {/* <div className="field">
+                  <div className="field">
                     <label>Phone</label>
-                    <input name="phone" value={form.phone || ''} onChange={handleChange} />
-                  </div> */}
+                    <input name="phoneNumber" value={form.phoneNumber || ''} onChange={handleChange} />
+                  </div>
 
                   <div className="field">
                     <label>Profile picture URL</label>
@@ -155,16 +135,6 @@ function ProfileEditPage() {
                   <div className="field">
                     <label>Current password</label>
                     <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required />
-                  </div>
-
-                  <div className="field">
-                    <label>New password</label>
-                    <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
-                  </div>
-
-                  <div className="field">
-                    <label>Confirm new password</label>
-                    <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
                   </div>
                 </div>
 
