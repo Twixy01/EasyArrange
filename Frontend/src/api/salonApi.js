@@ -50,7 +50,7 @@ export const salonApi = {
         return response.data;
     },
 
-    async updateShiftForStaffDay({staffId, day, startShift, endShift}){
+    async updateShiftForStaffDay({ staffId, day, startShift, endShift }) {
         const updateData = {
             staffId,
             day,
@@ -61,7 +61,7 @@ export const salonApi = {
         return response.data;
     },
 
-    async deleteStaffShift({staffId, shiftId}) {
+    async deleteStaffShift({ staffId, shiftId }) {
         const response = await Axios.delete(`${BASE_URL}/staff-shifts/${staffId}/${shiftId}`);
         return response.data;
     },
@@ -99,6 +99,21 @@ export const salonApi = {
 
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
+        return response.data;
+    },
+
+    async getOverlappingBookings(staffId, start, end) {
+        const response = await Axios.get(`${BASE_URL}/bookings/staff/${staffId}/overlaps`, {
+            params: {
+                start,
+                end
+            }
+        })
+        return response.data;
+    },
+
+    async getCalendarBlocksByStaff(staffId) {
+        const response = await Axios.get(`${BASE_URL}/calendar-blocks/staff/${staffId}`);
         return response.data;
     },
 

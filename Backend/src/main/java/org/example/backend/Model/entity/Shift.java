@@ -21,15 +21,12 @@ public class Shift {
 
     @Column(name = "day", nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Day must not be null")
     private ShiftDay day;
 
     @Column(name = "start_shift", nullable = false)
-    @NotNull(message = "Shift start time must not be null")
     private LocalTime startShift;
 
     @Column(name = "end_shift", nullable = false)
-    @NotNull(message = "Shift end time must not be null")
     private LocalTime endShift;
 
     @OneToMany(mappedBy = "shift")

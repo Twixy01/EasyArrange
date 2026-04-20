@@ -4,6 +4,8 @@ import SectionHeader from "../components/common/SectionHeader";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import { useCreateCalendarBlock } from "../hooks/mutations/useCreateCalendarBlock";
+import { useOverlappingBookings } from "../hooks/queries/useOverlappingBookings";
+import { useCalendarBlocksByStaff } from "../hooks/queries/useCalendarBlocksByStaff";
 
 export default function CalendarBlockPage() {
   const { staff } = useAuth();
@@ -18,8 +20,10 @@ export default function CalendarBlockPage() {
   const [isAllDay, setIsAllDay] = useState(true);
   const [selectedStartDateTime, setSelectedStartDateTime] = useState(minDateTime1);
   const [selectedEndDateTime, setSelectedEndDateTime] = useState(minDateTime2);
-  const { mutate: createCalendarBlock, } = useCreateCalendarBlock();
-  
+  const { mutate: createCalendarBlock, isError: createCalendarBlockError } = useCreateCalendarBlock();
+  const { data: overlappingBookings = [], isError: overlappingError, isLoading: overlappingLoading } = useOverlappingBookings(staffId, selectedStartDateTime, selectedEndDateTime)
+  const { data: calendarBlocks = [], isError: calendarBlockError } = useCalendarBlocksByStaff(staffId)
+
   const previewText = useMemo(() => {
     if (!selectedStartDateTime || !selectedEndDateTime) return "Choose a start and end time.";
 
@@ -43,28 +47,48 @@ export default function CalendarBlockPage() {
     }
   };
 
+  const handleOnChange = (value, setDateTime) => {
+    setDateTime(value.includes('T') ? value : `${value}T00:00`)
+  }
+
+  const formatDisplayDate = (iso) => {
+    if (!iso) return 'Unknown'
+    const date = new Date(iso)
+    if (Number.isNaN(date.getTime())) return 'Unknown'
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return `${year}.${month}.${day}. ${hours}:${minutes}`
+  }
+
+  const saveDisabled = !staffId || overlappingLoading || overlappingError || overlappingBookings.length > 0
+
   const saveBlock = async ({ title, selectedStartDateTime, selectedEndDateTime, staffId }) => {
-      await createCalendarBlock(
-        {
-          title,
-          startDateTime: selectedStartDateTime,
-          endDateTime: selectedEndDateTime,
-          staffId
+    await createCalendarBlock(
+      {
+        title,
+        startDateTime: selectedStartDateTime,
+        endDateTime: selectedEndDateTime,
+        staffId
+      },
+      {
+        onSuccess: () => {
+          alert("Calendar block created successfully!");
+          setTitle("Time off");
+          setIsAllDay(true);
+          setSelectedStartDateTime(minDateTime1);
+          setSelectedEndDateTime(minDateTime2);
         },
-        {
-          onSuccess: () => {
-            alert("Calendar block created successfully!");
-            setTitle("Time off");
-            setIsAllDay(true);
-            setSelectedStartDateTime(minDateTime1);
-            setSelectedEndDateTime(minDateTime2);
-          },
-          onError: (error) => {
-            console.error("Error creating calendar block:", error.response?.data);
-            alert("Failed to create calendar block. Please try again.");
-          }
+        onError: (error) => {
+          console.error("Error creating calendar block:", error.response?.data);
+          alert("Failed to create calendar block. Please try again.");
         }
-      )
+      }
+    )
   };
 
   return (
@@ -116,11 +140,11 @@ export default function CalendarBlockPage() {
                       id="block-start"
                       className="calendar-block-input"
                       type={isAllDay ? "date" : "datetime-local"}
-                      value={isAllDay? selectedStartDateTime.slice(0, 10) : selectedStartDateTime}
+                      value={isAllDay ? selectedStartDateTime.slice(0, 10) : selectedStartDateTime}
                       min={isAllDay ? minDateTime1.slice(0, 10) : minDateTime1}
                       onKeyDown={(e) => e.preventDefault()}
                       onPaste={(e) => e.preventDefault()}
-                      onChange={(e) => setSelectedStartDateTime(e.target.value)}
+                      onChange={(e) => handleOnChange(e.target.value, setSelectedStartDateTime)}
                     />
                   </div>
 
@@ -130,11 +154,11 @@ export default function CalendarBlockPage() {
                       id="block-end"
                       className="calendar-block-input"
                       type={isAllDay ? "date" : "datetime-local"}
-                      value={isAllDay? selectedEndDateTime.slice(0, 10) : selectedEndDateTime}
+                      value={isAllDay ? selectedEndDateTime.slice(0, 10) : selectedEndDateTime}
                       min={isAllDay ? minDateTime2.slice(0, 10) : minDateTime2}
                       onKeyDown={(e) => e.preventDefault()}
                       onPaste={(e) => e.preventDefault()}
-                      onChange={(e) => setSelectedEndDateTime(e.target.value)}
+                      onChange={(e) => handleOnChange(e.target.value, setSelectedEndDateTime)}
                     />
                   </div>
                 </div>
@@ -149,12 +173,20 @@ export default function CalendarBlockPage() {
 
                 <div className="calendar-block-actions">
                   <Button className="btn btn-secondary">Reset</Button>
-                  <Button 
-                  className="btn btn-primary"
-                  onClick={() => saveBlock({ title, selectedStartDateTime, selectedEndDateTime, staffId })}>
+                  <Button
+                    disabled={saveDisabled}
+                    className="btn btn-primary"
+                    title={saveDisabled ? 'Resolve booking conflicts before saving this block' : undefined}
+                    onClick={() => saveBlock({ title, selectedStartDateTime, selectedEndDateTime, staffId })}>
                     Save block
                   </Button>
                 </div>
+
+                {createCalendarBlockError && (
+                  <div className="form-error" style={{ marginTop: 12 }}>
+                    Failed to create calendar block. Please try again.
+                  </div>
+                )}
               </div>
             </Card>
           </div>
@@ -166,24 +198,111 @@ export default function CalendarBlockPage() {
                 <p className="muted">
                   New time blocks should be checked against existing bookings before saving.
                 </p>
+                {overlappingLoading && (
+                  <div className="calendar-info-pill neutral">
+                    Checking for conflicts...
+                  </div>
+                )}
 
-                <div className="calendar-info-pill neutral">
-                  No conflicts checked yet
-                </div>
+                {!overlappingLoading && overlappingError && (
+                  <div className="form-error">
+                    Failed to load booking conflicts.
+                  </div>
+                )}
+
+                {!overlappingLoading && !overlappingError && overlappingBookings.length === 0 && (
+                  <div className="calendar-info-pill neutral">
+                    No booking conflicts found for the selected time.
+                  </div>
+                )}
+
+                {!overlappingLoading && !overlappingError && overlappingBookings.length > 0 && (
+                  <div>
+                    {overlappingBookings.map((b) => {
+                      const bookingId = b.bookingId ?? b.id;
+
+                      return (
+                        <div key={bookingId} className="booking-item">
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            gap: 12
+                          }}>
+                            <div>
+                              <strong>{formatDisplayDate(b.startDateTime)}</strong>
+                              <div className="muted">Service: {b.service?.name || '—'}</div>
+                              <div className="muted">Customer: {b.customer?.name || '—'}</div>
+                              <div className="muted">Customer phone: {b.customer?.phoneNumber || '—'}</div>
+                            </div>
+                            <div style={{
+                              alignSelf: 'center',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'flex-end',
+                              gap: 8
+                            }}>
+                  
+                              
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
               </div>
             </Card>
 
             <Card className="calendar-info-card">
               <div className="card-body calendar-info-card-body">
                 <h3>Your blocked time off</h3>
+                {calendarBlockError && (
+                  <div className="form-error">
+                    Failed to load blocked time off.
+                  </div>
+                )}
+
+                {!calendarBlockError && calendarBlocks.length > 0 ? (
+                  <div>
+                    {calendarBlocks.map((block) => {
+                      return (
+                        <div key={block.calendarBlockId} className="booking-item">
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            gap: 12
+                          }}>
+                            <div>
+                              <strong>{block.title}</strong>
+                              <div className="muted">start: {formatDisplayDate(block.startDateTime)}</div>
+                              <div className="muted">end: {formatDisplayDate(block.endDateTime)}</div>
+                            </div>
+                            <div style={{
+                              alignSelf: 'center',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'flex-end',
+                              gap: 8
+                            }}>
+                  
+                              
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
                 <p className="muted">
                   You currently have no blocked time off.
                 </p>
+                )}
               </div>
             </Card>
           </div>
         </div>
-      </div>
-    </section>
+      </div >
+    </section >
   );
 }

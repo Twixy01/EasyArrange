@@ -14,6 +14,7 @@ public class UserResponseMapper implements Function<User, UserResponse> {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
+                user.getPhoneNumber(),
                 user.getProfilePicture(),
                 new RoleResponse(user.getRole().getRoleId(), user.getRole().getName())
         );

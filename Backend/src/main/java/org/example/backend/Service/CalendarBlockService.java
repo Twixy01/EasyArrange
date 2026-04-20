@@ -77,6 +77,18 @@ public class CalendarBlockService {
             throw new IllegalArgumentException("Calendar block already exists for staff with this start and end time");
         }
 
+        if (!calendarBlockDto.startDateTime().isBefore(calendarBlockDto.endDateTime())) {
+            throw new IllegalArgumentException("Start datetime must be before end datetime");
+        }
+
+        if (calendarBlockRepository.existsOverlapping(
+                calendarBlockDto.staffId(),
+                calendarBlockDto.startDateTime(),
+                calendarBlockDto.endDateTime()
+        )) {
+            throw new IllegalArgumentException("Calendar block overlaps with existing block for staff");
+        }
+
         Staff staff = staffRepository.findById(calendarBlockDto.staffId())
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with id: " + calendarBlockDto.staffId()));
 

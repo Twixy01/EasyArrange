@@ -1,6 +1,6 @@
 package org.example.backend.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.*;
@@ -130,6 +130,17 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingResponse> findOverlappingBookings(Long staffId, LocalDateTime start, LocalDateTime end) {
+        if (!start.isBefore(end)) {
+            return List.of();
+        }
+
+        return bookingRepository.findAllOverlaps(staffId, start, end).stream()
+                .map(bookingResponseMapper)
+                .collect(Collectors.toList());
+    }
+
     public List<AvailableSlotResponse> getAvailableSlots(Long staffId, LocalDate selectedDate, Long serviceId) {
         List<Shift> shifts = staffShiftRepository.findAllShiftsByStaffId(staffId);
 
@@ -153,7 +164,7 @@ public class BookingService {
 
         LocalDateTime current = startOfDay;
 
-        LocalDateTime now = LocalDateTime.now().plusHours(3); //You can book a slot at least 3 hours in advance
+        LocalDateTime now = LocalDateTime.now().plusHours(3); //You can book a time slot maximum 3 hours in advance
         while (current.plusMinutes(serviceDuration).isBefore(endOfDay)
                 || current.plusMinutes(serviceDuration).isEqual(endOfDay)) {
 
@@ -199,6 +210,9 @@ public class BookingService {
             throw new IllegalArgumentException("Start datetime must be before end datetime");
         }
 
+        if (bookingRepository.existsByStaffIdAndStartDateTimeAndEndDateTime(bookingRequest.staffId(), start, end)){
+            throw new IllegalArgumentException("Booking already exists for staff id " + bookingRequest.staffId() + " at the specified time");
+        }
         Booking booking = bookingCreateRequestMapper.apply(bookingRequest);
 
         Staff staff = staffRepository.findById(bookingRequest.staffId())

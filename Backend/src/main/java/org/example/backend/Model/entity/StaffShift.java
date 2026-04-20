@@ -12,21 +12,18 @@ import java.util.Objects;
 @Table(name = "staff_shift", schema = "easyarrange")
 public class StaffShift {
     @EmbeddedId
-    @NotNull(message = "StaffShiftId cannot be null")
     private StaffShiftId id = new StaffShiftId();
 
     @MapsId("staffId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "staff_id", nullable = false)
-    @NotNull(message = "Staff cannot be null")
     private Staff staff;
 
     @MapsId("shiftId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "shift_id", nullable = false)
-    @NotNull(message = "Shift cannot be null")
     private Shift shift;
 
     public StaffShiftId getId() {
