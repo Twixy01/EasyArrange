@@ -981,7 +981,7 @@ textarea {
   background: rgba(124, 58, 237, 0.08);
 }
 
-.shift-remove-btn {
+.remove-btn {
   background: transparent;
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fca5a5;
@@ -991,13 +991,13 @@ textarea {
   transition: 0.25s ease;
 }
 
-.shift-remove-btn:hover {
+.remove-btn:hover {
   border-color: var(--danger);
   background: rgba(239, 68, 68, 0.12);
   color: #fecaca;
 }
 
-.shift-remove-btn:active,
+.remove-btn:active,
 .shift-reset-btn:active {
   transform: scale(0.98);
 }

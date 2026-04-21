@@ -1,4 +1,4 @@
-import { useMemo, useState, useContext } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import SectionHeader from "../components/common/SectionHeader";
 import Card from "../components/common/Card";
@@ -7,10 +7,10 @@ import { useCreateCalendarBlock } from "../hooks/mutations/useCreateCalendarBloc
 import { useDeleteCalendarBlock } from "../hooks/mutations/useDeleteCalendarBlock";
 import { useOverlappingBookings } from "../hooks/queries/useOverlappingBookings";
 import { useCalendarBlocksByStaff } from "../hooks/queries/useCalendarBlocksByStaff";
-import { UIStateContext } from "../context/UIStateContext.jsx";
+// import { UIStateContext } from "../context/UIStateContext.jsx";
 
 export default function CalendarBlockPage() {
-  const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
+  // const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
 
   const { staff } = useAuth();
   const staffId = useMemo(() => staff?.staffId, [staff]);
@@ -87,14 +87,14 @@ export default function CalendarBlockPage() {
       },
       {
         onSuccess: () => {
-          onSuccess("Calendar block created successfully!");
+          // onSuccess("Calendar block created successfully!");
           setTitle("Time off");
           setIsAllDay(true);
           setSelectedStartDateTime(minDateTime1);
           setSelectedEndDateTime(minDateTime2);
         },
         onError: (error) => {
-          showError(error.response?.data?.detail || error.response?.data?.message || "Failed to create calendar block. Please try again.");
+          // showError(error.response?.data?.detail || error.response?.data?.message || "Failed to create calendar block. Please try again.");
         }
       }
     )
@@ -115,7 +115,7 @@ export default function CalendarBlockPage() {
     } catch (err) {
       console.error('Failed to delete calendar block', err?.response ?? err)
       const serverMessage = err?.payload?.detail || err?.payload?.message || err?.message || 'Failed to remove time off block'
-      alert(serverMessage)
+      // alert(serverMessage)
     } finally {
       setDeletingCalendarBlockId(null)
     }
@@ -212,7 +212,7 @@ export default function CalendarBlockPage() {
                   </Button>
                 </div>
 
-                {createCalendarBlockError && showError("Failed to create calendar block. Please try again.")}
+                {/* {createCalendarBlockError && showError("Failed to create calendar block. Please try again.")} */}
               </div>
             </Card>
           </div>
@@ -224,16 +224,16 @@ export default function CalendarBlockPage() {
                 <p className="muted">
                   New time blocks should be checked against existing bookings before saving.
                 </p>
-                {overlappingLoading && showLoading("Checking for conflicts...")}
+                {/* {overlappingLoading && showLoading("Checking for conflicts...")} */}
 
-                {!overlappingLoading && overlappingError && showError("Failed to load booking conflicts.")}
+                {/* {!overlappingLoading && overlappingError && showError("Failed to load booking conflicts.")} */}
 
 
                 {
                   !overlappingLoading &&
                   !overlappingError &&
-                  overlappingBookings.length === 0 &&
-                  showError("No booking conflicts found for the selected time.")
+                  overlappingBookings.length === 0
+                  // showError("No booking conflicts found for the selected time.")
                 }
 
                 {!overlappingLoading && !overlappingError && overlappingBookings.length > 0 && (
@@ -304,7 +304,7 @@ export default function CalendarBlockPage() {
                               gap: 8
                             }}>
                               <Button
-                                className="btn-secondary"
+                                className="remove-btn"
                                 disabled={isDeletingCalendarBlock && deletingCalendarBlockId === block.calendarBlockId}
                                 onClick={() => handleDeleteCalendarBlock(block.calendarBlockId)}
                               >

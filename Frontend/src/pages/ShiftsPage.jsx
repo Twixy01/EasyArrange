@@ -278,7 +278,7 @@ export default function ShiftsPage() {
                                             </Button>
 
                                             <Button
-                                                className="btn shift-remove-btn"
+                                                className="remove-btn"
                                                 onClick={() => removeShift(staff?.staffId, shift?.shiftId)}
                                             >
                                                 Remove
