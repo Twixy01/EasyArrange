@@ -73,6 +73,8 @@ function ProfilePage() {
         navigate('/')
     }
 
+    // navigate to dedicated change-password page
+    const goToChangePassword = () => navigate('/profile/change-password')
 
     const roleData = user.role
     const roleLabel = roleData?.name ? String(roleData.name).toUpperCase() : (roleData?.roleId ? `Role #${roleData.roleId}` : null)
@@ -117,7 +119,7 @@ function ProfilePage() {
 
     const formatTimeUntil = (msDiff) => {
         if (msDiff == null) return '—'
-        // if already started (negative) show Started
+        //if already started (negative) show Started
         if (msDiff < 0) return 'Started'
         const totalMinutes = Math.ceil(msDiff / 60000)
         const totalHours = Math.floor(totalMinutes / 60)
@@ -160,12 +162,12 @@ function ProfilePage() {
                                 <div style={{flex: 1}}>
                                     <h2 style={{margin: 0}}>{user.name}</h2>
                                     <p className="muted" style={{marginTop: 6}}>{user.email}</p>
-                                    {/* phone is intentionally commented out until needed */}
                                     {user.phoneNumber && <p>📞 {user.phoneNumber}</p>}
                                     {roleLabel && <p className="muted">Role: {roleLabel}</p>}
 
                                     <div style={{marginTop: 12}}>
                                         <Button onClick={handleEdit} className="btn-primary">Edit profile</Button>
+                                        <Button onClick={goToChangePassword} className="btn" style={{marginLeft: 8}}>Change password</Button>
                                         <Button onClick={handleLogout} className="btn-secondary"
                                                 style={{marginLeft: 8}}>Logout
                                         </Button>
@@ -278,7 +280,6 @@ function ProfilePage() {
                             </div>
                         </Card>
                     )}
-
                 </div>
             </div>
         </section>

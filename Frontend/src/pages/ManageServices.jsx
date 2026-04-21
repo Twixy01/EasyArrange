@@ -1,61 +1,462 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
 import Card from '../components/common/Card'
+import { useServices } from '../hooks/queries/useServices'
 import { useAuth } from '../hooks/useAuth'
+import { Link } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createService, updateService, deleteService, createStaffService, deleteStaffService } from '../services/api'
+import { salonApi } from '../api/salonApi'
 
 function ManageServices() {
-    const { user } = useAuth()
-    const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
+  const { user } = useAuth()
+  const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
-    if (!user) {
-        return (
-            <section className="section">
-                <div className="container">
-                    <Card>
-                        <div className="card-body">
-                            <h2>Not signed in</h2>
-                            <p className="muted">Please <Link to="/login">log in</Link> to access this page.</p>
-                        </div>
-                    </Card>
-                </div>
-            </section>
-        )
+  const { data: services = [], isLoading, error } = useServices()
+  const queryClient = useQueryClient()
+
+  const [editingId, setEditingId] = useState(null)
+  const [editValues, setEditValues] = useState({})
+  const [newService, setNewService] = useState({ name: '', description: '', duration: '', price: '', image: '' })
+  const [fieldErrors, setFieldErrors] = useState(null)
+  const [serverError, setServerError] = useState(null)
+
+  // staff-management state
+  const [serviceStaffs, setServiceStaffs] = useState({}) // map serviceId -> [staff]
+  const [allStaff, setAllStaff] = useState(null)
+  const [recentlyAdded, setRecentlyAdded] = useState({}) // map serviceId -> [staffId]
+
+  const createMutation = useMutation({
+    mutationFn: (payload) => createService(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['services'] })
+      setEditValues({})
+      setNewService({ name: '', description: '', duration: '', price: '', image: '' })
+      setFieldErrors(null)
+      setServerError(null)
+    },
+    onError: (err) => {
+      console.error('Create service error', err)
+      const payload = err?.payload || err?.response?.data
+      if (payload) {
+        setServerError(payload.detail || payload.message || null)
+        setFieldErrors(payload.fieldErrors || null)
+      } else {
+        setServerError(err?.message || 'Create failed')
+      }
     }
+  })
 
-    if (!isAdmin) {
-        return (
-            <section className="section">
-                <div className="container">
-                    <Card>
-                        <div className="card-body">
-                            <h2>Access denied</h2>
-                            <p className="muted">You do not have permission to view this page.</p>
-                        </div>
-                    </Card>
-                </div>
-            </section>
-        )
+  const updateMutation = useMutation({
+    mutationFn: ({ serviceId, payload }) => updateService(serviceId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['services'] })
+      setEditingId(null)
+      setEditValues({})
+      setFieldErrors(null)
+      setServerError(null)
+    },
+    onError: (err) => {
+      console.error('Update service error', err)
+      const payload = err?.payload || err?.response?.data
+      if (payload) {
+        setServerError(payload.detail || payload.message || null)
+        setFieldErrors(payload.fieldErrors || null)
+      } else {
+        setServerError(err?.message || 'Update failed')
+      }
     }
+  })
 
+  const deleteMutation = useMutation({
+    mutationFn: (serviceId) => deleteService(serviceId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+    onError: (err) => {
+      console.error('Delete service error', err)
+      setServerError(err?.message || 'Delete failed')
+    }
+  })
+
+  if (!user) {
     return (
-        <section className="section">
-            <div className="container">
-                <div className="page">
-                    <Card>
-                        <div className="card-body">
-                            <h2>Manage Services</h2>
-                            <p className="muted">(Admin only) This page will show service management tools — currently empty.</p>
-
-                            <div className="placeholder-list" style={{marginTop: 12}}>
-                                <em>No service entries yet.</em>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Not signed in</h2>
+              <p className="muted">Please <Link to="/login">log in</Link> to access this page.</p>
             </div>
-        </section>
+          </Card>
+        </div>
+      </section>
     )
+  }
+
+  if (!isAdmin) {
+    return (
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Access denied</h2>
+              <p className="muted">You do not have permission to view this page.</p>
+            </div>
+          </Card>
+        </div>
+      </section>
+    )
+  }
+
+  const startEdit = (s) => {
+    setEditingId(s.serviceId)
+    setEditValues({
+      name: s.name || '',
+      description: s.description || '',
+      duration: s.duration ?? s.durationMinutes ?? 30,
+      price: s.price || 0,
+      image: s.image || ''
+    })
+    setFieldErrors(null)
+    setServerError(null)
+
+    ;(async () => {
+      try {
+        const assigned = await salonApi.getStaffByService(s.serviceId)
+        setServiceStaffs((m) => ({ ...m, [s.serviceId]: assigned || [] }))
+      } catch (err) {
+        console.error('Failed to load staff for service', err)
+        setServiceStaffs((m) => ({ ...m, [s.serviceId]: [] }))
+      }
+
+      if (!allStaff) {
+        try {
+          const fetchedAll = await salonApi.getStaff()
+          setAllStaff(fetchedAll || [])
+        } catch (err) {
+          console.error('Failed to load all staff', err)
+          setAllStaff([])
+        }
+      }
+    })()
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditValues({})
+    setFieldErrors(null)
+    setServerError(null)
+  }
+
+  const saveEdit = async (serviceId) => {
+    const name = (editValues.name || '').trim()
+    if (!name) {
+      setFieldErrors({ ...(fieldErrors || {}), name: 'Name must not be blank' })
+      return
+    }
+
+    const duration = Number(editValues.duration) || 0
+    if (duration <= 0) {
+      setFieldErrors({ ...(fieldErrors || {}), duration: 'Duration must be a positive number' })
+      return
+    }
+
+    const price = Number(editValues.price) || 0
+    const image = (editValues.image || '').trim()
+
+    const payload = { name, description: editValues.description || '', duration: duration, price, image }
+
+    setFieldErrors(null)
+    setServerError(null)
+
+    try {
+      if (editingId) {
+        await updateMutation.mutateAsync({ serviceId, payload })
+      } else {
+        await createMutation.mutateAsync(payload)
+      }
+    } catch (err) {
+      console.error('Failed to save service', err)
+      const payloadErr = err?.payload || err?.response?.data
+      if (payloadErr) {
+        setServerError(payloadErr.detail || payloadErr.message || null)
+        setFieldErrors(payloadErr.fieldErrors || null)
+      } else {
+        setServerError(err?.message || 'Failed to save service')
+      }
+    }
+  }
+
+  const createNew = async () => {
+    const name = (newService.name || '').trim()
+    if (!name) {
+      setFieldErrors({ ...(fieldErrors || {}), name: 'Name must not be blank' })
+      return
+    }
+    const duration = Number(newService.duration) || 0
+    if (duration <= 0) {
+      setFieldErrors({ ...(fieldErrors || {}), duration: 'Duration must be a positive number' })
+      return
+    }
+    const price = Number(newService.price) || 0
+    const image = (newService.image || '').trim()
+    const payload = { name, description: newService.description || '', duration, price }
+    if (image) payload.image = image
+    try {
+      await createMutation.mutateAsync(payload)
+    } catch (err) {
+      console.error('Create failed', err)
+    }
+  }
+
+  const handleDelete = async (serviceId) => {
+    if (!window.confirm('Are you sure you want to delete this service?')) return
+    try {
+      await deleteMutation.mutateAsync(serviceId)
+    } catch (err) {
+      console.error('Failed to delete service', err)
+      alert(err?.message || 'Failed to delete service')
+    }
+  }
+
+  const handleAddStaff = async (serviceId, staffId) => {
+    try {
+      const staffIdNum = Number(staffId)
+      const serviceIdNum = Number(serviceId)
+      await createStaffService({ staffId: staffIdNum, serviceId: serviceIdNum })
+      const assigned = await salonApi.getStaffByService(serviceIdNum)
+      setServiceStaffs((m) => ({ ...m, [serviceIdNum]: assigned || [] }))
+      await queryClient.invalidateQueries({ queryKey: ['services'] })
+      setRecentlyAdded(prev => {
+        const arr = prev[serviceIdNum] ? [...prev[serviceIdNum]] : []
+        if (!arr.includes(staffIdNum)) arr.push(staffIdNum)
+        return { ...prev, [serviceIdNum]: arr }
+      })
+      setTimeout(() => {
+        setRecentlyAdded(prev => {
+          const arr = (prev[serviceIdNum] || []).filter(id => id !== staffIdNum)
+          return { ...prev, [serviceIdNum]: arr }
+        })
+      }, 10000)
+    } catch (err) {
+      console.error('Failed to add staff to service', err)
+      alert(err?.message || 'Failed to add staff')
+    }
+  }
+
+  const handleRemoveStaff = async (serviceId, staffId) => {
+    if (!window.confirm('Remove this staff from the service?')) return
+    try {
+      const staffIdNum = Number(staffId)
+      const serviceIdNum = Number(serviceId)
+      await deleteStaffService(staffIdNum, serviceIdNum)
+      const assigned = await salonApi.getStaffByService(serviceIdNum)
+      setServiceStaffs((m) => ({ ...m, [serviceIdNum]: assigned || [] }))
+      await queryClient.invalidateQueries({ queryKey: ['services'] })
+      setRecentlyAdded(prev => {
+        const arr = (prev[serviceIdNum] || []).filter(id => id !== staffIdNum)
+        return { ...prev, [serviceIdNum]: arr }
+      })
+    } catch (err) {
+      console.error('Failed to remove staff from service', err)
+      alert(err?.message || 'Failed to remove staff')
+    }
+  }
+
+  return (
+    <section className="section">
+      <div className="container">
+        <Card>
+          <div className="card-body">
+            <h2>Manage Services</h2>
+            <p className="muted">Below is a simple listing of services. You can create, edit and delete services here.</p>
+
+            {serverError && <div className="form-error" style={{ marginBottom: 8 }}>{serverError}</div>}
+
+            {isLoading && <p className="muted">Loading services...</p>}
+            {error && <div className="form-error">{error?.message || 'Failed to load services'}</div>}
+
+            {!isLoading && services && (
+              <div className="service-list-form">
+                {services.map(s => {
+                  const isEditing = editingId === s.serviceId
+                  const displayDuration = s.duration ?? s.durationMinutes ?? 0
+                  return (
+                    <fieldset key={s.serviceId} style={{ marginBottom: 12, padding: 8, border: '1px solid #eee' }}>
+                      <legend style={{ fontWeight: 600 }}>{s.name || 'Unnamed'}</legend>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'start' }}>
+
+                        <div>
+                          <div style={{ marginBottom: 8 }}>
+                            <label className="muted">Name</label>
+                            <input
+                              type="text"
+                              value={isEditing ? editValues.name : (s.name || '')}
+                              onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                            {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                          </div>
+
+                          <div>
+                            <label className="muted">Description</label>
+                            <textarea
+                              value={isEditing ? editValues.description : (s.description || '')}
+                              onChange={(e) => setEditValues(v => ({ ...v, description: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gap: 8 }}>
+
+                          <div>
+                            <label className="muted">Price (numeric)</label>
+                            <input
+                              type="number"
+                              value={isEditing ? editValues.price : (s.price || 0)}
+                              onChange={(e) => setEditValues(v => ({ ...v, price: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="muted">Image URL</label>
+                            {isEditing ? (
+                              <input type="text" value={editValues.image || ''} onChange={(e) => setEditValues(v => ({ ...v, image: e.target.value }))} />
+                            ) : (
+                              <input type="text" value={s.image || ''} readOnly />
+                            )}
+                            {(isEditing ? (editValues.image) : s.image) ? (
+                              <div style={{ marginTop: 6 }}>
+                                <img src={(isEditing ? editValues.image : s.image) || ''} alt={s.name} style={{ maxWidth: 120, maxHeight: 80, objectFit: 'cover', borderRadius: 6 }} onError={(e) => { e.target.style.display = 'none' }} />
+                              </div>
+                            ) : null}
+                          </div>
+
+                          <div>
+                            <label className="muted">Duration (minutes)</label>
+                            <input
+                              type="number"
+                              value={isEditing ? editValues.duration : displayDuration}
+                              onChange={(e) => setEditValues(v => ({ ...v, duration: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                            {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                          </div>
+
+                          <div>
+                            <label className="muted">ID</label>
+                            <input type="text" value={s.serviceId || ''} readOnly />
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
+                        {isEditing ? (
+                          <>
+                            <button className="btn-primary" onClick={() => saveEdit(s.serviceId)} disabled={updateMutation.isLoading}>Save</button>
+                            <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                          </>
+                        ) : (
+                          <>
+                            <button className="btn" onClick={() => startEdit(s)}>Edit</button>
+                            <button className="btn-danger" onClick={() => handleDelete(s.serviceId)} disabled={deleteMutation.isLoading}>Delete</button>
+                          </>
+                        )}
+                      </div>
+
+                      {isEditing && (
+                        <div style={{ gridColumn: '1 / -1', marginTop: 12, padding: 8, borderTop: '1px solid var(--border)' }}>
+                          <h4 style={{ margin: 0 }}>Manage staff for this service</h4>
+                          <div style={{ marginTop: 8 }}>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              {(serviceStaffs[s.serviceId] || []).length === 0 && <div className="muted">No staff assigned</div>}
+                              {(serviceStaffs[s.serviceId] || []).map(st => {
+                                const isRecent = (recentlyAdded[s.serviceId] || []).includes(st.staffId)
+                                const assignedStyle = isRecent
+                                  ? { border: '1px solid #28a745', background: '#e9f7ef', color: '#155724' }
+                                  : { border: '1px solid #0b3d91', background: '#e6eefb', color: '#0b3d91' }
+                                return (
+                                  <div key={st.staffId} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 6, borderRadius: 6, ...assignedStyle }}>
+                                    <div>{st.user?.name || st.user?.username || `Staff #${st.staffId}`}</div>
+                                    <button className="btn-danger" onClick={() => handleRemoveStaff(s.serviceId, st.staffId)}>Remove</button>
+                                  </div>
+                                )
+                              })}
+
+                            </div>
+
+                            <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
+                              <label className="muted">Add staff:</label>
+                              <select defaultValue="" onChange={(e) => { const staffId = e.target.value; if (staffId) handleAddStaff(s.serviceId, staffId); e.target.value = '' }}>
+                                <option value="" disabled>Select staff</option>
+                                {(allStaff || []).map(st => (
+                                  <option key={st.staffId} value={st.staffId}>{st.user?.name || st.user?.username || `Staff #${st.staffId}`}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                          </div>
+                        </div>
+                      )}
+
+                    </fieldset>
+                  )
+                })}
+
+                <fieldset style={{ marginTop: 16, padding: 8, border: '1px dashed #ddd' }}>
+                  <legend style={{ fontWeight: 600 }}>Create new service</legend>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div>
+                      <label className="muted">Name</label>
+                      <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
+                      {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                    </div>
+
+                    <div>
+                      <label className="muted">Duration (minutes)</label>
+                      <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
+                      {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                    </div>
+
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="muted">Description</label>
+                      <textarea value={newService.description} onChange={(e) => setNewService(v => ({ ...v, description: e.target.value }))} />
+                    </div>
+
+                    <div>
+                      <label className="muted">Price (numeric)</label>
+                      <input type="number" value={newService.price} onChange={(e) => setNewService(v => ({ ...v, price: e.target.value }))} />
+                    </div>
+
+                    <div>
+                      <label className="muted">Image URL</label>
+                      <input type="text" value={newService.image} onChange={(e) => setNewService(v => ({ ...v, image: e.target.value }))} />
+                    </div>
+
+                    <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                      <button className="btn-primary" onClick={() => createNew()} disabled={createMutation.isLoading}>Create</button>
+                    </div>
+
+                  </div>
+                </fieldset>
+
+              </div>
+            )}
+
+            {!isLoading && (!services || services.length === 0) && (
+              <p className="muted">No services found.</p>
+            )}
+
+          </div>
+        </Card>
+      </div>
+    </section>
+  )
 }
 
 export default ManageServices
-

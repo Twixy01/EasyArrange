@@ -18,14 +18,15 @@ function ManageUsers() {
     const [fieldErrors, setFieldErrors] = useState(null)
     const [serverError, setServerError] = useState(null)
 
-    //remove the logged-in user from the displayed list so they don't appear in the admin form
-    const displayedUsers = Array.isArray(users) ? users.filter(u => u.userId !== user?.userId) : []
+    // remove the logged-in user from the displayed list so they don't appear in the admin form
+    const displayedUsers = useMemo(() => {
+        return Array.isArray(users) ? users.filter(u => u.userId !== user?.userId) : []
+    }, [users, user?.userId])
 
     //derive available roles from displayedUsers (fallback when no dedicated roles API exists)
     const availableRoles = useMemo(() => {
         const map = new Map()
-        const list = displayedUsers
-        list.forEach(u => {
+        displayedUsers.forEach(u => {
             const r = u.role
             if (!r) return
             const key = r.roleId ?? r.name
@@ -129,7 +130,7 @@ function ManageUsers() {
         // prefill role as object {roleId,name} if available
         const roleObj = (u.role && (u.role.roleId || u.role.roleId === 0)) ? { roleId: u.role.roleId, name: u.role.name } : (u.role?.name ? { name: u.role.name } : {})
         setEditingId(u.userId)
-        setEditValues({ name: u.name || '', email: u.email || '', role: roleObj, currentPassword: '', newPassword: '' })
+        setEditValues({ name: u.name || '', email: u.email || '', phoneNumber: u.phoneNumber ?? u.phone ?? '', role: roleObj, currentPassword: '', newPassword: '' })
         setFieldErrors(null)
         setServerError(null)
     }
@@ -168,6 +169,7 @@ function ManageUsers() {
         const payload = {
             name,
             email: originalUser.email,
+            phoneNumber: editValues.phoneNumber || originalUser.phoneNumber || originalUser.phone || null,
             // include currentPassword only if editing yourself (backend enforces it)
             currentPassword: (originalUser.userId === user.userId) ? editValues.currentPassword : undefined,
             // admin editing others typically won't supply currentPassword; backend may reject if it enforces it
@@ -265,11 +267,10 @@ function ManageUsers() {
                                                     <input type="text" value={u.userId || ''} readOnly />
                                                 </div>
 
-                                                {/* Phone intentionally commented out until needed */}
-                                                {/* <div>
+                                                <div>
                                                     <label className="muted">Phone</label>
-                                                    <input type="text" value={u.phone || ''} readOnly />
-                                                </div> */}
+                                                    <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? u.phone ?? '')} onChange={(e) => setEditValues(v => ({ ...v, phoneNumber: e.target.value }))} readOnly={!isEditing} />
+                                                </div>
 
                                                 {/* show currentPassword only when editing your own account */}
                                                 {isEditing && u.userId === user.userId && (
