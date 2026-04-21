@@ -125,5 +125,22 @@ export const salonApi = {
     async getUsers() {
         const response = await Axios.get(`${BASE_URL}/users`);
         return response.data;
+    },
+
+    // --- Service management (admin) ---
+    async createService(servicePayload) {
+        // expects { name, description, durationMinutes, price }
+        const response = await Axios.post(`${BASE_URL}/services`, servicePayload);
+        return response.data;
+    },
+
+    async updateService(serviceId, servicePayload) {
+        const response = await Axios.put(`${BASE_URL}/services/${serviceId}`, servicePayload);
+        return response.data;
+    },
+
+    async deleteService(serviceId) {
+        const response = await Axios.delete(`${BASE_URL}/services/${serviceId}`);
+        return response.data;
     }
 };
