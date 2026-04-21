@@ -1,12 +1,12 @@
 package org.example.backend.Service;
 
-
 import org.springframework.transaction.annotation.Transactional;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
 import org.example.backend.Model.entity.*;
 import org.example.backend.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated
 @org.springframework.stereotype.Service
 public class BookingService {
 
@@ -142,11 +143,7 @@ public class BookingService {
         Shift shiftBySelectedDate = shifts.stream()
                 .filter(shift -> shift.getDay().name().equals(selectedDate.getDayOfWeek().name()))
                 .findFirst()
-                .orElse(null);
-
-        if (shiftBySelectedDate == null) {
-            return List.of();
-        }
+                .orElseThrow(() -> new IllegalArgumentException("No shift found for staff with id " + staffId + " on date " + selectedDate));
 
         LocalDateTime startOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getStartShift());
         LocalDateTime endOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getEndShift());
