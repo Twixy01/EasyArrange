@@ -700,6 +700,19 @@ textarea {
   }
 }
 
+/* Booking summary jump button */
+.booking-summary-jump {
+  display: block;
+  margin-top: 0.25rem;
+  width: fit-content;
+  align-self: flex-start;
+}
+@media (max-width: 899px) {
+  .booking-summary-jump {
+    display: none;
+  }
+}
+
 /* shift page */
 .shift-page {
   position: relative;

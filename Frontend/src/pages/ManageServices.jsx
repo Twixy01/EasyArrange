@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useMemo } from 'react'
 import Card from '../components/common/Card'
 import { useServices } from '../hooks/queries/useServices'
 import { useAuth } from '../hooks/useAuth'
@@ -6,8 +6,11 @@ import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createService, updateService, deleteService, createStaffService, deleteStaffService } from '../services/api'
 import { salonApi } from '../api/salonApi'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ManageServices() {
+  const { showSuccess, showError, getErrorMessage } = useContext(UIStateContext)
+
   const { user } = useAuth()
   const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
@@ -18,7 +21,6 @@ function ManageServices() {
   const [editValues, setEditValues] = useState({})
   const [newService, setNewService] = useState({ name: '', description: '', duration: '', price: '', image: '' })
   const [fieldErrors, setFieldErrors] = useState(null)
-  const [serverError, setServerError] = useState(null)
 
   // staff-management state
   const [serviceStaffs, setServiceStaffs] = useState({}) // map serviceId -> [staff]
@@ -29,19 +31,19 @@ function ManageServices() {
     mutationFn: (payload) => createService(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['services'] })
+      showSuccess("Service created successfully.")
       setEditValues({})
       setNewService({ name: '', description: '', duration: '', price: '', image: '' })
       setFieldErrors(null)
-      setServerError(null)
     },
     onError: (err) => {
       console.error('Create service error', err)
       const payload = err?.payload || err?.response?.data
       if (payload) {
-        setServerError(payload.detail || payload.message || null)
+        showError(getErrorMessage(err, "Failed to create service. Please check your input and try again."))
         setFieldErrors(payload.fieldErrors || null)
       } else {
-        setServerError(err?.message || 'Create failed')
+        showError(getErrorMessage(err, "Failed to create service. Please check your input and try again."))
       }
     }
   })
@@ -50,19 +52,19 @@ function ManageServices() {
     mutationFn: ({ serviceId, payload }) => updateService(serviceId, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['services'] })
+      showSuccess("Service updated successfully.")
       setEditingId(null)
       setEditValues({})
       setFieldErrors(null)
-      setServerError(null)
     },
     onError: (err) => {
       console.error('Update service error', err)
       const payload = err?.payload || err?.response?.data
       if (payload) {
-        setServerError(payload.detail || payload.message || null)
+        showError(getErrorMessage(err, "Failed to update service. Please check your input and try again."))
         setFieldErrors(payload.fieldErrors || null)
       } else {
-        setServerError(err?.message || 'Update failed')
+        showError(getErrorMessage(err, "Failed to update service. Please check your input and try again."))
       }
     }
   })
@@ -71,10 +73,10 @@ function ManageServices() {
     mutationFn: (serviceId) => deleteService(serviceId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['services'] })
+      showSuccess("Service deleted successfully.")
     },
     onError: (err) => {
-      console.error('Delete service error', err)
-      setServerError(err?.message || 'Delete failed')
+      showError(getErrorMessage(err, "Failed to delete service. Please try again."))
     }
   })
 
@@ -118,34 +120,32 @@ function ManageServices() {
       image: s.image || ''
     })
     setFieldErrors(null)
-    setServerError(null)
 
-    ;(async () => {
-      try {
-        const assigned = await salonApi.getStaffByService(s.serviceId)
-        setServiceStaffs((m) => ({ ...m, [s.serviceId]: assigned || [] }))
-      } catch (err) {
-        console.error('Failed to load staff for service', err)
-        setServiceStaffs((m) => ({ ...m, [s.serviceId]: [] }))
-      }
-
-      if (!allStaff) {
+     ; (async () => {
         try {
-          const fetchedAll = await salonApi.getStaff()
-          setAllStaff(fetchedAll || [])
+          const assigned = await salonApi.getStaffByService(s.serviceId)
+          setServiceStaffs((m) => ({ ...m, [s.serviceId]: assigned || [] }))
         } catch (err) {
-          console.error('Failed to load all staff', err)
-          setAllStaff([])
+          console.error('Failed to load staff for service', err)
+          setServiceStaffs((m) => ({ ...m, [s.serviceId]: [] }))
         }
-      }
-    })()
+
+        if (!allStaff) {
+          try {
+            const fetchedAll = await salonApi.getStaff()
+            setAllStaff(fetchedAll || [])
+          } catch (err) {
+            console.error('Failed to load all staff', err)
+            setAllStaff([])
+          }
+        }
+      })()
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditValues({})
     setFieldErrors(null)
-    setServerError(null)
   }
 
   const saveEdit = async (serviceId) => {
@@ -167,7 +167,6 @@ function ManageServices() {
     const payload = { name, description: editValues.description || '', duration: duration, price, image }
 
     setFieldErrors(null)
-    setServerError(null)
 
     try {
       if (editingId) {
@@ -179,10 +178,10 @@ function ManageServices() {
       console.error('Failed to save service', err)
       const payloadErr = err?.payload || err?.response?.data
       if (payloadErr) {
-        setServerError(payloadErr.detail || payloadErr.message || null)
+        showError(getErrorMessage(err, "Failed to save service. Please check your input and try again."))
         setFieldErrors(payloadErr.fieldErrors || null)
       } else {
-        setServerError(err?.message || 'Failed to save service')
+        showError(getErrorMessage(err, "Failed to save service. Please try again."))
       }
     }
   }
@@ -204,8 +203,9 @@ function ManageServices() {
     if (image) payload.image = image
     try {
       await createMutation.mutateAsync(payload)
+      showSuccess("Service created successfully.")
     } catch (err) {
-      console.error('Create failed', err)
+      showError(getErrorMessage(err, "Failed to create service. Please try again."))
     }
   }
 
@@ -213,9 +213,9 @@ function ManageServices() {
     if (!window.confirm('Are you sure you want to delete this service?')) return
     try {
       await deleteMutation.mutateAsync(serviceId)
+      showSuccess("Service deleted successfully.")
     } catch (err) {
-      console.error('Failed to delete service', err)
-      alert(err?.message || 'Failed to delete service')
+      showError(getErrorMessage(err, "Failed to delete service. Please try again."))
     }
   }
 
@@ -239,8 +239,7 @@ function ManageServices() {
         })
       }, 10000)
     } catch (err) {
-      console.error('Failed to add staff to service', err)
-      alert(err?.message || 'Failed to add staff')
+      showError(getErrorMessage(err, "Failed to add staff to service. Please try again."))
     }
   }
 
@@ -257,11 +256,18 @@ function ManageServices() {
         const arr = (prev[serviceIdNum] || []).filter(id => id !== staffIdNum)
         return { ...prev, [serviceIdNum]: arr }
       })
+      showSuccess("Staff removed from service successfully.")
     } catch (err) {
-      console.error('Failed to remove staff from service', err)
-      alert(err?.message || 'Failed to remove staff')
+      showError(getErrorMessage(err, "Failed to remove staff from service. Please try again."))
     }
   }
+
+  useMemo(() => {
+    if (error) {
+      const message = getErrorMessage(error, "Failed to load services. Please try again later.")
+      showError(message)
+    }
+  }, [error])
 
   return (
     <section className="section">
@@ -271,10 +277,7 @@ function ManageServices() {
             <h2>Manage Services</h2>
             <p className="muted">Below is a simple listing of services. You can create, edit and delete services here.</p>
 
-            {serverError && <div className="form-error" style={{ marginBottom: 8 }}>{serverError}</div>}
-
             {isLoading && <p className="muted">Loading services...</p>}
-            {error && <div className="form-error">{error?.message || 'Failed to load services'}</div>}
 
             {!isLoading && services && (
               <div className="service-list-form">

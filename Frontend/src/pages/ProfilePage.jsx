@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../hooks/useAuth'
@@ -7,17 +7,17 @@ import Button from '../components/common/Button'
 import {cancelBooking} from '../services/api'
 import {useBookingsByCustomer} from '../hooks/queries/useBookingsByCustomer'
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ProfilePage() {
+    const { showLoading, showError, showSuccess, getErrorMessage } = useContext(UIStateContext)
+
     const {user, logout} = useAuth()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [bookingSuccess, setBookingSuccess] = useState(null)
 
     const customerId = user?.userId
-
-    // stable snapshot of "now" for this render to satisfy purity rule
-    // const now = useMemo(() => Date.now(), [])
 
     const {
         data: bookings = [],
@@ -43,6 +43,10 @@ function ProfilePage() {
             await queryClient.invalidateQueries({queryKey: ['bookings', customerId]})
             setBookingSuccess('Booking cancelled')
             setTimeout(() => setBookingSuccess(null), 3000)
+        },
+        onError: (error) => {
+            const serverMessage = getErrorMessage(error, 'Failed to cancel booking. Please try again.')
+            showError(serverMessage)
         },
         onSettled: () => {
             setCancellingId(null)
@@ -81,7 +85,7 @@ function ProfilePage() {
 
     const handleCancelBooking = async (bookingId) => {
         if (!bookingId) {
-            alert('Booking id missing, cannot cancel')
+            showError('Booking id missing, cannot cancel')
             return
         }
         const ok = window.confirm('Are you sure you want to cancel this booking?')
@@ -90,9 +94,8 @@ function ProfilePage() {
             setCancellingId(bookingId)
             await cancelBookingMutation.mutateAsync(bookingId)
         } catch (err) {
-            console.error('Failed to cancel booking', err?.response ?? err)
-            const serverMessage = err?.payload?.detail || err?.payload?.message || err?.message || 'Failed to cancel booking'
-            alert(serverMessage)
+            const serverMessage = getErrorMessage(err, 'Failed to cancel booking')
+            showError(serverMessage)
         }
     }
 
@@ -143,6 +146,12 @@ function ProfilePage() {
         return `${yyyy}.${mm}.${dd} ${hh}:${min}`
     }
 
+    useEffect(() => {
+        if (bookingsError) {
+            showError(bookingsError, "Failed to load the bookings.")
+        }
+    }, [bookingsError])
+
     return (
         <section className="section profile-section">
             {bookingSuccess &&
@@ -182,7 +191,6 @@ function ProfilePage() {
                                     <h3 style={{marginTop: 0}}>My bookings</h3>
 
                                     {loadingBookings && <p className="muted">Loading bookings...</p>}
-                                    {bookingsError && <div className="form-error">{bookingsError}</div>}
 
                                     {!loadingBookings && bookings.length === 0 && !bookingsError && (
                                         <p className="muted">You have no bookings.</p>

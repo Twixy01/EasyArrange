@@ -60,6 +60,18 @@ export function UIStateProvider({ children }) {
     showNotification("loading", message);
   }, [showNotification]);
 
+  const getErrorMessage = useCallback((err, customMessage) => {
+    if (!err) return null;
+
+    return (
+      err?.response?.data?.detail ||
+      err?.response?.data?.message ||
+      err?.message ||
+      customMessage ||
+      "Something went wrong"
+    );
+  }, []);
+
   const value = useMemo(() => ({
     notification,
     showNotification,
@@ -67,6 +79,7 @@ export function UIStateProvider({ children }) {
     showError,
     showLoading,
     hideNotification,
+    getErrorMessage,
   }), [
     notification,
     showNotification,
@@ -74,6 +87,8 @@ export function UIStateProvider({ children }) {
     showError,
     showLoading,
     hideNotification,
+    getErrorMessage,
+
   ]);
 
   return (

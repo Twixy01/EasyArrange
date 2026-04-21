@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useContext, useEffect } from 'react'
 import { useServices } from '../hooks/queries/useServices'
 import ServiceCard from '../components/common/ServiceCard'
 import SectionHeader from '../components/common/SectionHeader'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ServicesPage() {
+  const { showError, getErrorMessage } = useContext(UIStateContext)
   const { data: services = [], isLoading, error } = useServices()
   const [query, setQuery] = useState('')
 
@@ -21,6 +23,14 @@ function ServicesPage() {
   ]
 
   const showServices = (error || (!services || services.length === 0)) ? demoServices : filtered
+
+  useEffect(() => {
+    if (error) {
+      const message = getErrorMessage(error, "Failed to load services. Please try again later.")
+      showError(message)
+    }
+  }, [error])
+
 
   return (
     <section className="section">
@@ -49,10 +59,6 @@ function ServicesPage() {
               <ServiceCard key={s.serviceId} service={s} />
             ))}
           </div>
-        )}
-
-        {error && (
-          <p className="muted">Failed to load services from backend; showing demo data.</p>
         )}
       </div>
     </section>

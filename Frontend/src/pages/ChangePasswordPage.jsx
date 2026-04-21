@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Card from '../components/common/Card'
 import { useAuth } from '../hooks/useAuth'
 import { updateUser, getUser } from '../services/api'
+import { UIStateContext } from '../context/UIStateContext'
 
 export default function ChangePasswordPage() {
+  const { showSuccess, showError, getErrorMessage } = useContext(UIStateContext)
+
   const { user, login } = useAuth()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmNewPassword: '' })
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
   const [serverDebug, setServerDebug] = useState(null)
 
   if (!user) return (
@@ -37,12 +38,11 @@ export default function ChangePasswordPage() {
   }
 
   const handleSubmit = async () => {
-    setError(null)
-    setSuccess(null)
-    if (!form.currentPassword) return setError('Current password is required')
-    if (!form.newPassword) return setError('New password is required')
-    if (form.newPassword !== form.confirmNewPassword) return setError('New passwords do not match')
-    if (form.newPassword.length < 4) return setError('New password must be at least 4 characters')
+    setServerDebug(null)
+    if (!form.currentPassword) return showError('Current password is required')
+    if (!form.newPassword) return showError('New password is required')
+    if (form.newPassword !== form.confirmNewPassword) return showError('New passwords do not match')
+    if (form.newPassword.length < 4) return showError('New password must be at least 4 characters')
 
     setSaving(true)
     try {
@@ -65,8 +65,7 @@ export default function ChangePasswordPage() {
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token }
       try { login(newUser) } catch { /* ignore */ }
-      setSuccess('Password changed successfully')
-      setTimeout(() => setSuccess(null), 3000)
+      showSuccess('Password changed successfully')
       navigate('/profile')
     } catch (err) {
       const payloadErr = err?.payload || err?.response?.data
@@ -75,12 +74,12 @@ export default function ChangePasswordPage() {
       if (payloadErr) {
         if (payloadErr.fieldErrors) {
           const msgs = Object.entries(payloadErr.fieldErrors).map(([k, v]) => `${k}: ${v}`).join(' ')
-          setError(msgs || payloadErr.detail || payloadErr.message || err.message)
+          showError(msgs || getErrorMessage(err, 'Failed to change password'))
         } else {
-          setError(payloadErr.detail || payloadErr.message || err.message)
+          showError(getErrorMessage(err, 'Failed to change password'))
         }
       } else {
-        setError(err.message || 'Failed to change password')
+        showError(getErrorMessage(err, 'Failed to change password'))
       }
     } finally {
       setSaving(false)
@@ -110,9 +109,7 @@ export default function ChangePasswordPage() {
                   <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
                 </div>
 
-                {error && <div className="form-error">{error}</div>}
                 {serverDebug && <pre style={{marginTop:8, maxHeight:200, overflow:'auto', background:'#f6f8fa', padding:8}}>{JSON.stringify(serverDebug, null, 2)}</pre>}
-                {success && <div className="form-success">{success}</div>}
 
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button className="btn-primary" onClick={handleSubmit} disabled={saving}>{saving ? 'Saving...' : 'Create new password'}</button>

@@ -11,7 +11,7 @@ import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 import { UIStateContext } from "../context/UIStateContext.jsx";
 
 export default function ShiftsPage() {
-    const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
+    const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
 
     const { user, staff } = useAuth();
     const roleNameUpper = user?.role?.name ? String(user.role.name).toUpperCase() : null;
@@ -21,9 +21,6 @@ export default function ShiftsPage() {
     const { data: shifts = [], isLoading, error: shiftError } = useShiftsByStaff(staff?.staffId);
 
     const [shiftDrafts, setShiftDrafts] = useState({});
-
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
 
 
     useEffect(() => {
@@ -93,7 +90,13 @@ export default function ShiftsPage() {
         }
     });
 
-    if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (<p>You do not have permission to view this page.</p>);
+    if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (
+        <section className="section">
+            <div className="container">
+                <p>You do not have permission to view this page.</p>
+            </div>
+        </section>
+    );
 
     if (isLoading) {
         return (
@@ -106,10 +109,11 @@ export default function ShiftsPage() {
     }
 
     if (shiftError) {
+        showError(getErrorMessage(shiftError));
         return (
             <section className="section">
                 <div className="container">
-                    <p>{shiftError}</p>
+                    <p>Failed to load shifts. Please try again later.</p>
                 </div>
             </section>
         );
@@ -120,7 +124,7 @@ export default function ShiftsPage() {
 
         showLoading("Saving shift...");
 
-        updateShiftMutate(
+        await updateShiftMutate(
             {
                 staffId,
                 day: shift.day,
@@ -132,7 +136,7 @@ export default function ShiftsPage() {
                     showSuccess("Shift updated successfully!");
                 },
                 onError: (err) => {
-                    showError(err?.response?.data?.detail || "Failed to update shift.");
+                    showError(getErrorMessage(err));
                 },
             }
         );
@@ -147,18 +151,18 @@ export default function ShiftsPage() {
     };
 
     const removeShift = async (staffId, shiftId) => {
-        if (!confirm("Are you sure you want to remove this shift?")) return;
+        if (!confirm("Are you sure you want to remove this shift?", "Confirm Removal")) return;
 
         showLoading("Removing shift...");
 
-        removeShiftMutate(
+        await removeShiftMutate(
             { staffId, shiftId },
             {
                 onSuccess: () => {
                     showSuccess("Shift removed successfully!");
                 },
                 onError: (err) => {
-                    showError(err?.response?.data?.detail || "Failed to remove shift.");
+                    showError(getErrorMessage(err));
                 },
             }
         );
