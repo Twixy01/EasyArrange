@@ -1,5 +1,6 @@
 package org.example.backend.Service;
 
+
 import org.springframework.transaction.annotation.Transactional;
 import org.example.backend.DTO.Booking.*;
 import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
@@ -89,13 +90,7 @@ public class BookingService {
                                 booking.getService().getId(),
                                 computedStatus.name()
                         );
-                        try {
-                            return update(booking.getId(), request);
-                        } catch (Exception e) {
-                            // If updating fails (for example due to validation), log and fall back to mapping the existing booking
-                            System.err.println("Warning: failed to auto-update booking id=" + booking.getId() + ": " + e.getMessage());
-                            return bookingResponseMapper.apply(booking);
-                        }
+                        return update(booking.getId(), request);
                     }
 
                     // No update required, return mapped response
@@ -247,6 +242,18 @@ public class BookingService {
         Booking existing = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
+        // If the client attempts to cancel the booking, enforce the 24-hour rule against
+        // the currently stored start datetime to prevent bypassing by changing startDateTime
+        if (BookingStatus.CANCELLED.name().equals(bookingRequest.status())) {
+            LocalDateTime originalStart = existing.getStartDateTime();
+            LocalDateTime now = LocalDateTime.now();
+            // Block cancellation if the stored start is not after now + 24 hours (i.e. start <= now+24h)
+            if (!originalStart.isAfter(now.plusHours(24))) {
+                throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
+            }
+        }
+
+        // apply updates from request
         bookingUpdateRequestMapper.accept(existing, bookingRequest);
 
         Service service = serviceRepository.findById(bookingRequest.serviceId())
@@ -261,7 +268,7 @@ public class BookingService {
 
 
     @Transactional
-    public void cancel(Long id) {
+    public void remove(Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
@@ -271,17 +278,21 @@ public class BookingService {
             throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
         }
 
-        //mark it as CANCELLED and persist the status
+        // Instead of hard-deleting the booking, mark it as CANCELLED and persist the status
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void hardRemove(Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 
-        bookingRepository.deleteById(booking.getId());
+        if (booking.getStatus() != BookingStatus.CANCELLED) {
+            throw new IllegalArgumentException("Only cancelled bookings can be removed permanently");
+        }
+
+        bookingRepository.deleteById(id);
     }
 
 }

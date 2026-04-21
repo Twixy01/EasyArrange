@@ -11,6 +11,7 @@ import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
 import ProfilePage from '../pages/ProfilePage'
 import ProfileEditPage from '../pages/ProfileEditPage'
+import ChangePasswordPage from '../pages/ChangePasswordPage'
 import ShiftsPage from '../pages/ShiftsPage'
 import CalendarBlockPage from '../pages/CalendarBlockPage'
 // import ManageStaffs from '../pages/ManageStaffs'
@@ -60,6 +61,7 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile/change-password" element={<ChangePasswordPage />} />
                     <Route path="/profile/edit" element={<ProfileEditPage />} />
                     <Route path="/shifts" element={<ShiftsPage />} />
                     <Route path="/time-off" element={<CalendarBlockPage />} />
