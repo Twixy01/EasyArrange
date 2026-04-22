@@ -54,7 +54,7 @@ export default function ShiftsPage() {
         });
     }, [shifts, roleNameUpper]);
 
-    const orderedShifts = [
+    const [orderedShifts, setOrderedShifts] = useState([
         { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
         { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
         { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
@@ -62,33 +62,17 @@ export default function ShiftsPage() {
         { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
         { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
         { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
-    ];
+    ]);
 
-    shifts.forEach(shift => {
-        switch (shift.day) {
-            case "MONDAY":
-                orderedShifts[0] = shift;
-                break;
-            case "TUESDAY":
-                orderedShifts[1] = shift;
-                break;
-            case "WEDNESDAY":
-                orderedShifts[2] = shift;
-                break;
-            case "THURSDAY":
-                orderedShifts[3] = shift;
-                break;
-            case "FRIDAY":
-                orderedShifts[4] = shift;
-                break;
-            case "SATURDAY":
-                orderedShifts[5] = shift;
-                break;
-            case "SUNDAY":
-                orderedShifts[6] = shift;
-                break;
-        }
-    });
+    useEffect(() => {
+        const newOrderedShifts = [...orderedShifts];
+        shifts.forEach(shift => {
+            // Find index by day and update
+            const index = newOrderedShifts.findIndex(s => s.day === shift.day);
+            if (index !== -1) newOrderedShifts[index] = shift;
+        });
+        setOrderedShifts(newOrderedShifts);
+    }, [shifts]);
 
     if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (
         <section className="section">

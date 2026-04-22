@@ -224,6 +224,8 @@ function ProfilePage() {
                                                                 <div
                                                                     className="muted">With: {b.staff?.user?.name || '—'}</div>
                                                                 <div
+                                                                    className="muted">Phone: {b.staff?.user?.phoneNumber || '—'}</div>
+                                                                <div
                                                                     className="muted">Service: {b.service?.name ? `${b.service.name} | ${b.service?.price != null ? ` ${b.service.price} Ft` : ''}` : '—'}</div>
                                                                 {startsAt && getStatusOrder(b.status) === 1 && (
                                                                     <div className="muted" style={{marginTop: 4}}>
