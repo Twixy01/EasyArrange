@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import SectionHeader from "../components/common/SectionHeader";
 import Card from "../components/common/Card";
 import { useStaff } from "../hooks/queries/useStaff";
+import avatarPlaceholder from "../assets/avatar-placeholder.png";
 
 export default function StaffPage() {
   const {data: staff = [], isLoading: staffLoading, error: staffError} = useStaff();
-
+  
   if (staffLoading) {
     return (
       <section className="section">
@@ -42,11 +43,12 @@ export default function StaffPage() {
 
             return (
               <Card key={member.staffId} className="staff-card">
-                <img src={memberImage} alt={memberName} />
+                <img src={memberImage || avatarPlaceholder} alt={memberName} />
                 <div className="card-body">
                   <h3>{memberName}</h3>
                   <p className="muted">{member.title}</p>
                   <p>{member.bio}</p>
+                  <p className="muted">{member.user?.phoneNumber}</p>
                   <div className="pill-wrap">
                     {member.services.map((item) => (
                       <span key={item.serviceId} className="pill">

@@ -236,7 +236,7 @@ function ManageUsers() {
                                                 <div>
                                                     <label className="muted">Name</label>
                                                     <input type="text" value={isEditing ? editValues.name : (u.name || '')} onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))} readOnly={!isEditing} />
-                                                    {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                                                    {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
                                                 </div>
                                                 <div>
                                                     <label className="muted">Email</label>
@@ -260,7 +260,7 @@ function ManageUsers() {
                                                     ) : (
                                                         <input type="text" value={u.role?.name || u.role || ''} readOnly />
                                                     )}
-                                                    {fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
+                                                    {isEditing && fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
                                                 </div>
 
                                                 <div>
@@ -279,12 +279,12 @@ function ManageUsers() {
                                                         <div>
                                                             <label className="muted">Current password</label>
                                                             <input type="password" value={editValues.currentPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, currentPassword: e.target.value }))} />
-                                                            {fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
+                                                            {isEditing && fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
                                                         </div>
                                                         <div>
                                                             <label className="muted">New password (optional)</label>
                                                             <input type="password" value={editValues.newPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, newPassword: e.target.value }))} />
-                                                            {fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
+                                                            {isEditing && fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
                                                         </div>
                                                     </>
                                                 )}

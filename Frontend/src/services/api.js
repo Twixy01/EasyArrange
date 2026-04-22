@@ -23,16 +23,25 @@ function normalizeAxiosError(error) {
     const status = error?.response?.status;
     const statusText = error?.response?.statusText;
 
-    const detail =
+    const userMessage =
         payload?.detail ||
         payload?.message ||
-        error?.message ||
         'Request failed';
+    const debugDetail = payload?.detail || payload?.message || error?.message || 'Request failed';
 
     const normalized = new Error(
-        status ? `HTTP ${status}${statusText ? ` ${statusText}` : ''} - ${detail}` : detail
+        status ? `HTTP ${status}${statusText ? ` ${statusText}` : ''} - ${debugDetail}` : debugDetail
     );
-    normalized.payload = payload || { detail };
+    normalized.userMessage = userMessage;
+    normalized.status = status;
+    normalized.payload = payload || { detail: userMessage };
+    console.error('API request failed', {
+        status,
+        statusText,
+        url: error?.config?.url,
+        method: error?.config?.method,
+        payload: normalized.payload
+    });
     throw normalized;
 }
 

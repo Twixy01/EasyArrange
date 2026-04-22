@@ -10,6 +10,16 @@ import { useEffect, useState, useContext } from "react";
 import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 import { UIStateContext } from "../context/UIStateContext.jsx";
 
+const WEEK_SHIFT_TEMPLATE = [
+    { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
+    { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
+    { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
+    { shiftId: "thursday", day: "THURSDAY", startShift: "", endShift: "" },
+    { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
+    { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
+    { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
+];
+
 export default function ShiftsPage() {
     const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
 
@@ -54,18 +64,10 @@ export default function ShiftsPage() {
         });
     }, [shifts, roleNameUpper]);
 
-    const [orderedShifts, setOrderedShifts] = useState([
-        { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
-        { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
-        { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
-        { shiftId: "thursday", day: "THURSDAY", startShift: "", endShift: "" },
-        { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
-        { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
-        { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
-    ]);
+    const [orderedShifts, setOrderedShifts] = useState(WEEK_SHIFT_TEMPLATE);
 
     useEffect(() => {
-        const newOrderedShifts = [...orderedShifts];
+        const newOrderedShifts = WEEK_SHIFT_TEMPLATE.map((shift) => ({ ...shift }));
         shifts.forEach(shift => {
             // Find index by day and update
             const index = newOrderedShifts.findIndex(s => s.day === shift.day);
@@ -144,6 +146,11 @@ export default function ShiftsPage() {
             {
                 onSuccess: () => {
                     showSuccess("Shift removed successfully!");
+                    setShiftDrafts((currentDrafts) => {
+                        const updated = { ...currentDrafts };
+                        delete updated[shiftId];
+                        return updated;
+                    });
                 },
                 onError: (err) => {
                     showError(getErrorMessage(err));

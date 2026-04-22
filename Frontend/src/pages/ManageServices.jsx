@@ -299,7 +299,7 @@ function ManageServices() {
                               onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))}
                               readOnly={!isEditing}
                             />
-                            {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                            {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
                           </div>
 
                           <div>
@@ -346,7 +346,7 @@ function ManageServices() {
                               onChange={(e) => setEditValues(v => ({ ...v, duration: e.target.value }))}
                               readOnly={!isEditing}
                             />
-                            {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                            {isEditing && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
                           </div>
 
                           <div>
@@ -417,13 +417,13 @@ function ManageServices() {
                     <div>
                       <label className="muted">Name</label>
                       <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
-                      {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                      {!editingId && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
                     </div>
 
                     <div>
                       <label className="muted">Duration (minutes)</label>
                       <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
-                      {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                      {!editingId && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
                     </div>
 
                     <div style={{ gridColumn: '1 / -1' }}>

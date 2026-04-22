@@ -139,11 +139,16 @@ public class BookingService {
 
     public List<AvailableSlotResponse> getAvailableSlots(Long staffId, LocalDate selectedDate, Long serviceId) {
         List<Shift> shifts = staffShiftRepository.findAllShiftsByStaffId(staffId);
+        List<AvailableSlotResponse> slots = new ArrayList<>();
 
         Shift shiftBySelectedDate = shifts.stream()
                 .filter(shift -> shift.getDay().name().equals(selectedDate.getDayOfWeek().name()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No shift found for staff with id " + staffId + " on date " + selectedDate));
+                .orElse(null);
+
+        if (shiftBySelectedDate == null) {
+            return slots; // No shifts for the selected date, return empty list
+        }
 
         LocalDateTime startOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getStartShift());
         LocalDateTime endOfDay = LocalDateTime.of(selectedDate, shiftBySelectedDate.getEndShift());
@@ -152,7 +157,6 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Service with id " + serviceId + " not found"))
                 .getDuration();
 
-        List<AvailableSlotResponse> slots = new ArrayList<>();
 
         LocalDateTime current = startOfDay;
 

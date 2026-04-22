@@ -97,8 +97,18 @@ export const salonApi = {
         return response.data;
     },
 
+    async getBookingsByStaff(staffId) {
+        const response = await Axios.get(`${BASE_URL}/bookings/staff/${staffId}`);
+        return response.data;
+    },
+
     async cancelBooking(bookingId) {
         const response = await Axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {});
+        return response.data;
+    },
+
+    async updateBookingStatus(bookingId, bookingUpdateBody) {
+        const response = await Axios.put(`${BASE_URL}/bookings/${bookingId}`, bookingUpdateBody);
         return response.data;
     },
 

@@ -98,7 +98,7 @@ public class BookingRestController {
         return bookingService.update(id, request);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/cancel/{id}")
     public void delete(@PathVariable("id") Long id) {
         bookingService.remove(id);
     }
