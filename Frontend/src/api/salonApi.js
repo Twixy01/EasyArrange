@@ -117,6 +117,11 @@ export const salonApi = {
         return response.data;
     },
 
+    async deleteCalendarBlock(calendarBlockId) {
+        const response = await Axios.delete(`${BASE_URL}/calendar-blocks/${calendarBlockId}`);
+        return response.data;
+    },
+
     async getUsers() {
         const response = await Axios.get(`${BASE_URL}/users`);
         return response.data;

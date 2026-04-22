@@ -99,20 +99,19 @@ function NavBar() {
                         Book Now
                     </NavLink>
 
-                    {isAdmin && (
-                        <>
-                            <NavLink to="/admin/users" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Users </NavLink>
-                            <NavLink to="/admin/services" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Services </NavLink>
-                        </>
-                    )}
-
                     {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>
                             <NavLink to="/time-off" onClick={closeMenu}> Time Off </NavLink>
                         </>
                     ) : null}
-
+                    
+                    {isAdmin && (
+                        <>
+                            <NavLink to="/admin/users" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Users </NavLink>
+                            <NavLink to="/admin/services" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Services </NavLink>
+                        </>
+                    )}
                     {!isLoggedIn ? (
                         <>
                             <NavLink to="/login" onClick={closeMenu}>

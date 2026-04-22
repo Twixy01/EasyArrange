@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Card from "../components/common/Card";
 import { useServices } from "../hooks/queries/useServices";
@@ -10,8 +10,11 @@ import SectionHeader from "../components/common/SectionHeader";
 import Button from "../components/common/Button";
 import ProtectedAction from "../components/common/ProtectedAction";
 import { useAuth } from "../hooks/useAuth";
+import { UIStateContext } from "../context/UIStateContext";
 
 function BookingPage() {
+  const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
+
   const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +27,6 @@ function BookingPage() {
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [success, setSuccess] = useState("");
 
   const preselectedStaffId = location.state?.staffId ?? null;
   const preselectedServiceFromState = location.state?.service ?? null;
@@ -47,7 +49,6 @@ function BookingPage() {
         setSelectedService(preselectedServiceFromState);
         setSelectedStaff(null);
         setSelectedSlot(null);
-        setSuccess("");
       }, 0);
     }
 
@@ -79,14 +80,16 @@ function BookingPage() {
     error: staffError,
   } = useAvailableStaff(selectedService?.serviceId);
 
-  useEffect(() => {
-    if (!selectedService) return;
-    if (!availableStaff || availableStaff.length === 0) return;
-    if (selectedStaff) return; // user already selected
 
-    // defer to avoid lint rule about setState in effect
-    setTimeout(() => setSelectedStaff(availableStaff[0]), 0);
-  }, [availableStaff, selectedService, selectedStaff]);
+  //Avoid auto-selecting staff after selecting service
+  // useEffect(() => {
+  //   if (!selectedService) return;
+  //   if (!availableStaff || availableStaff.length === 0) return;
+  //   if (selectedStaff) return; // user already selected
+
+  //   // defer to avoid lint rule about setState in effect
+  //   setTimeout(() => setSelectedStaff(availableStaff[0]), 0);
+  // }, [availableStaff, selectedService, selectedStaff]);
 
   const {
     data: slots = [],
@@ -114,21 +117,15 @@ function BookingPage() {
     setTimeout(() => setSelectedSlot(null), 0);
   }, [selectedStaff, selectedDate]);
 
-  if (servicesLoading && !preselectedServiceFromState) {
-    return <p>Loading services...</p>;
-  }
-
-  if (servicesError && !preselectedServiceFromState) {
-    return <p>Failed to load services.</p>;
-  }
-
-  if (allStaffLoading) {
-    return <p>Loading staff...</p>;
-  }
-
-  if (allStaffError) {
-    return <p>Failed to load staff.</p>;
-  }
+  useEffect(() => {
+    if (servicesError && !preselectedServiceFromState) {
+      showError(getErrorMessage(servicesError, "Failed to load services."));
+    } else if (staffError) {
+      showError(getErrorMessage(staffError, "Failed to load staff."));
+    } else if (slotsError) {
+      showError(getErrorMessage(slotsError, "Failed to load available slots."));
+    }
+  }, [servicesError, preselectedServiceFromState, staffError, slotsError]);
 
   const handleBooking = async () => {
     if (!selectedSlot || !selectedService || !selectedStaff || !user) return;
@@ -145,9 +142,12 @@ function BookingPage() {
       },
       {
         onSuccess: () => {
-          setSuccess("Your appointment has been booked successfully.");
+          showSuccess("Your appointment has been booked successfully.");
           setSelectedSlot(null);
           setTimeout(() => navigate("/"), 1000);
+        },
+        onError: (error) => {
+          showError(getErrorMessage(error, "Failed to create booking. Please try again."));
         }
       }
     );
@@ -167,42 +167,45 @@ function BookingPage() {
             <div className="booking-step">
               <h3>1. Select a service</h3>
               <div className="grid cards-3">
-                {serviceOptions.map((service) => (
-                  <Card
-                    key={service.serviceId}
-                    className={`select-card ${String(selectedService?.serviceId) === String(service.serviceId)
-                      ? "selected"
-                      : ""
-                      }`}
-                  >
-                    <button
-                      type="button"
-                      className="select-card-button"
-                      onClick={() => {
-                        setSelectedService(service);
-                        if (
-                          selectedStaff &&
-                          !selectedStaff.services?.some(
-                            (staffService) => Number(staffService.serviceId) === Number(service.serviceId)
-                          )
-                        ) {
-                          setSelectedStaff(null);
-                        }
-                        setSelectedSlot(null);
-                        setSuccess("");
-                      }}
+                {servicesLoading ? 
+                (<p className="muted">Loading services...</p>) : (
+                  serviceOptions.map((service) => (
+                    <Card
+                      key={service.serviceId}
+                      className={`select-card ${String(selectedService?.serviceId) === String(service.serviceId)
+                        ? "selected"
+                        : ""
+                        }`}
                     >
-                      <div>
-                        <h4>{service.name}</h4>
-                        <p>{service.description}</p>
-                      </div>
-                      <div className="service-meta">
-                        <span>{service.price} HUF</span>
-                        <span>{service.duration} min</span>
-                      </div>
-                    </button>
-                  </Card>
-                ))}
+                      <button
+                        type="button"
+                        className="select-card-button"
+                        onClick={() => {
+                          setSelectedService(service);
+                          if (
+                            selectedStaff &&
+                            !selectedStaff.services?.some(
+                              (staffService) => Number(staffService.serviceId) === Number(service.serviceId)
+                            )
+                          ) {
+                            setSelectedStaff(null);
+                          }
+                          setSelectedSlot(null);
+                        }}
+                      >
+                        <div>
+                          <h4>{service.name}</h4>
+                          <p>{service.description}</p>
+                        </div>
+                        <div className="service-meta">
+                          <span>{service.price} HUF</span>
+                          <span>{service.duration} min</span>
+                        </div>
+                      </button>
+                    </Card>
+                  ))
+                )
+                }
               </div>
             </div>
 
@@ -257,7 +260,6 @@ function BookingPage() {
                         onClick={() => {
                           setSelectedStaff(member);
                           setSelectedSlot(null);
-                          setSuccess("");
                         }}
                       >
                         <div className="staff-inline">
@@ -290,7 +292,6 @@ function BookingPage() {
                   onPaste={(e) => e.preventDefault()}
                   onChange={(e) => {
                     setSelectedDate(e.target.value);
-                    setSuccess("");
                   }}
                 />
               </div>
@@ -316,7 +317,6 @@ function BookingPage() {
                         }`}
                       onClick={() => {
                         setSelectedSlot(slot);
-                        setSuccess("");
                       }}
                     >
                       {slot.label}
@@ -325,6 +325,11 @@ function BookingPage() {
                 </div>
               )}
             </div>
+            <Button
+              variant="secondary"
+              className="booking-summary-jump"
+              onClick={() => { window.scrollTo(0, 0) }}>Go to confirmation 🔝
+            </Button>
           </div>
 
           <aside className="booking-sidebar">
@@ -345,8 +350,6 @@ function BookingPage() {
               <p>
                 <strong>Time:</strong> {selectedSlot?.label || "Not selected"}
               </p>
-
-              {success && <div className="form-success">{success}</div>}
 
               <ProtectedAction fallbackText="Please log in before confirming your booking.">
                 <Button

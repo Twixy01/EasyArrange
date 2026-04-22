@@ -205,6 +205,11 @@ public class BookingService {
         if (bookingRepository.existsByStaffIdAndStartDateTimeAndEndDateTime(bookingRequest.staffId(), start, end)){
             throw new IllegalArgumentException("Booking already exists for staff id " + bookingRequest.staffId() + " at the specified time");
         }
+
+        if (calendarBlockRepository.existsOverlapping(bookingRequest.staffId(), start, end) ||
+                bookingRepository.existsOverlapping(bookingRequest.staffId(), start, end)) {
+            throw new IllegalArgumentException("The specified time overlaps with a calendar block or booking for staff id " + bookingRequest.staffId());
+        }
         Booking booking = bookingCreateRequestMapper.apply(bookingRequest);
 
         Staff staff = staffRepository.findById(bookingRequest.staffId())

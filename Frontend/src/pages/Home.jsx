@@ -1,35 +1,25 @@
-import { } from 'react'
+import { useEffect, useContext } from 'react'
 import { useServices } from '../hooks/queries/useServices'
 import { useStaff } from '../hooks/queries/useStaff'
 import { Link } from 'react-router-dom'
 import SectionHeader from '../components/common/SectionHeader'
 import { motion } from 'framer-motion'
 import Card from '../components/common/Card'
+import { UIStateContext } from '../context/UIStateContext'
 
 export default function Home() {
+  const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
+  const { data: services = [], error: servicesError } = useServices();
+  const { data: staff = [], error: staffError } = useStaff();
 
-  const { data: services = [], isLoading: servicesLoading, error: servicesError } = useServices();
-  const { data: staff = [], isLoading: staffLoading, error: staffError } = useStaff();
-
-  if (servicesLoading || staffLoading) {
-    return (
-      <section className="section">
-        <div className="container">
-          <p>Loading home content...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (servicesError || staffError) {
-    return (
-      <section className="section">
-        <div className="container">
-          <p>{servicesError || staffError}</p>
-        </div>
-      </section>
-    );
-  }
+  useEffect(() => {
+    if (servicesError){
+      showError(servicesError?.message ?? "Failed to load services.");
+    }
+    if (staffError){
+      showError(staffError?.message ?? "Failed to load staff.");
+    }
+  }, [servicesError, staffError]);
 
   return (
     <>

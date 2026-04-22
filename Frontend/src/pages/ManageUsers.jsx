@@ -1,12 +1,15 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useContext } from 'react'
 import Card from '../components/common/Card'
 import { useUsers } from '../hooks/queries/useUsers'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateUser, deleteUser, adminUpdateUser } from '../services/api'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ManageUsers() {
+    const { showSuccess, showError, getErrorMessage } = useContext(UIStateContext)
+
     const { user } = useAuth()
     const isAdmin = !!(user && user.role && String(user.role.name).toUpperCase() === 'ADMIN')
 
@@ -16,7 +19,6 @@ function ManageUsers() {
     const [editingId, setEditingId] = useState(null)
     const [editValues, setEditValues] = useState({})
     const [fieldErrors, setFieldErrors] = useState(null)
-    const [serverError, setServerError] = useState(null)
 
     // remove the logged-in user from the displayed list so they don't appear in the admin form
     const displayedUsers = useMemo(() => {
@@ -47,19 +49,18 @@ function ManageUsers() {
         mutationFn: ({ userId, payload }) => updateUser(userId, payload),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['users'] })
+            showSuccess("User updated successfully.")
             setEditingId(null)
             setEditValues({})
             setFieldErrors(null)
-            setServerError(null)
         },
         onError: (err) => {
-            console.error('Update user error', err)
             const payload = err?.payload || err?.response?.data
             if (payload) {
-                setServerError(payload.detail || payload.message || null)
+                showError(getErrorMessage(err, "Failed to update user. Please check your input and try again."))
                 setFieldErrors(payload.fieldErrors || null)
             } else {
-                setServerError(err?.message || 'Update failed')
+                showError(getErrorMessage(err, "Failed to update user."))
             }
         }
     })
@@ -68,19 +69,19 @@ function ManageUsers() {
         mutationFn: ({ userId, payload }) => adminUpdateUser(userId, payload),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['users'] })
+            showSuccess("User updated successfully.")
             setEditingId(null)
             setEditValues({})
             setFieldErrors(null)
-            setServerError(null)
         },
         onError: (err) => {
             console.error('Admin update user error', err)
             const payload = err?.payload || err?.response?.data
             if (payload) {
-                setServerError(payload.detail || payload.message || null)
+                showError(getErrorMessage(err, "Failed to update user. Please check your input and try again."))
                 setFieldErrors(payload.fieldErrors || null)
             } else {
-                setServerError(err?.message || 'Update failed')
+                showError(getErrorMessage(err, "Failed to update user."))
             }
         }
     })
@@ -89,9 +90,10 @@ function ManageUsers() {
         mutationFn: (userId) => deleteUser(userId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['users'] })
+            showSuccess("User deleted successfully.")
         },
         onError: (err) => {
-            console.error('Delete user error', err)
+            showError(getErrorMessage(err, "Failed to delete user."))
         }
     })
 
@@ -132,14 +134,12 @@ function ManageUsers() {
         setEditingId(u.userId)
         setEditValues({ name: u.name || '', email: u.email || '', phoneNumber: u.phoneNumber ?? u.phone ?? '', role: roleObj, currentPassword: '', newPassword: '' })
         setFieldErrors(null)
-        setServerError(null)
     }
 
     const cancelEdit = () => {
         setEditingId(null)
         setEditValues({})
         setFieldErrors(null)
-        setServerError(null)
     }
 
     const saveEdit = async (userId, originalUser) => {
@@ -169,17 +169,16 @@ function ManageUsers() {
         const payload = {
             name,
             email: originalUser.email,
-            phoneNumber: editValues.phoneNumber || originalUser.phoneNumber || originalUser.phone || null,
+            phoneNumber: originalUser.phoneNumber,
             // include currentPassword only if editing yourself (backend enforces it)
             currentPassword: (originalUser.userId === user.userId) ? editValues.currentPassword : undefined,
             // admin editing others typically won't supply currentPassword; backend may reject if it enforces it
             newPassword: null,
-            profilePicture: null,
+            profilePicture: originalUser.profilePicture,
             role: roleObj
         }
 
         setFieldErrors(null)
-        setServerError(null)
 
         try {
             // if current user is admin and editing someone else, call admin endpoint
@@ -189,13 +188,12 @@ function ManageUsers() {
                 await updateMutation.mutateAsync({ userId, payload })
             }
         } catch (err) {
-            console.error('Failed to update user', err)
             const payloadErr = err?.payload || err?.response?.data
             if (payloadErr) {
-                setServerError(payloadErr.detail || payloadErr.message || null)
+                showError(getErrorMessage(err, "Failed to update user. Please check your input and try again."))
                 setFieldErrors(payloadErr.fieldErrors || null)
             } else {
-                setServerError(err?.message || 'Failed to update user')
+                showError(getErrorMessage(err, "Failed to update user. Please check your input and try again."))
             }
         }
     }
@@ -204,12 +202,18 @@ function ManageUsers() {
         if (!window.confirm('Are you sure you want to delete this user?')) return
         try {
             await deleteMutation.mutateAsync(userId)
+            showSuccess("User deleted successfully.")
         } catch (err) {
-            console.error('Failed to delete user', err)
-            const detail = err?.payload?.detail || err?.message || 'Failed to delete user'
-            alert(detail)
+            showError(getErrorMessage(err, "Failed to delete user. Please try again."))
         }
     }
+
+    useMemo(() => {
+        if (error) {
+            const message = getErrorMessage(error, "Failed to load users. Please try again later.")
+            showError(message)
+        }
+    }, [error])
 
     return (
         <section className="section">
@@ -219,10 +223,7 @@ function ManageUsers() {
                         <h2>Manage Users</h2>
                         <p className="muted">Below is a simple listing of users. You can edit names and roles here.</p>
 
-                        {serverError && <div className="form-error" style={{ marginBottom: 8 }}>{serverError}</div>}
-
                         {isLoading && <p className="muted">Loading users...</p>}
-                        {error && <div className="form-error">{error?.message || 'Failed to load users'}</div>}
 
                         {!isLoading && displayedUsers && displayedUsers.length > 0 && (
                             <div className="user-list-form">
@@ -269,7 +270,7 @@ function ManageUsers() {
 
                                                 <div>
                                                     <label className="muted">Phone</label>
-                                                    <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? u.phone ?? '')} onChange={(e) => setEditValues(v => ({ ...v, phoneNumber: e.target.value }))} readOnly={!isEditing} />
+                                                    <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? '')} readOnly />
                                                 </div>
 
                                                 {/* show currentPassword only when editing your own account */}
