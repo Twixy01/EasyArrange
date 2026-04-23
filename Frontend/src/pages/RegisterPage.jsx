@@ -7,6 +7,7 @@ function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('') // added phone state
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
@@ -15,17 +16,26 @@ function RegisterPage() {
   const defaultRoleId = 2
   const defaultRoleName = 'CUSTOMER'
 
+  // Hungarian phone regex used on backend (accepts +36, 0036 or 06 and valid operator codes)
+  const hungarianPhoneRegex = /^(\+36|0036|06)(1|[2-9][0-9])\d{7}$/
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
 
     if (!name || !email || !password) {
-      setError('Please fill in all fields.')
+      setError('Please fill in all required fields.')
       return
     }
 
     if (password.length < 4) {
       setError('Password must be at least 4 characters.')
+      return
+    }
+
+    // if phone provided, validate it client-side to avoid backend 400s
+    if (phone && !hungarianPhoneRegex.test(phone.trim())) {
+      setError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
       return
     }
 
@@ -36,6 +46,8 @@ function RegisterPage() {
         name,
         email,
         password,
+        // include phone if provided; backend expects phoneNumber in DTO
+        phoneNumber: phone && phone.trim() !== '' ? phone.trim() : null,
         role: { roleId: defaultRoleId, name: defaultRoleName }
       }
 
@@ -48,6 +60,7 @@ function RegisterPage() {
       if (!res.ok) {
         const text = await res.text()
         console.error('Register failed', { status: res.status, text })
+        // backend may return plain text messages for validation errors
         if (res.status === 400) {
           setError(text || 'Invalid input. Please check your details.')
         } else if (res.status === 409) {
@@ -104,6 +117,21 @@ function RegisterPage() {
               onChange={e => setEmail(e.target.value)}
               required
             />
+          </div>
+
+          {/* phone number field (optional) */}
+          <div className="field">
+            <label htmlFor="phone">Phone</label>
+            <input
+              id="phone"
+              name="phoneNumber"
+              type="tel"
+              placeholder="+36 20 123 4567 or 06123456789"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              aria-label="phone number"
+            />
+            <small className="hint">Optional — Hungarian numbers only (e.g. +36123456789)</small>
           </div>
 
           <div className="field">

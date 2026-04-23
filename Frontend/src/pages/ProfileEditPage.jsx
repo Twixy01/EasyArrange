@@ -31,6 +31,8 @@ function ProfileEditPage() {
     )
   }
 
+  const hungarianPhoneRegex = /^(\+36|0036|06)(1|[2-9][0-9])\d{7}$/
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
@@ -49,6 +51,13 @@ function ProfileEditPage() {
       return
     }
 
+    // validate phone client-side if provided
+    const phoneTrim = form.phoneNumber ? String(form.phoneNumber).trim() : ''
+    if (phoneTrim !== '' && !hungarianPhoneRegex.test(phoneTrim)) {
+      setError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
+      return
+    }
+
     setSaving(true)
 
     try {
@@ -59,21 +68,37 @@ function ProfileEditPage() {
         return
       }
 
+      // Normalize email to avoid case-only collisions (backend treats email checks strictly)
+      const normalizedEmail = String(form.email || '').trim().toLowerCase()
+
+      // If normalized email equals the currently stored user's email (case-insensitive),
+      // send the original user.email value so backend equality check succeeds and doesn't
+      // falsely think the email changed and collide with another record.
+      const emailToSend = (user?.email && String(user.email).trim().toLowerCase() === normalizedEmail)
+        ? user.email
+        : normalizedEmail
+
+      // Send phoneNumber as null when empty to prevent backend regex validation errors
+      const phonePayload = phoneTrim === '' ? null : phoneTrim
+
+      // Determine role id and ensure role name is uppercase
       let roleId = 2
+      let roleName = 'CUSTOMER'
       try {
-        const roleName = user.role.name || null
-        if (typeof roleName === 'string' && roleName.toUpperCase().includes('ADMIN')) roleId = 1
+        roleName = (user?.role?.name || 'CUSTOMER').toString().toUpperCase()
+        if (roleName.includes('ADMIN')) roleId = 1
+        else if (roleName.includes('STAFF')) roleId = 3
       } catch {
-        console.debug('role mapping ignored')
+        // fallback to default
       }
 
       const payload = {
         name: form.name,
-        email: form.email,
-        phoneNumber: form.phoneNumber,
+        email: emailToSend,
+        phoneNumber: phonePayload,
         currentPassword: form.currentPassword,
-        profilePicture: form.profilePicture,
-        role: {roleId: roleId, name: user.role.name}
+        profilePicture: form.profilePicture || null,
+        role: { roleId: roleId, name: roleName }
       }
 
       const updated = await updateUser(resolvedUserId, payload)
@@ -92,7 +117,10 @@ function ProfileEditPage() {
           const msgs = Object.values(p.fieldErrors).filter(Boolean).join(' ')
           if (msgs) userMessage = msgs
         } else if (p.detail) {
+          // backend often uses detail for validation messages like "Email already exists!"
           userMessage = p.detail
+        } else if (p.message) {
+          userMessage = p.message
         }
       }
       setError(userMessage)
