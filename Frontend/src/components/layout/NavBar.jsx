@@ -40,15 +40,20 @@ function NavBar() {
                     {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts"> My Shifts </NavLink>
+                            <NavLink to="/staff/bookings"> My Bookings </NavLink>
                             <NavLink to="/time-off"> Time Off </NavLink>
+                            
                         </>
                     ) : null}
 
                     {isAdmin && (
-                        <div className="admin-links" style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
-                            <NavLink to="/admin/users" style={{ color: 'gold', fontWeight: 600 }}>Manage Users</NavLink>
-                            <NavLink to="/admin/services" style={{ color: 'gold', fontWeight: 600 }}>Manage Services</NavLink>
-                        </div>
+                        <details className="admin-menu">
+                            <summary>Admin</summary>
+                            <div className="admin-menu-list">
+                                <NavLink to="/admin/users">Manage Users</NavLink>
+                                <NavLink to="/admin/services">Manage Services</NavLink>
+                            </div>
+                        </details>
                     )}
                 </nav>
 
@@ -102,15 +107,19 @@ function NavBar() {
                     {canManageStaffSchedule ? (
                         <>
                             <NavLink to="/shifts" onClick={closeMenu}> My Shifts </NavLink>
+                            <NavLink to="/staff/bookings" onClick={closeMenu}> My Bookings </NavLink>
                             <NavLink to="/time-off" onClick={closeMenu}> Time Off </NavLink>
                         </>
                     ) : null}
                     
                     {isAdmin && (
-                        <>
-                            <NavLink to="/admin/users" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Users </NavLink>
-                            <NavLink to="/admin/services" onClick={closeMenu} style={{ color: 'gold', fontWeight: 600 }}> Manage Services </NavLink>
-                        </>
+                        <details className="admin-menu mobile-admin-menu">
+                            <summary>Admin</summary>
+                            <div className="admin-menu-list">
+                                <NavLink to="/admin/users" onClick={closeMenu}>Manage Users</NavLink>
+                                <NavLink to="/admin/services" onClick={closeMenu}>Manage Services</NavLink>
+                            </div>
+                        </details>
                     )}
                     {!isLoggedIn ? (
                         <>

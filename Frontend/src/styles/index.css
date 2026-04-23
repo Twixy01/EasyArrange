@@ -332,6 +332,51 @@ textarea {
   background: var(--bg-soft);
 }
 
+.admin-menu {
+  position: relative;
+}
+
+.admin-menu summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.admin-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-menu summary::after {
+  content: " ▾";
+  color: var(--text-muted);
+}
+
+.admin-menu-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.desktop-nav .admin-menu-list {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 180px;
+  box-shadow: var(--shadow-soft);
+}
+
+.mobile-admin-menu .admin-menu-list {
+  position: static;
+  box-shadow: none;
+}
+
 .hero {
   padding: 4rem 0 3rem;
 }
@@ -668,6 +713,10 @@ textarea {
   }
 
   .mobile-drawer {
+    display: none;
+  }
+
+  .mobile-admin-menu {
     display: none;
   }
 

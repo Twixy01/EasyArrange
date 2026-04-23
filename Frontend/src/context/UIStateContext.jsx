@@ -63,11 +63,18 @@ export function UIStateProvider({ children }) {
   const getErrorMessage = useCallback((err, customMessage) => {
     if (!err) return null;
 
+    const fieldErrorMessage = err?.payload?.fieldErrors
+      ? Object.values(err.payload.fieldErrors).filter(Boolean).join(" ")
+      : null;
+
     return (
+      fieldErrorMessage ||
+      err?.userMessage ||
       err?.response?.data?.detail ||
       err?.response?.data?.message ||
-      err?.message ||
       customMessage ||
+      (err?.status ? "Request failed. Please try again." : null) ||
+      err?.message ||
       "Something went wrong"
     );
   }, []);

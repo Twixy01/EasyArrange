@@ -10,6 +10,16 @@ import { useEffect, useState, useContext } from "react";
 import { useDeleteStaffShift } from "../hooks/mutations/useDeleteStaffShift";
 import { UIStateContext } from "../context/UIStateContext.jsx";
 
+const WEEK_SHIFT_TEMPLATE = [
+    { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
+    { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
+    { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
+    { shiftId: "thursday", day: "THURSDAY", startShift: "", endShift: "" },
+    { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
+    { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
+    { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
+];
+
 export default function ShiftsPage() {
     const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
 
@@ -54,41 +64,17 @@ export default function ShiftsPage() {
         });
     }, [shifts, roleNameUpper]);
 
-    const orderedShifts = [
-        { shiftId: "monday", day: "MONDAY", startShift: "", endShift: "" },
-        { shiftId: "tuesday", day: "TUESDAY", startShift: "", endShift: "" },
-        { shiftId: "wednesday", day: "WEDNESDAY", startShift: "", endShift: "" },
-        { shiftId: "thursday", day: "THURSDAY", startShift: "", endShift: "" },
-        { shiftId: "friday", day: "FRIDAY", startShift: "", endShift: "" },
-        { shiftId: "saturday", day: "SATURDAY", startShift: "", endShift: "" },
-        { shiftId: "sunday", day: "SUNDAY", startShift: "", endShift: "" },
-    ];
+    const [orderedShifts, setOrderedShifts] = useState(WEEK_SHIFT_TEMPLATE);
 
-    shifts.forEach(shift => {
-        switch (shift.day) {
-            case "MONDAY":
-                orderedShifts[0] = shift;
-                break;
-            case "TUESDAY":
-                orderedShifts[1] = shift;
-                break;
-            case "WEDNESDAY":
-                orderedShifts[2] = shift;
-                break;
-            case "THURSDAY":
-                orderedShifts[3] = shift;
-                break;
-            case "FRIDAY":
-                orderedShifts[4] = shift;
-                break;
-            case "SATURDAY":
-                orderedShifts[5] = shift;
-                break;
-            case "SUNDAY":
-                orderedShifts[6] = shift;
-                break;
-        }
-    });
+    useEffect(() => {
+        const newOrderedShifts = WEEK_SHIFT_TEMPLATE.map((shift) => ({ ...shift }));
+        shifts.forEach(shift => {
+            // Find index by day and update
+            const index = newOrderedShifts.findIndex(s => s.day === shift.day);
+            if (index !== -1) newOrderedShifts[index] = shift;
+        });
+        setOrderedShifts(newOrderedShifts);
+    }, [shifts]);
 
     if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (
         <section className="section">
@@ -160,6 +146,11 @@ export default function ShiftsPage() {
             {
                 onSuccess: () => {
                     showSuccess("Shift removed successfully!");
+                    setShiftDrafts((currentDrafts) => {
+                        const updated = { ...currentDrafts };
+                        delete updated[shiftId];
+                        return updated;
+                    });
                 },
                 onError: (err) => {
                     showError(getErrorMessage(err));

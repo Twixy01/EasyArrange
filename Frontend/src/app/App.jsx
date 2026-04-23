@@ -16,6 +16,7 @@ import CalendarBlockPage from "../pages/CalendarBlockPage";
 import ManageServices from "../pages/ManageServices";
 import ManageUsers from "../pages/ManageUsers";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
+import StaffBookingsPage from "../pages/StaffBookingsPage";
 import { UIStateProvider } from "../context/UIStateContext.jsx";
 import { useEffect } from "react";
 import Footer from "../components/layout/Footer.jsx";
@@ -54,6 +55,7 @@ function App() {
           <Route path="/time-off" element={<CalendarBlockPage />} />
           <Route path="/admin/services" element={<ManageServices />} />
           <Route path="/admin/users" element={<ManageUsers />} />
+          <Route path="/staff/bookings" element={<StaffBookingsPage />} />
           <Route path="/profile/change-password" element={<ChangePasswordPage />} />
         </Routes>
         <Footer />

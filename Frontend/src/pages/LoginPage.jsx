@@ -1,28 +1,27 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import SectionHeader from '../components/common/SectionHeader'
 import Button from '../components/common/Button'
+import { UIStateContext } from '../context/UIStateContext'
 
 function LoginPage() {
+  const { showError } = useContext(UIStateContext)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
-
     if (!email || !password) {
-      setError('Please fill in both fields.')
+      showError('Please fill in both fields.')
       return
     }
 
     if (password.length < 4) {
-      setError('Password must be at least 4 characters.')
+      showError('Password must be at least 4 characters.')
       return
     }
 
@@ -41,21 +40,21 @@ function LoginPage() {
           const bodyJson = JSON.parse(bodyText)
           if (bodyJson.fieldErrors) {
             if (bodyJson.fieldErrors.password) {
-              setError(bodyJson.fieldErrors.password)
+              showError(bodyJson.fieldErrors.password)
               return
             }
             const msgs = Object.values(bodyJson.fieldErrors).join(' ')
             if (msgs) {
-              setError(msgs)
+              showError(msgs)
               return
             }
           }
           if (bodyJson.detail) {
-            setError(bodyJson.detail)
+            showError(bodyJson.detail)
             return
           }
           if (bodyJson.title) {
-            setError(bodyJson.title)
+            showError(bodyJson.title)
             return
           }
         } catch (parseErr) {
@@ -64,9 +63,9 @@ function LoginPage() {
 
         console.error('Login failed', { status: res.status, text: bodyText })
         if (res.status === 401) {
-          setError('Invalid credentials.')
+          showError('Invalid credentials.')
         } else {
-          setError(bodyText || 'Login failed. Please try again.')
+          showError('Login failed. Please try again.')
         }
         return
       }
@@ -78,7 +77,7 @@ function LoginPage() {
       navigate('/')
     } catch (err) {
       console.error('Login error', err)
-      setError('Network error. Please try again.')
+      showError('Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -94,7 +93,6 @@ function LoginPage() {
           center
           />
         <form className="form-card" onSubmit={handleSubmit} noValidate>
-          {error && <div className="form-error" role="alert">{error}</div>}
           <div className="field">
             <label htmlFor="email">Email</label>
             <input

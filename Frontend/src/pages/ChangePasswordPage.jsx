@@ -13,7 +13,6 @@ export default function ChangePasswordPage() {
 
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmNewPassword: '' })
   const [saving, setSaving] = useState(false)
-  const [serverDebug, setServerDebug] = useState(null)
 
   if (!user) return (
     <section className="section">
@@ -38,7 +37,6 @@ export default function ChangePasswordPage() {
   }
 
   const handleSubmit = async () => {
-    setServerDebug(null)
     if (!form.currentPassword) return showError('Current password is required')
     if (!form.newPassword) return showError('New password is required')
     if (form.newPassword !== form.confirmNewPassword) return showError('New passwords do not match')
@@ -70,7 +68,6 @@ export default function ChangePasswordPage() {
     } catch (err) {
       const payloadErr = err?.payload || err?.response?.data
       console.error('Change password failed', err, payloadErr)
-      setServerDebug(payloadErr || err?.response)
       if (payloadErr) {
         if (payloadErr.fieldErrors) {
           const msgs = Object.entries(payloadErr.fieldErrors).map(([k, v]) => `${k}: ${v}`).join(' ')
@@ -108,8 +105,6 @@ export default function ChangePasswordPage() {
                   <label className="muted">Confirm new password</label>
                   <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
                 </div>
-
-                {serverDebug && <pre style={{marginTop:8, maxHeight:200, overflow:'auto', background:'#f6f8fa', padding:8}}>{JSON.stringify(serverDebug, null, 2)}</pre>}
 
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button className="btn-primary" onClick={handleSubmit} disabled={saving}>{saving ? 'Saving...' : 'Create new password'}</button>
