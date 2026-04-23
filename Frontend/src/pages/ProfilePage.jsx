@@ -8,6 +8,7 @@ import {cancelBooking} from '../services/api'
 import {useBookingsByCustomer} from '../hooks/queries/useBookingsByCustomer'
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
 import { UIStateContext } from '../context/UIStateContext'
+import { resolveMediaUrl } from '../services/api'
 
 function ProfilePage() {
     const { showLoading, showError, showSuccess, getErrorMessage } = useContext(UIStateContext)
@@ -152,6 +153,8 @@ function ProfilePage() {
         }
     }, [bookingsError])
 
+    const avatarUrl = resolveMediaUrl(user.profilePicture) || avatarPlaceholder
+
     return (
         <section className="section profile-section">
             {bookingSuccess &&
@@ -163,7 +166,7 @@ function ProfilePage() {
                         <Card className="profile-summary">
                             <div className="card-body" style={{display: 'flex', gap: 16, alignItems: 'center'}}>
                                 <img
-                                    src={user.profilePicture || avatarPlaceholder}
+                                    src={avatarUrl}
                                     alt={user.name}
                                     className="profile-avatar"
                                     style={{width: 96, height: 96, borderRadius: 8, objectFit: 'cover'}}

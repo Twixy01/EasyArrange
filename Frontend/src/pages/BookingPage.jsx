@@ -11,6 +11,7 @@ import Button from "../components/common/Button";
 import ProtectedAction from "../components/common/ProtectedAction";
 import { useAuth } from "../hooks/useAuth";
 import { UIStateContext } from "../context/UIStateContext";
+import { resolveMediaUrl } from '../services/api'
 
 function BookingPage() {
   const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
@@ -217,7 +218,7 @@ function BookingPage() {
                   <Card className="select-card selected">
                     <div className="staff-inline">
                       <img
-                        src={selectedStaff.user?.profilePicture}
+                        src={resolveMediaUrl(selectedStaff.user?.profilePicture) || selectedStaff.user?.profilePicture}
                         alt={selectedStaff.user?.name || "Staff member"}
                       />
                       <div>
@@ -264,7 +265,7 @@ function BookingPage() {
                       >
                         <div className="staff-inline">
                           <img
-                            src={member.user?.profilePicture}
+                            src={resolveMediaUrl(member.user?.profilePicture) || member.user?.profilePicture}
                             alt={member.user?.name || "Staff member"}
                           />
                           <div>
