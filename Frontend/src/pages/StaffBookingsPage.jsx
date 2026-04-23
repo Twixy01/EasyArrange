@@ -1,8 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import Card from "../components/common/Card";
-import Button from "../components/common/Button";
 import { useAuth } from "../hooks/useAuth";
 import { useStaff } from "../hooks/queries/useStaff";
 import { useBookingsByStaff } from "../hooks/queries/useBookingsByStaff";
@@ -13,6 +12,9 @@ function StaffBookingsPage() {
     const { showError, showSuccess } = useContext(UIStateContext);
     const { user } = useAuth();
     const queryClient = useQueryClient();
+    const futureStatuses = ["BOOKED", "NO_SHOW", "CANCELLED"];
+    const pastStatuses = ["COMPLETED", "NO_SHOW", "CANCELLED"];
+    const autoCompletedIdsRef = useRef(new Set());
 
     const { data: staff = [] } = useStaff();
 
@@ -76,11 +78,21 @@ function StaffBookingsPage() {
     };
 
     const changeBookingStatus = async (booking, nextStatus) => {
-        const bookingId = booking.bookingId
+        const bookingId = booking.bookingId ?? booking.id
         if (!bookingId || !nextStatus) {
             showError("Missing booking or status.");
             return;
         }
+
+        const startsAt = booking.startDateTime ? new Date(booking.startDateTime).getTime() : null;
+        const isPastBooking = startsAt != null && startsAt < Date.now();
+        if (isPastBooking && nextStatus === "BOOKED") {
+            showError("Past bookings cannot be set to BOOKED.");
+            return;
+        }
+
+        const currentStatus = String(booking.status || "").toUpperCase();
+        if (currentStatus === nextStatus) return;
 
         const confirmed = window.confirm(`Are you sure you want to set this booking to ${nextStatus}?`);
         if (!confirmed) return;
@@ -119,6 +131,47 @@ function StaffBookingsPage() {
             showError(bookingsError);
         }
     }, [bookingsError, showError]);
+
+    useEffect(() => {
+        const now = Date.now();
+        const pastBooked = (Array.isArray(bookings) ? bookings : []).filter((booking) => {
+            const bookingId = booking.bookingId ?? booking.id;
+            if (!bookingId || autoCompletedIdsRef.current.has(bookingId)) return false;
+            const startsAt = booking.startDateTime ? new Date(booking.startDateTime).getTime() : null;
+            const isPastBooking = startsAt != null && startsAt < now;
+            const isBooked = String(booking.status || "").toUpperCase() === "BOOKED";
+            return isPastBooking && isBooked;
+        });
+
+        if (pastBooked.length === 0) return;
+
+        (async () => {
+            try {
+                for (const booking of pastBooked) {
+                    const bookingId = booking.bookingId ?? booking.id;
+                    autoCompletedIdsRef.current.add(bookingId);
+                    const updateBody = {
+                        startDateTime: booking.startDateTime,
+                        endDateTime: booking.endDateTime,
+                        serviceId: booking.service?.serviceId,
+                        status: "COMPLETED",
+                    };
+                    await updateBookingStatusMutation.mutateAsync({ bookingId, bookingUpdateBody: updateBody });
+                }
+
+                await queryClient.invalidateQueries({ queryKey: ["staffBookings", staffId] });
+                await queryClient.invalidateQueries({ queryKey: ["bookingsByStaff", staffId] });
+                await queryClient.invalidateQueries({ queryKey: ["bookings", staffId] });
+            } catch (error) {
+                showError(
+                    error?.response?.data?.detail ||
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    "Failed to auto-complete past bookings."
+                );
+            }
+        })();
+    }, [bookings, staffId, updateBookingStatusMutation, queryClient, showError]);
 
     if (!user) {
         return (
@@ -175,12 +228,15 @@ function StaffBookingsPage() {
                                         {sortedBookings.map((booking, index) => {
                                             const bookingId = booking.bookingId ?? booking.id;
                                             const normalizedStatus = String(booking.status || "").toUpperCase();
+                                            const startsAt = booking.startDateTime ? new Date(booking.startDateTime).getTime() : null;
+                                            const isPastBooking = startsAt != null && startsAt < Date.now();
+                                            const allowedStatuses = isPastBooking ? pastStatuses : futureStatuses;
                                             const statusClass = booking.status
                                                 ? `status-badge ${String(booking.status).toLowerCase().replace(/\s+/g, "_")}`
                                                 : "status-badge";
-
-                                            const canMarkNoShow = normalizedStatus === "BOOKED";
-                                            const canCancel = normalizedStatus === "BOOKED";
+                                            const selectedStatus = allowedStatuses.includes(normalizedStatus)
+                                                ? normalizedStatus
+                                                : (isPastBooking ? "COMPLETED" : "BOOKED");
 
                                             return (
                                                 <div key={bookingId ?? `staff-booking-${index}`} className="booking-item">
@@ -232,37 +288,20 @@ function StaffBookingsPage() {
                                                         >
                                                             <span className={statusClass}>{booking.status || "Unknown"}</span>
 
-                                                            {canMarkNoShow && (
-                                                                <Button
-                                                                    className="btn-secondary"
-                                                                    disabled={
-                                                                        updateBookingStatusMutation.isPending &&
-                                                                        updatingBookingId === bookingId
-                                                                    }
-                                                                    onClick={() => changeBookingStatus(booking, "NO_SHOW")}
-                                                                >
-                                                                    {updateBookingStatusMutation.isPending &&
-                                                                        updatingBookingId === bookingId
-                                                                        ? "Updating..."
-                                                                        : "Mark no-show"}
-                                                                </Button>
-                                                            )}
-
-                                                            {canCancel && (
-                                                                <Button
-                                                                    className="remove-btn"
-                                                                    disabled={
-                                                                        updateBookingStatusMutation.isPending &&
-                                                                        updatingBookingId === bookingId
-                                                                    }
-                                                                    onClick={() => changeBookingStatus(booking, "CANCELLED")}
-                                                                >
-                                                                    {updateBookingStatusMutation.isPending &&
-                                                                        updatingBookingId === bookingId
-                                                                        ? "Updating..."
-                                                                        : "Cancel booking"}
-                                                                </Button>
-                                                            )}
+                                                            <select
+                                                                value={selectedStatus}
+                                                                disabled={
+                                                                    updateBookingStatusMutation.isPending &&
+                                                                    updatingBookingId === bookingId
+                                                                }
+                                                                onChange={(e) => changeBookingStatus(booking, e.target.value)}
+                                                            >
+                                                                {allowedStatuses.map((statusOption) => (
+                                                                    <option key={statusOption} value={statusOption}>
+                                                                        {statusOption}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>

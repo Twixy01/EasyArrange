@@ -1,4 +1,6 @@
-import React, { useMemo, useState, useContext } from 'react'
+import React, { useMemo, useState, useContext, useEffect } from 'react'
+const ID_TO_NAME = { 1: 'ADMIN', 2: 'CUSTOMER', 3: 'STAFF' }
+
 import Card from '../components/common/Card'
 import { useUsers } from '../hooks/queries/useUsers'
 import { useAuth } from '../hooks/useAuth'
@@ -19,31 +21,97 @@ function ManageUsers() {
     const [editingId, setEditingId] = useState(null)
     const [editValues, setEditValues] = useState({})
     const [fieldErrors, setFieldErrors] = useState(null)
+    const [roleFilter, setRoleFilter] = useState('ALL')
 
-    // remove the logged-in user from the displayed list so they don't appear in the admin form
     const displayedUsers = useMemo(() => {
-        return Array.isArray(users) ? users.filter(u => u.userId !== user?.userId) : []
+        if (!Array.isArray(users)) return []
+        return users
+            .filter(u => u.userId !== user?.userId)
+            .map(u => {
+                const raw = u.role
+                let roleId = null
+                let roleName = ''
+                if (raw != null) {
+                    if (typeof raw === 'number') {
+                        roleId = Number(raw)
+                    } else if (typeof raw === 'string') {
+                        if (/^\d+$/.test(raw)) roleId = Number(raw)
+                        else roleName = raw
+                    } else if (typeof raw === 'object') {
+                        if (raw.roleId != null) roleId = Number(raw.roleId)
+                        else if (raw.id != null) roleId = Number(raw.id)
+                        roleName = raw.name ?? roleName
+                    }
+                }
+                return { ...u, normalizedRole: { roleId: roleId, roleName: (roleName || '').toString() } }
+            })
     }, [users, user?.userId])
 
-    //derive available roles from displayedUsers (fallback when no dedicated roles API exists)
+    const filteredUsers = useMemo(() => {
+        if (!displayedUsers || !Array.isArray(displayedUsers)) return []
+        if (!roleFilter || roleFilter === 'ALL') return displayedUsers
+
+        const numeric = /^\d+$/.test(String(roleFilter))
+        if (numeric) {
+            const id = Number(roleFilter)
+            const idToName = { 1: 'ADMIN', 2: 'CUSTOMER', 3: 'STAFF' }
+            const wantName = idToName[id]
+            return displayedUsers.filter(u => {
+                const rid = Number(u.normalizedRole?.roleId)
+                const rname = String(u.normalizedRole?.roleName || u.role?.name || u.role || '').toUpperCase()
+                return rid === id || (wantName && rname === wantName)
+            })
+        }
+
+        const wanted = String(roleFilter).toUpperCase()
+        return displayedUsers.filter(u => String((u.normalizedRole?.roleName || u.role?.name || u.role || '')).toUpperCase() === wanted)
+    }, [displayedUsers, roleFilter])
+
     const availableRoles = useMemo(() => {
         const map = new Map()
         displayedUsers.forEach(u => {
-            const r = u.role
-            if (!r) return
-            const key = r.roleId ?? r.name
-            if (!map.has(key)) {
-                map.set(key, { roleId: r.roleId ?? null, name: r.name ?? String(r) })
-            }
+            const rId = u.normalizedRole?.roleId
+            const rName = u.normalizedRole?.roleName || (u.role?.name ?? (typeof u.role === 'string' ? u.role : ''))
+            const key = rId != null ? String(rId) : (rName || '')
+            if (!key) return
+            if (!map.has(key)) map.set(key, { roleId: rId ?? null, name: rName })
         })
-        // ensure at least common roles if none found
         if (map.size === 0) {
-            map.set('CUSTOMER', { roleId: null, name: 'CUSTOMER' })
-            map.set('STAFF', { roleId: null, name: 'STAFF' })
-            map.set('ADMIN', { roleId: null, name: 'ADMIN' })
+            map.set('1', { roleId: 1, name: ID_TO_NAME[1] })
+            map.set('2', { roleId: 2, name: ID_TO_NAME[2] })
+            map.set('3', { roleId: 3, name: ID_TO_NAME[3] })
         }
         return Array.from(map.values())
-    }, [displayedUsers])
+    }, [displayedUsers]);
+
+    const roleOptions = useMemo(() => {
+        const seen = new Set()
+        const opts = []
+        const canonIds = [1, 2, 3]
+        canonIds.forEach(id => {
+            const name = ID_TO_NAME[id]
+            const key = String(id)
+            if (!seen.has(key)) {
+                seen.add(key)
+                opts.push({ value: key, label: name })
+            }
+        })
+
+        const rolesArr = availableRoles || []
+        rolesArr.forEach(r => {
+            const key = r.roleId != null ? String(r.roleId) : r.name
+            if (!key) {
+                return
+            }
+            if (!seen.has(key)) {
+                seen.add(key)
+                opts.push({ value: r.roleId != null ? String(r.roleId) : r.name, label: r.name })
+            }
+        })
+
+        return opts
+    }, [availableRoles]);
+
 
     const updateMutation = useMutation({
         mutationFn: ({ userId, payload }) => updateUser(userId, payload),
@@ -97,6 +165,13 @@ function ManageUsers() {
         }
     })
 
+    useEffect(() => {
+        if (error) {
+            const message = getErrorMessage(error, "Failed to load users. Please try again later.")
+            showError(message)
+        }
+    }, [error, getErrorMessage, showError])
+
     if (!user) {
         return (
             <section className="section">
@@ -128,9 +203,10 @@ function ManageUsers() {
     }
 
     const startEdit = (u) => {
-        // admins may edit anyone
-        // prefill role as object {roleId,name} if available
-        const roleObj = (u.role && (u.role.roleId || u.role.roleId === 0)) ? { roleId: u.role.roleId, name: u.role.name } : (u.role?.name ? { name: u.role.name } : {})
+        const roleObj = {
+            roleId: u.normalizedRole?.roleId ?? null,
+            name: u.normalizedRole?.roleName || u.role?.name || (typeof u.role === 'string' ? u.role : '')
+        }
         setEditingId(u.userId)
         setEditValues({ name: u.name || '', email: u.email || '', phoneNumber: u.phoneNumber ?? u.phone ?? '', role: roleObj, currentPassword: '', newPassword: '' })
         setFieldErrors(null)
@@ -143,19 +219,16 @@ function ManageUsers() {
     }
 
     const saveEdit = async (userId, originalUser) => {
-        // client-side validation
         const name = (editValues.name || '').trim()
         if (!name) {
             setFieldErrors({ ...(fieldErrors || {}), name: 'Name must not be blank' })
             return
         }
 
-        // normalize role object: prefer explicit roleId, else fallback to role name
         let roleObj = null
         if (editValues.role && (editValues.role.roleId || editValues.role.roleId === 0)) {
             roleObj = { roleId: Number(editValues.role.roleId), name: editValues.role.name }
         } else if (editValues.role && editValues.role.name) {
-            // no roleId available; try to find matching role from availableRoles
             const match = availableRoles.find(r => String(r.name).toUpperCase() === String(editValues.role.name).toUpperCase())
             roleObj = match && match.roleId ? { roleId: match.roleId, name: match.name } : { roleId: null, name: editValues.role.name }
         }
@@ -165,14 +238,11 @@ function ManageUsers() {
             return
         }
 
-        // Build payload according to backend expectation. Backend requires `email` in the request; we keep email unchanged
         const payload = {
             name,
             email: originalUser.email,
             phoneNumber: originalUser.phoneNumber,
-            // include currentPassword only if editing yourself (backend enforces it)
             currentPassword: (originalUser.userId === user.userId) ? editValues.currentPassword : undefined,
-            // admin editing others typically won't supply currentPassword; backend may reject if it enforces it
             newPassword: null,
             profilePicture: originalUser.profilePicture,
             role: roleObj
@@ -181,7 +251,6 @@ function ManageUsers() {
         setFieldErrors(null)
 
         try {
-            // if current user is admin and editing someone else, call admin endpoint
             if (isAdmin && originalUser.userId !== user.userId) {
                 await adminUpdateMutation.mutateAsync({ userId, payload })
             } else {
@@ -208,106 +277,121 @@ function ManageUsers() {
         }
     }
 
-    useMemo(() => {
-        if (error) {
-            const message = getErrorMessage(error, "Failed to load users. Please try again later.")
-            showError(message)
-        }
-    }, [error])
-
     return (
         <section className="section">
             <div className="container">
                 <Card>
                     <div className="card-body">
-                        <h2>Manage Users</h2>
-                        <p className="muted">Below is a simple listing of users. You can edit names and roles here.</p>
+                        <h1 className="title">Manage Users</h1>
+
+                        {error && (
+                            <div className="notification is-danger">
+                                <button className="delete" onClick={() => showError('')}></button>
+                                {getErrorMessage(error, "Failed to load users. Please try again later.")}
+                            </div>
+                        )}
 
                         {isLoading && <p className="muted">Loading users...</p>}
 
                         {!isLoading && displayedUsers && displayedUsers.length > 0 && (
-                            <div className="user-list-form">
-                                {displayedUsers.map(u => {
-                                    const isEditing = editingId === u.userId
-                                    return (
-                                        <fieldset key={u.userId} style={{ marginBottom: 12, padding: 8, border: '1px solid #eee' }}>
-                                            <legend style={{ fontWeight: 600 }}>{u.name || 'Unnamed'}</legend>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'center' }}>
-                                                <div>
-                                                    <label className="muted">Name</label>
-                                                    <input type="text" value={isEditing ? editValues.name : (u.name || '')} onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))} readOnly={!isEditing} />
-                                                    {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
-                                                </div>
-                                                <div>
-                                                    <label className="muted">Email</label>
-                                                    <input type="text" value={u.email || ''} readOnly />
-                                                </div>
+                            <>
+                                <div style={{ marginBottom: 16 }}>
+                                    <label className="muted">Filter by role</label>
+                                    <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} style={{ marginLeft: 8 }}>
+                                        <option value="ALL">All roles</option>
+                                        {roleOptions.map(o => (
+                                            <option key={o.value} value={o.value}>{o.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                                                <div>
-                                                    <label className="muted">Role</label>
-                                                    {isEditing ? (
-                                                        <select value={editValues.role?.roleId ?? editValues.role?.name ?? ''} onChange={(e) => {
-                                                            const val = e.target.value
-                                                            const roleById = availableRoles.find(r => String(r.roleId) === String(val))
-                                                            if (roleById) setEditValues(v => ({ ...v, role: roleById }))
-                                                            else setEditValues(v => ({ ...v, role: { name: val } }))
-                                                        }}>
-                                                            <option value="">Select role</option>
-                                                            {availableRoles.map(r => (
-                                                                <option key={r.roleId ?? r.name} value={r.roleId ?? r.name}>{r.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    ) : (
-                                                        <input type="text" value={u.role?.name || u.role || ''} readOnly />
-                                                    )}
-                                                    {isEditing && fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
-                                                </div>
-
-                                                <div>
-                                                    <label className="muted">ID</label>
-                                                    <input type="text" value={u.userId || ''} readOnly />
-                                                </div>
-
-                                                <div>
-                                                    <label className="muted">Phone</label>
-                                                    <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? '')} readOnly />
-                                                </div>
-
-                                                {/* show currentPassword only when editing your own account */}
-                                                {isEditing && u.userId === user.userId && (
-                                                    <>
+                                {filteredUsers.length > 0 ? (
+                                    <div className="user-list-form">
+                                        {filteredUsers.map(u => {
+                                            const isEditing = editingId === u.userId
+                                            return (
+                                                <fieldset key={u.userId} style={{ marginBottom: 12, padding: 8, border: '1px solid #eee' }}>
+                                                    <legend style={{ fontWeight: 600 }}>{u.name || 'Unnamed'}</legend>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'center' }}>
                                                         <div>
-                                                            <label className="muted">Current password</label>
-                                                            <input type="password" value={editValues.currentPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, currentPassword: e.target.value }))} />
-                                                            {isEditing && fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
+                                                            <label className="muted">Name</label>
+                                                            <input type="text" value={isEditing ? editValues.name : (u.name || '')} onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))} readOnly={!isEditing} />
+                                                            {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
                                                         </div>
                                                         <div>
-                                                            <label className="muted">New password (optional)</label>
-                                                            <input type="password" value={editValues.newPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, newPassword: e.target.value }))} />
-                                                            {isEditing && fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
+                                                            <label className="muted">Email</label>
+                                                            <input type="text" value={u.email || ''} readOnly />
                                                         </div>
-                                                    </>
-                                                )}
 
-                                                <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                                                    {isEditing ? (
-                                                        <>
-                                                            <button className="btn-primary" onClick={() => saveEdit(u.userId, u)} disabled={updateMutation.isLoading || (u.userId === user.userId && !(editValues.currentPassword && editValues.currentPassword.trim()))}>Save</button>
-                                                            <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button className="btn" onClick={() => startEdit(u)}>Edit</button>
-                                                            <button className="btn-danger" onClick={() => handleDelete(u.userId)} disabled={deleteMutation.isLoading}>Delete</button>
-                                                        </>
-                                                    )}
-                                                </div>
+                                                        <div>
+                                                            <label className="muted">Role</label>
+                                                            {isEditing ? (
+                                                                <select value={editValues.role?.roleId ?? editValues.role?.name ?? ''} onChange={(e) => {
+                                                                    const val = e.target.value
+                                                                    const roleById = availableRoles.find(r => String(r.roleId) === String(val))
+                                                                    if (roleById) setEditValues(v => ({ ...v, role: roleById }))
+                                                                    else setEditValues(v => ({ ...v, role: { name: val } }))
+                                                                }}>
+                                                                    <option value="">Select role</option>
+                                                                    {availableRoles.map(r => (
+                                                                        <option key={r.roleId ?? r.name} value={r.roleId ?? r.name}>{r.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            ) : (
+                                                                <input type="text" value={u.role?.name || u.role || ''} readOnly />
+                                                            )}
+                                                            {isEditing && fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
+                                                        </div>
 
-                                            </div>
-                                        </fieldset>
-                                    )
-                                })}
-                            </div>
+                                                        <div>
+                                                            <label className="muted">ID</label>
+                                                            <input type="text" value={u.userId || ''} readOnly />
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="muted">Phone</label>
+                                                            <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? '')} readOnly />
+                                                        </div>
+
+                                                        {/* show currentPassword only when editing your own account */}
+                                                        {isEditing && u.userId === user.userId && (
+                                                            <>
+                                                                <div>
+                                                                    <label className="muted">Current password</label>
+                                                                    <input type="password" value={editValues.currentPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, currentPassword: e.target.value }))} />
+                                                                    {isEditing && fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
+                                                                </div>
+                                                                <div>
+                                                                    <label className="muted">New password (optional)</label>
+                                                                    <input type="password" value={editValues.newPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, newPassword: e.target.value }))} />
+                                                                    {isEditing && fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
+                                                                </div>
+                                                            </>
+                                                        )}
+
+                                                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                                                            {isEditing ? (
+                                                                <>
+                                                                    <button className="btn-primary" onClick={() => saveEdit(u.userId, u)} disabled={updateMutation.isLoading || (u.userId === user.userId && !(editValues.currentPassword && editValues.currentPassword.trim()))}>Save</button>
+                                                                    <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <button className="btn" onClick={() => startEdit(u)}>Edit</button>
+                                                                    <button className="btn-danger" onClick={() => handleDelete(u.userId)} disabled={deleteMutation.isLoading}>Delete</button>
+                                                                </>
+                                                            )}
+                                                        </div>
+
+                                                    </div>
+                                                </fieldset>
+                                            )
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p className="muted">No users match the selected role.</p>
+                                )}
+                            </>
                         )}
 
                         {!isLoading && (!displayedUsers || displayedUsers.length === 0) && (
@@ -318,6 +402,7 @@ function ManageUsers() {
             </div>
         </section>
     )
+
 }
 
 export default ManageUsers
