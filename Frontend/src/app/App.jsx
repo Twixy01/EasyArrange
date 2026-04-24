@@ -17,6 +17,7 @@ import ManageServices from "../pages/ManageServices";
 import ManageUsers from "../pages/ManageUsers";
 import MyStaff from "../pages/MyStaff";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
+import StaffBookingsPage from "../pages/StaffBookingsPage";
 import { UIStateProvider } from "../context/UIStateContext.jsx";
 import { useEffect } from "react";
 import Footer from "../components/layout/Footer.jsx";
@@ -56,6 +57,7 @@ function App() {
           <Route path="/admin/services" element={<ManageServices />} />
           <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="/admin/my-staff" element={<MyStaff />} />
+          <Route path="/staff/bookings" element={<StaffBookingsPage />} />
           <Route path="/profile/change-password" element={<ChangePasswordPage />} />
         </Routes>
         <Footer />

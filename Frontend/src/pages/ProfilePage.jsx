@@ -16,7 +16,6 @@ function ProfilePage() {
     const {user, logout} = useAuth()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const [bookingSuccess, setBookingSuccess] = useState(null)
 
     const customerId = user?.userId
 
@@ -42,8 +41,7 @@ function ProfilePage() {
         mutationFn: async (bookingId) => cancelBooking(bookingId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['bookings', customerId]})
-            setBookingSuccess('Booking cancelled')
-            setTimeout(() => setBookingSuccess(null), 3000)
+            showSuccess('Booking cancelled')
         },
         onError: (error) => {
             const serverMessage = getErrorMessage(error, 'Failed to cancel booking. Please try again.')
@@ -100,25 +98,14 @@ function ProfilePage() {
         }
     }
 
-    //sorting bookings by status
-    const getStatusOrder = (status) => {
-        const s = String(status || '').toUpperCase().trim()
-        //order: ongoing, booked, completed, cancelled, others
-        if (s === 'ONGOING' || s === 'IN_PROGRESS') return 0
-        if (s === 'BOOKED' || s === 'SCHEDULED') return 1
-        if (s === 'COMPLETED' || s === 'DONE') return 2
-        if (s === 'CANCELLED' || s === 'CANCELED') return 3
-        return 4
-    }
-
     const sortedBookings = Array.isArray(bookings) ? [...bookings].sort((a, b) => {
-        const oa = getStatusOrder(a.status)
-        const ob = getStatusOrder(b.status)
-        if (oa !== ob) return oa - ob
-        //fallback: earlier start first
-        const ta = a.startDateTime ? new Date(a.startDateTime).getTime() : Number.POSITIVE_INFINITY
-        const tb = b.startDateTime ? new Date(b.startDateTime).getTime() : Number.POSITIVE_INFINITY
-        return ta - tb
+        const aBooked = String(a.status || '').toUpperCase() === 'BOOKED'
+        const bBooked = String(b.status || '').toUpperCase() === 'BOOKED'
+        if (aBooked !== bBooked) return bBooked - aBooked
+
+        const ta = a.startDateTime ? new Date(a.startDateTime).getTime() : Number.NEGATIVE_INFINITY
+        const tb = b.startDateTime ? new Date(b.startDateTime).getTime() : Number.NEGATIVE_INFINITY
+        return tb - ta
     }) : []
 
     const formatTimeUntil = (msDiff) => {
@@ -157,8 +144,6 @@ function ProfilePage() {
 
     return (
         <section className="section profile-section">
-            {bookingSuccess &&
-                                        <div className="form-success" style={{marginTop: 8}}>{bookingSuccess}</div>}
             <div className="container">
                 <div className="page profile-page">
 
@@ -227,8 +212,10 @@ function ProfilePage() {
                                                                 <div
                                                                     className="muted">With: {b.staff?.user?.name || '—'}</div>
                                                                 <div
+                                                                    className="muted">Phone: {b.staff?.user?.phoneNumber || '—'}</div>
+                                                                <div
                                                                     className="muted">Service: {b.service?.name ? `${b.service.name} | ${b.service?.price != null ? ` ${b.service.price} Ft` : ''}` : '—'}</div>
-                                                                {startsAt && getStatusOrder(b.status) === 1 && (
+                                                                {startsAt && String(b.status).toUpperCase() === 'BOOKED' && (
                                                                     <div className="muted" style={{marginTop: 4}}>
                                                                         Starts in: {formatTimeUntil(msUntil)}
                                                                     </div>

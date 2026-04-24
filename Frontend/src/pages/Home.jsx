@@ -6,7 +6,7 @@ import SectionHeader from '../components/common/SectionHeader'
 import { motion } from 'framer-motion'
 import Card from '../components/common/Card'
 import { UIStateContext } from '../context/UIStateContext'
-import { resolveMediaUrl } from '../services/api'
+import avatarPlaceholder from '../assets/avatar-placeholder.png';
 
 export default function Home() {
   const { showSuccess, showError, showLoading, hideNotification } = useContext(UIStateContext);
@@ -75,7 +75,7 @@ export default function Home() {
           <div className="grid cards-3">
             {services.map((service) => (
               <Card key={service.serviceId} className="service-card">
-                <img src={resolveMediaUrl(service.image) || service.image} alt={service.name} />
+                <img src={service.image} alt={service.name} />
                 <div className="card-body">
                   <h3>{service.name}</h3>
                   <p>{service.description}</p>
@@ -102,7 +102,7 @@ export default function Home() {
             {staff.map((member) => (
               <Card key={member.staffId} className="staff-card">
                 <img
-                  src={resolveMediaUrl(member.user?.profilePicture) || member.user?.profilePicture}
+                  src={member.user?.profilePicture || avatarPlaceholder}
                   alt={member.user?.name}
                 />
                 <div className="card-body">

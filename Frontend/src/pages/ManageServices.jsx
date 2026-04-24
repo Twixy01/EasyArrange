@@ -310,17 +310,17 @@ function ManageServices() {
 
                        <div className="service-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'start' }}>
 
-                         <div>
-                           <div style={{ marginBottom: 8 }}>
-                             <label className="muted">Name</label>
-                             <input
-                               type="text"
-                               value={isEditing ? editValues.name : (s.name || '')}
-                               onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))}
-                               readOnly={!isEditing}
-                             />
-                             {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
-                           </div>
+                        <div>
+                          <div style={{ marginBottom: 8 }}>
+                            <label className="muted">Name</label>
+                            <input
+                              type="text"
+                              value={isEditing ? editValues.name : (s.name || '')}
+                              onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                            {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                          </div>
 
                            <div>
                              <label className="muted">Description</label>
@@ -358,16 +358,16 @@ function ManageServices() {
                              ) : null}
                            </div>
 
-                           <div>
-                             <label className="muted">Duration (minutes)</label>
-                             <input
-                               type="number"
-                               value={isEditing ? editValues.duration : displayDuration}
-                               onChange={(e) => setEditValues(v => ({ ...v, duration: e.target.value }))}
-                               readOnly={!isEditing}
-                             />
-                             {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
-                           </div>
+                          <div>
+                            <label className="muted">Duration (minutes)</label>
+                            <input
+                              type="number"
+                              value={isEditing ? editValues.duration : displayDuration}
+                              onChange={(e) => setEditValues(v => ({ ...v, duration: e.target.value }))}
+                              readOnly={!isEditing}
+                            />
+                            {isEditing && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                          </div>
 
                            <div>
                              <label className="muted">ID</label>
@@ -429,20 +429,20 @@ function ManageServices() {
                    )
                  })}
 
-                 <fieldset ref={createRef} id="create-service" style={{ marginTop: 16, padding: 8, border: '1px dashed #ddd' }}>
-                   <legend style={{ fontWeight: 600 }}>Create new service</legend>
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                     <div>
-                       <label className="muted">Name</label>
-                       <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
-                       {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
-                     </div>
+                <fieldset style={{ marginTop: 16, padding: 8, border: '1px dashed #ddd' }}>
+                  <legend style={{ fontWeight: 600 }}>Create new service</legend>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div>
+                      <label className="muted">Name</label>
+                      <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
+                      {!editingId && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                    </div>
 
-                     <div>
-                       <label className="muted">Duration (minutes)</label>
-                       <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
-                       {fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
-                     </div>
+                    <div>
+                      <label className="muted">Duration (minutes)</label>
+                      <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
+                      {!editingId && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                    </div>
 
                      <div style={{ gridColumn: '1 / -1' }}>
                        <label className="muted">Description</label>

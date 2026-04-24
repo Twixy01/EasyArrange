@@ -69,9 +69,9 @@ function StaffCard({ member }) {
         <p className="muted">{member.title}</p>
         <p>{member.bio}</p>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
-          <div style={{ flex: 1 }}>
-            <div className="pill-wrap" style={{ margin: 0 }}>
+        <div className="staff-services-row" style={{ marginTop: 8 }}>
+          <div className="staff-services">
+            <div className="pill-wrap">
               {member.services?.map((item) => (
                 <span key={item.serviceId} className="pill">
                   {item.name}

@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import SectionHeader from '../components/common/SectionHeader'
 import Button from '../components/common/Button'
+import { UIStateContext } from '../context/UIStateContext'
 
 function RegisterPage() {
+  const { showError, showSuccess } = useContext(UIStateContext)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('') // added phone state
-  const [error, setError] = useState(null)
+  const [password, setPassword] = useState('')
+
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -21,21 +23,23 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
 
     if (!name || !email || !password) {
-      setError('Please fill in all required fields.')
+      const msg = 'Please fill in all fields.'
+      showError(msg)
+
       return
     }
 
     if (password.length < 4) {
-      setError('Password must be at least 4 characters.')
+      const msg = 'Password must be at least 4 characters.'
+      showError(msg)
       return
     }
 
     // if phone provided, validate it client-side to avoid backend 400s
     if (phone && !hungarianPhoneRegex.test(phone.trim())) {
-      setError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
+      showError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
       return
     }
 
@@ -60,22 +64,25 @@ function RegisterPage() {
       if (!res.ok) {
         const text = await res.text()
         console.error('Register failed', { status: res.status, text })
-        // backend may return plain text messages for validation errors
+
+        let message = 'Registration failed. Please try again.'
+
         if (res.status === 400) {
-          setError(text || 'Invalid input. Please check your details.')
+          message = 'Invalid input. Please check your details.'
         } else if (res.status === 409) {
-          setError(text || 'Email already exists.')
-        } else {
-          setError(text || 'Registration failed. Please try again.')
+          message = 'Email already exists.'
         }
+        showError(message)
         return
       }
 
       await res.json()
+      showSuccess('Registration successful. You can now log in.')
       navigate('/login')
     } catch (err) {
       console.error('Registration error', err)
-      setError('Network error. Please try again.')
+      const msg = 'Network error. Please try again.'
+      showError(msg)
     } finally {
       setIsLoading(false)
     }
@@ -90,7 +97,6 @@ function RegisterPage() {
           description="Register to manage bookings and your personal profile."
           center
         />
-        {error && <div className="error" role="alert">{error}</div>}
 
         <form className="register-form" onSubmit={handleSubmit} noValidate>
           <div className="field">

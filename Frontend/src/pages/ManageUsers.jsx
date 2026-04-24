@@ -316,7 +316,7 @@ function ManageUsers() {
                                                         <div>
                                                             <label className="muted">Name</label>
                                                             <input type="text" value={isEditing ? editValues.name : (u.name || '')} onChange={(e) => setEditValues(v => ({ ...v, name: e.target.value }))} readOnly={!isEditing} />
-                                                            {fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                                                            {isEditing && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
                                                         </div>
                                                         <div>
                                                             <label className="muted">Email</label>
@@ -326,30 +326,21 @@ function ManageUsers() {
                                                         <div>
                                                             <label className="muted">Role</label>
                                                             {isEditing ? (
-                                                                <select value={editValues.role?.roleId != null ? String(editValues.role?.roleId) : editValues.role?.name ?? ''} onChange={(e) => {
+                                                                <select value={editValues.role?.roleId ?? editValues.role?.name ?? ''} onChange={(e) => {
                                                                     const val = e.target.value
-                                                                    const opt = roleOptions.find(o => o.value === val)
-                                                                    if (opt) {
-                                                                        if (/^\d+$/.test(val)) {
-                                                                            const rid = Number(val)
-                                                                            setEditValues(v => ({ ...v, role: { roleId: rid, name: ID_TO_NAME[rid] ?? opt.label } }))
-                                                                        } else {
-                                                                            setEditValues(v => ({ ...v, role: { name: opt.label } }))
-                                                                        }
-                                                                    } else {
-                                                                        if (/^\d+$/.test(val)) setEditValues(v => ({ ...v, role: { roleId: Number(val), name: ID_TO_NAME[Number(val)] ?? '' } }))
-                                                                        else setEditValues(v => ({ ...v, role: { name: val } }))
-                                                                    }
+                                                                    const roleById = availableRoles.find(r => String(r.roleId) === String(val))
+                                                                    if (roleById) setEditValues(v => ({ ...v, role: roleById }))
+                                                                    else setEditValues(v => ({ ...v, role: { name: val } }))
                                                                 }}>
                                                                     <option value="">Select role</option>
-                                                                    {roleOptions.map(r => (
-                                                                        <option key={r.value} value={r.value}>{r.label}</option>
+                                                                    {availableRoles.map(r => (
+                                                                        <option key={r.roleId ?? r.name} value={r.roleId ?? r.name}>{r.name}</option>
                                                                     ))}
                                                                 </select>
                                                             ) : (
-                                                                <input type="text" value={u.normalizedRole?.roleName || ID_TO_NAME[u.normalizedRole?.roleId] || u.role?.name || u.role || ''} readOnly />
+                                                                <input type="text" value={u.role?.name || u.role || ''} readOnly />
                                                             )}
-                                                            {fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
+                                                            {isEditing && fieldErrors?.role && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.role}</div>}
                                                         </div>
 
                                                         <div>
@@ -368,12 +359,12 @@ function ManageUsers() {
                                                                 <div>
                                                                     <label className="muted">Current password</label>
                                                                     <input type="password" value={editValues.currentPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, currentPassword: e.target.value }))} />
-                                                                    {fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
+                                                                    {isEditing && fieldErrors?.currentPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.currentPassword}</div>}
                                                                 </div>
                                                                 <div>
                                                                     <label className="muted">New password (optional)</label>
                                                                     <input type="password" value={editValues.newPassword || ''} onChange={(e) => setEditValues(v => ({ ...v, newPassword: e.target.value }))} />
-                                                                    {fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
+                                                                    {isEditing && fieldErrors?.newPassword && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.newPassword}</div>}
                                                                 </div>
                                                             </>
                                                         )}
