@@ -107,8 +107,8 @@ export const salonApi = {
         return response.data;
     },
 
-    async updateBookingStatus(bookingId, bookingUpdateBody) {
-        const response = await Axios.put(`${BASE_URL}/bookings/${bookingId}`, bookingUpdateBody);
+    async updateBookingStatus(bookingId, bookingUpdateBody, isStaff) {
+        const response = await Axios.put(`${BASE_URL}/bookings/${bookingId}/${isStaff}`, bookingUpdateBody);
         return response.data;
     },
 

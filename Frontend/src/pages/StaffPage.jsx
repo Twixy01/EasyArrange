@@ -14,7 +14,7 @@ function formatTimeString(raw) {
     return `${h}:${m}`
   }
   const m = /^(\d{1,2}):(\d{2})/.exec(String(raw).trim())
-  if (m) return `${String(m[1]).padStart(2,'0')}:${m[2]}`
+  if (m) return `${String(m[1]).padStart(2, '0')}:${m[2]}`
   return String(raw)
 }
 
@@ -68,33 +68,45 @@ function StaffCard({ member }) {
         <h3>{memberName}</h3>
         <p className="muted">{member.title}</p>
         <p>{member.bio}</p>
+        {/* ---------------------------------------- */}
+        <div className="staff-services-panel">
+          <div className="staff-services-header">
+            <span>Specialized in</span>
+            <strong>{member.services?.length || 0}</strong>
+          </div>
 
-        <div className="staff-services-row" style={{ marginTop: 8 }}>
-          <div className="staff-services">
-            <div className="pill-wrap">
-              {member.services?.map((item) => (
-                <span key={item.serviceId} className="pill">
+          <div className="staff-service-tags">
+            {member.services?.length > 0 ? (
+              member.services.map((item) => (
+                <span key={item.serviceId} className="staff-service-tag">
                   {item.name}
                 </span>
-              ))}
+              ))
+            ) : (
+              <span className="staff-service-empty">No services assigned</span>
+            )}
+          </div>
+        </div>
+        {/* ||||||||||||| */}
+        <div className="staff-availability-panel">
+          <div>
+            <span className="staff-availability-label">Availability</span>
+            <div className="staff-availability-date">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="calendar-block-input"
+              />
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="calendar-block-input"
-              style={{ maxWidth: 160 }}
-            />
-
-            <div style={{ textAlign: 'right' }}>
-              <span className={`availability-pill ${availability.label === 'Available' ? 'available' : 'off'}`}>
-                {availability.label}
-              </span>
-              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-                {availability.label === 'Available' && (() => {
+          <div className="staff-availability-status">
+            <span className={`availability-pill ${availability.label === "Available" ? "available" : "off"}`}>
+              {availability.label}
+            </span>
+            <div className="muted staff-availability-reason">
+              {availability.label === 'Available' && (() => {
                   const day = new Date(selectedDate).toLocaleDateString('en-GB', { weekday: 'long' }).toUpperCase();
                   const shift = shifts.find(s => String(s.day).toUpperCase() === day);
                   if (shift && shift.startShift && shift.endShift) return `${formatTimeString(shift.startShift)} - ${formatTimeString(shift.endShift)}`;
@@ -108,8 +120,8 @@ function StaffCard({ member }) {
                       const st = new Date(b.startDateTime)
                       const ed = new Date(b.endDateTime)
                       const pad = (n) => String(n).padStart(2, '0')
-                      const startDay = `${st.getFullYear()}-${pad(st.getMonth()+1)}-${pad(st.getDate())}`
-                      const endDay = `${ed.getFullYear()}-${pad(ed.getMonth()+1)}-${pad(ed.getDate())}`
+                      const startDay = `${st.getFullYear()}-${pad(st.getMonth() + 1)}-${pad(st.getDate())}`
+                      const endDay = `${ed.getFullYear()}-${pad(ed.getMonth() + 1)}-${pad(ed.getDate())}`
                       return selectedDate >= startDay && selectedDate <= endDay
                     } catch {
                       return false
@@ -118,7 +130,6 @@ function StaffCard({ member }) {
                   if (overlapping) return overlapping.title || 'Time off'
                   return availability.reason || ''
                 })()}
-              </div>
             </div>
           </div>
         </div>
@@ -137,7 +148,7 @@ function StaffCard({ member }) {
 }
 
 export default function StaffPage() {
-  const {data: staff = [], isLoading: staffLoading, error: staffError} = useStaff();
+  const { data: staff = [], isLoading: staffLoading, error: staffError } = useStaff();
 
   if (staffLoading) {
     return (

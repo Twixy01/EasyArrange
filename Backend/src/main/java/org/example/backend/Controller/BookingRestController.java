@@ -93,14 +93,14 @@ public class BookingRestController {
         return bookingService.create(request);
     }
 
-    @PutMapping("/{id}")
-    public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request) {
-        return bookingService.update(id, request);
+    @PutMapping("/{id}/{isStaff}")
+    public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request, @PathVariable("isStaff") Boolean isStaff) {
+        return bookingService.update(id, request, isStaff);
     }
 
     @PostMapping("/cancel/{id}")
-    public void delete(@PathVariable("id") Long id) {
-        bookingService.remove(id);
+    public void cancel(@PathVariable("id") Long id) {
+        bookingService.cancel(id);
     }
 
     @DeleteMapping("/{id}/hard")

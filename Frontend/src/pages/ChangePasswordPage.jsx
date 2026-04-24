@@ -84,34 +84,36 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <section className="section">
+    <section className="section change-password-page">
       <div className="container">
         <div className="page">
-          <Card className="form-card">
+          <Card className="form-card change-password-card">
             <div className="card-body">
-              <h2 style={{ marginTop: 0 }}>Create new password</h2>
-              <p className="muted">Enter your current password and choose a new one.</p>
+              <div className="change-password-header">
+                <p className="change-password-eyebrow">Security</p>
+                <h2>Create new password</h2>
+                <p className="muted">Enter your current password and choose a new one.</p>
+              </div>
 
-              <div style={{ display: 'grid', gap: 12 }}>
-                <div>
-                  <label className="muted">Current password</label>
+              <div className="change-password-grid">
+                <div className="change-password-field">
+                  <label>Current password</label>
                   <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} />
                 </div>
-                <div>
-                  <label className="muted">New password</label>
+                <div className="change-password-field">
+                  <label>New password</label>
                   <input name="newPassword" type="password" value={form.newPassword} onChange={handleChange} />
                 </div>
-                <div>
-                  <label className="muted">Confirm new password</label>
+                <div className="change-password-field">
+                  <label>Confirm new password</label>
                   <input name="confirmNewPassword" type="password" value={form.confirmNewPassword} onChange={handleChange} />
-                </div>
-
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-primary" onClick={handleSubmit} disabled={saving}>{saving ? 'Saving...' : 'Create new password'}</button>
-                  <button className="btn-secondary" onClick={handleCancel}>Cancel</button>
                 </div>
               </div>
 
+              <div className="change-password-actions">
+                <button className="btn btn-primary" onClick={handleSubmit} disabled={saving}>{saving ? 'Saving...' : 'Create new password'}</button>
+                <button className="btn btn-secondary" onClick={handleCancel}>Cancel</button>
+              </div>
             </div>
           </Card>
         </div>
