@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import Card from '../components/common/Card'
+import Button from '../components/common/Button'
 import { useServices } from '../hooks/queries/useServices'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
@@ -287,12 +288,12 @@ function ManageServices() {
                </div>
                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                  <Link to="/admin/my-staff" className="btn" style={{ marginRight: 8 }}>MY STAFF</Link>
-                 <button className="btn btn-primary" onClick={goToCreate} aria-label="Create new service" title="Create new service" style={{ padding: '0.6rem 1rem', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                     <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                   </svg>
-                   CREATE NEW SERVICE
-                 </button>
+                  <Button onClick={goToCreate} aria-label="Create new service" title="Create new service" style={{ padding: '0.6rem 1rem', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    CREATE NEW SERVICE
+                  </Button>
                </div>
              </div>
 
@@ -327,7 +328,7 @@ function ManageServices() {
                  </div>
 
                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                   <button className="btn-primary" onClick={() => createNew()} disabled={createMutation.isLoading}>Create</button>
+                  <Button onClick={() => createNew()} disabled={createMutation.isLoading}>Create</Button>
                  </div>
 
                </div>
@@ -417,13 +418,13 @@ function ManageServices() {
                        <div className="service-actions" style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
                          {isEditing ? (
                            <>
-                             <button className="btn-primary" onClick={() => saveEdit(s.serviceId)} disabled={updateMutation.isLoading}>Save</button>
-                             <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                             <Button onClick={() => saveEdit(s.serviceId)} disabled={updateMutation.isLoading}>Save</Button>
+                             <Button variant="secondary" onClick={cancelEdit}>Cancel</Button>
                            </>
                          ) : (
                            <>
-                             <button className="btn" onClick={() => startEdit(s)}>Edit</button>
-                             <button className="btn-danger" onClick={() => handleDelete(s.serviceId)} disabled={deleteMutation.isLoading}>Delete</button>
+                              <Button variant="secondary" onClick={() => startEdit(s)}>Edit</Button>
+                              <Button variant="danger" onClick={() => handleDelete(s.serviceId)} disabled={deleteMutation.isLoading}>Delete</Button>
                            </>
                          )}
                        </div>
@@ -440,7 +441,7 @@ function ManageServices() {
                                  return (
                                    <div key={st.staffId} className={chipClass}>
                                      <div className="staff-name">{st.user?.name || st.user?.username || `Staff #${st.staffId}`}</div>
-                                     <button className="btn-danger" onClick={() => handleRemoveStaff(s.serviceId, st.staffId)}>Remove</button>
+                                      <Button variant="danger" onClick={() => handleRemoveStaff(s.serviceId, st.staffId)}>Remove</Button>
                                    </div>
                                  )
                                })}

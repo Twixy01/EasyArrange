@@ -38,7 +38,7 @@ public class User {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private Role role;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "user")
     private List<Booking> bookings = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")

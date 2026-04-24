@@ -68,8 +68,8 @@ public class BookingService {
     }
 
     @Transactional
-    public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
-        List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
+    public List<BookingResponse> findBookingsByUserId(Long userId) {
+        List<BookingResponse> bookings = bookingRepository.findAllByUserId(userId).stream()
                 .map(booking -> {
                     BookingStatus currentStatus = booking.getStatus();
                     BookingStatus computedStatus = currentStatus;
@@ -220,9 +220,9 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Staff with id " + bookingRequest.staffId() + " not found"));
         booking.setStaff(staff);
 
-        User customer = userRepository.findById(bookingRequest.customerId())
-                .orElseThrow(() -> new IllegalArgumentException("Customer with id " + bookingRequest.customerId() + " not found"));
-        booking.setCustomer(customer);
+        User user = userRepository.findById(bookingRequest.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + bookingRequest.userId() + " not found"));
+        booking.setUser(user);
 
         Service service = serviceRepository.findById(bookingRequest.serviceId())
                 .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));

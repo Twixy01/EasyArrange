@@ -44,13 +44,13 @@ public class BookingRestController {
         return bookingService.findBookingsByStaffId(staffId);
     }
 
-    @GetMapping("/customer/{customerId}")
-    public List<BookingResponse> getByCustomer(@PathVariable("customerId") Long customerId) {
+    @GetMapping("/user/{userId}")
+    public List<BookingResponse> getByUser(@PathVariable("userId") Long userId) {
         try {
-            return bookingService.findBookingsByCustomerId(customerId);
+            return bookingService.findBookingsByUserId(userId);
         } catch (Exception ex) {
             // defensive: if something goes wrong while computing/updating bookings, don't fail the GET
-            System.err.println("Error while fetching bookings for customer " + customerId + ": " + ex.getMessage());
+            System.err.println("Error while fetching bookings for user " + userId + ": " + ex.getMessage());
             ex.printStackTrace();
             return Collections.emptyList();
         }

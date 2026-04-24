@@ -136,7 +136,7 @@ function BookingPage() {
     mutate(
       {
         staffId: selectedStaff.staffId,
-        customerId: bookingUserId,
+        userId: bookingUserId,
         startDateTime: selectedSlot.startDateTime,
         endDateTime: selectedSlot.endDateTime,
         serviceId: selectedService.serviceId,

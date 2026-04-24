@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import {cancelBooking} from '../services/api'
-import {useBookingsByCustomer} from '../hooks/queries/useBookingsByCustomer'
+import {useBookingsByUser} from '../hooks/queries/useBookingsByUser'
 import avatarPlaceholder from '../assets/avatar-placeholder.png'
 import { UIStateContext } from '../context/UIStateContext'
 import { resolveMediaUrl } from '../services/api'
@@ -17,13 +17,13 @@ function ProfilePage() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
 
-    const customerId = user?.userId
+    const userId = user?.userId
 
     const {
         data: bookings = [],
         isLoading: loadingBookings,
         error: bookingsQueryError,
-    } = useBookingsByCustomer(customerId)
+    } = useBookingsByUser(userId)
 
     const bookingsError = bookingsQueryError
         ? (bookingsQueryError?.payload?.detail || bookingsQueryError?.payload?.message || bookingsQueryError?.message || 'Failed to load bookings')
@@ -40,7 +40,7 @@ function ProfilePage() {
     const cancelBookingMutation = useMutation({
         mutationFn: async (bookingId) => cancelBooking(bookingId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['bookings', customerId]})
+            await queryClient.invalidateQueries({queryKey: ['bookings', userId]})
             showSuccess('Booking cancelled')
         },
         onError: (error) => {

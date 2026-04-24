@@ -264,13 +264,13 @@ function StaffMyBookingsPage() {
                                                             </strong>
 
                                                             <div className="muted">
-                                                                Customer: {booking.customer?.user?.name || booking.customer?.name || "—"}
+                                                                Customer: {booking.user?.user?.name || booking.user?.name || "—"}
                                                             </div>
 
                                                             <div className="muted">
                                                                 Customer phone:{" "}
-                                                                {booking.customer?.user?.phoneNumber ||
-                                                                    booking.customer?.phoneNumber ||
+                                                                {booking.user?.user?.phoneNumber ||
+                                                                    booking.user?.phoneNumber ||
                                                                     "—"}
                                                             </div>
 

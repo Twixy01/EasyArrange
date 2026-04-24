@@ -5,6 +5,7 @@ export default function Button({
   variant = "primary",
   className = "",
   disabled = false,
+  ...rest
 }) {
   return (
     <button
@@ -12,6 +13,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled}
       className={`btn btn-${variant} ${className}`}
+      {...rest}
     >
       {children}
     </button>
