@@ -26,30 +26,31 @@ export default function ServiceCard({ service }) {
 
   return (
     <Card className="service-card">
-      <h4>{name}</h4>
-      {description && <p className="muted">{description}</p>}
-      <div className="service-meta">
-        {displayDuration != null && <span>{displayDuration} min</span>}
-        {price != null && <span style={{ marginLeft: 8 }}>{price} Ft</span>}
-      </div>
+      <div className="card-body service-card-body">
+        <h4>{name}</h4>
+        {description && <p className="muted service-card-description">{description}</p>}
+        <div className="service-meta">
+          {displayDuration != null && <span>{displayDuration} min</span>}
+          {price != null && <span>{price} Ft</span>}
+        </div>
 
-      <div style={{ marginTop: 12 }}>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => navigate('/booking', { state: { service } })}
-        >
-          Book
-        </button>
+        <div className="service-card-actions">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => navigate('/booking', { state: { service } })}
+          >
+            Book
+          </button>
 
-        <Link
-          to={`/staff`}
-          state={{ serviceId }}
-          className="btn btn-secondary"
-          style={{ marginLeft: 8 }}
-        >
-          View staff
-        </Link>
+          <Link
+            to={`/staff`}
+            state={{ serviceId }}
+            className="btn btn-secondary"
+          >
+            View staff
+          </Link>
+        </div>
       </div>
     </Card>
   )

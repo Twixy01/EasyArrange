@@ -15,7 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByStaffId(Long staffId);
 
-    List<Booking> findAllByCustomerId(Long customerId);
+    List<Booking> findAllByUserId(Long userId);
 
     @Query("FROM Booking b WHERE b.startDateTime >= :start AND b.endDateTime <= :end")
     List<Booking> findAllBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
@@ -23,8 +23,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("FROM Booking b WHERE b.staff.id = :staffId AND b.startDateTime >= :start AND b.endDateTime <= :end")
     List<Booking> findAllByStaffBetween(@Param("staffId") Long staffId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("FROM Booking b WHERE b.customer.id = :customerId AND b.startDateTime >= :start AND b.endDateTime <= :end")
-    List<Booking> findAllByCustomerBetween(@Param("customerId") Long customerId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    @Query("FROM Booking b WHERE b.user.id = :userId AND b.startDateTime >= :start AND b.endDateTime <= :end")
+    List<Booking> findAllByUserBetween(@Param("userId") Long userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("FROM Booking b WHERE b.status = :status")
     List<Booking> findAllBookingsByStatus(@Param ("status") BookingStatus status);
@@ -41,7 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             JOIN FETCH s.user
             LEFT JOIN FETCH s.services ss
             LEFT JOIN FETCH ss.service
-            JOIN FETCH b.customer
+            JOIN FETCH b.user
             JOIN FETCH b.service
             WHERE b.staff.id = :staffId
             AND :start < b.endDateTime

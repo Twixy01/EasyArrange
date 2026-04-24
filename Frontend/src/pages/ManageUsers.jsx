@@ -278,7 +278,7 @@ function ManageUsers() {
     }
 
     return (
-        <section className="section">
+        <section className="section manage-users-page">
             <div className="container">
                 <Card>
                     <div className="card-body">
@@ -372,8 +372,8 @@ function ManageUsers() {
                                                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                                                             {isEditing ? (
                                                                 <>
-                                                                    <button className="btn-primary" onClick={() => saveEdit(u.userId, u)} disabled={updateMutation.isLoading || (u.userId === user.userId && !(editValues.currentPassword && editValues.currentPassword.trim()))}>Save</button>
-                                                                    <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                                                                    <button className="btn btn-primary" onClick={() => saveEdit(u.userId, u)} disabled={updateMutation.isLoading || (u.userId === user.userId && !(editValues.currentPassword && editValues.currentPassword.trim()))}>Save</button>
+                                                                    <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
                                                                 </>
                                                             ) : (
                                                                 <>

@@ -3,7 +3,7 @@ import { salonApi } from "../../api/salonApi";
 
 export function useUpdateBookingStatus() {
   return useMutation({
-    mutationFn: ({ bookingId, bookingUpdateBody }) =>
-      salonApi.updateBookingStatus(bookingId, bookingUpdateBody),
+    mutationFn: ({ bookingId, bookingUpdateBody, isStaff }) =>
+      salonApi.updateBookingStatus(bookingId, bookingUpdateBody, isStaff),
   });
 }

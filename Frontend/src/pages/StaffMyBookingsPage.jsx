@@ -8,7 +8,7 @@ import { useBookingsByStaff } from "../hooks/queries/useBookingsByStaff";
 import { UIStateContext } from "../context/UIStateContext";
 import { useUpdateBookingStatus } from "../hooks/mutations/useUpdateBookingStatus";
 
-function StaffBookingsPage() {
+function StaffMyBookingsPage() {
     const { showError, showSuccess } = useContext(UIStateContext);
     const { user } = useAuth();
     const queryClient = useQueryClient();
@@ -106,7 +106,11 @@ function StaffBookingsPage() {
                 serviceId: booking.service?.serviceId,
                 status: nextStatus
             }
-            await updateBookingStatusMutation.mutateAsync({ bookingId, bookingUpdateBody: updateBody });
+            await updateBookingStatusMutation.mutateAsync({
+                bookingId,
+                bookingUpdateBody: updateBody, 
+                isStaff: user?.role?.name == "STAFF" || user?.role?.name == "ADMIN" 
+            });
 
             await queryClient.invalidateQueries({ queryKey: ["staffBookings", staffId] });
             await queryClient.invalidateQueries({ queryKey: ["bookingsByStaff", staffId] });
@@ -156,7 +160,11 @@ function StaffBookingsPage() {
                         serviceId: booking.service?.serviceId,
                         status: "COMPLETED",
                     };
-                    await updateBookingStatusMutation.mutateAsync({ bookingId, bookingUpdateBody: updateBody });
+                    await updateBookingStatusMutation.mutateAsync({
+                        bookingId,
+                        bookingUpdateBody: updateBody,
+                        isStaff: user?.role?.name == "STAFF" || user?.role?.name == "ADMIN"
+                    });
                 }
 
                 await queryClient.invalidateQueries({ queryKey: ["staffBookings", staffId] });
@@ -256,13 +264,13 @@ function StaffBookingsPage() {
                                                             </strong>
 
                                                             <div className="muted">
-                                                                Customer: {booking.customer?.user?.name || booking.customer?.name || "—"}
+                                                                Customer: {booking.user?.user?.name || booking.user?.name || "—"}
                                                             </div>
 
                                                             <div className="muted">
                                                                 Customer phone:{" "}
-                                                                {booking.customer?.user?.phoneNumber ||
-                                                                    booking.customer?.phoneNumber ||
+                                                                {booking.user?.user?.phoneNumber ||
+                                                                    booking.user?.phoneNumber ||
                                                                     "—"}
                                                             </div>
 
@@ -288,20 +296,23 @@ function StaffBookingsPage() {
                                                         >
                                                             <span className={statusClass}>{booking.status || "Unknown"}</span>
 
-                                                            <select
-                                                                value={selectedStatus}
-                                                                disabled={
-                                                                    updateBookingStatusMutation.isPending &&
-                                                                    updatingBookingId === bookingId
-                                                                }
-                                                                onChange={(e) => changeBookingStatus(booking, e.target.value)}
-                                                            >
-                                                                {allowedStatuses.map((statusOption) => (
-                                                                    <option key={statusOption} value={statusOption}>
-                                                                        {statusOption}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
+                                                            <div className="booking-status-control">
+                                                                <select
+                                                                    className="booking-status-select"
+                                                                    value={selectedStatus}
+                                                                    disabled={
+                                                                        updateBookingStatusMutation.isPending &&
+                                                                        updatingBookingId === bookingId
+                                                                    }
+                                                                    onChange={(e) => changeBookingStatus(booking, e.target.value)}
+                                                                >
+                                                                    {allowedStatuses.map((statusOption) => (
+                                                                        <option key={statusOption} value={statusOption}>
+                                                                            {statusOption.replace("_", " ")}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -318,4 +329,4 @@ function StaffBookingsPage() {
     );
 }
 
-export default StaffBookingsPage;
+export default StaffMyBookingsPage;

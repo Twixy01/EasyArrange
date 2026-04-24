@@ -25,7 +25,7 @@ public class BookingResponseMapper implements Function<Booking, BookingResponse>
         return new BookingResponse(
                 booking.getId(),
                 staffResponseMapper.apply(booking.getStaff()),
-                userResponseMapper.apply(booking.getCustomer()),
+                userResponseMapper.apply(booking.getUser()),
                 booking.getStartDateTime(),
                 booking.getEndDateTime(),
                 serviceResponseMapper.apply(booking.getService()),

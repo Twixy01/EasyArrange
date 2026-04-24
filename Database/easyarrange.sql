@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Ápr 23. 19:02
+-- Létrehozás ideje: 2026. Ápr 24. 17:32
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -34,7 +34,7 @@ DROP TABLE IF EXISTS `booking`;
 CREATE TABLE `booking` (
   `booking_id` bigint(20) NOT NULL,
   `staff_id` bigint(20) NOT NULL,
-  `customer_id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
   `start_datetime` datetime NOT NULL,
   `end_datetime` datetime NOT NULL,
   `service_id` bigint(20) NOT NULL,
@@ -45,25 +45,28 @@ CREATE TABLE `booking` (
 -- A tábla adatainak kiíratása `booking`
 --
 
-INSERT INTO `booking` (`booking_id`, `staff_id`, `customer_id`, `start_datetime`, `end_datetime`, `service_id`, `status`) VALUES
+INSERT INTO `booking` (`booking_id`, `staff_id`, `user_id`, `start_datetime`, `end_datetime`, `service_id`, `status`) VALUES
 (13, 1, 5, '2026-04-02 09:00:00', '2026-04-02 09:20:00', 10, 'COMPLETED'),
 (14, 5, 6, '2026-04-02 10:00:00', '2026-04-02 10:25:00', 2, 'COMPLETED'),
 (15, 2, 7, '2026-04-02 13:30:00', '2026-04-02 14:00:00', 5, 'COMPLETED'),
-(16, 4, 9, '2026-04-02 14:30:00', '2026-04-02 15:15:00', 9, 'BOOKED'),
-(17, 3, 5, '2026-04-03 09:00:00', '2026-04-03 10:00:00', 13, 'BOOKED'),
+(16, 4, 9, '2026-04-02 14:30:00', '2026-04-02 15:15:00', 9, 'COMPLETED'),
+(17, 3, 5, '2026-04-03 09:00:00', '2026-04-03 10:00:00', 13, 'COMPLETED'),
 (18, 1, 6, '2026-04-03 10:30:00', '2026-04-03 12:00:00', 3, 'COMPLETED'),
 (19, 2, 7, '2026-04-03 14:00:00', '2026-04-03 14:40:00', 1, 'COMPLETED'),
 (20, 5, 9, '2026-04-03 15:00:00', '2026-04-03 15:20:00', 10, 'CANCELLED'),
-(21, 4, 5, '2026-04-04 09:00:00', '2026-04-04 09:25:00', 2, 'BOOKED'),
+(21, 4, 5, '2026-04-04 09:00:00', '2026-04-04 09:25:00', 2, 'COMPLETED'),
 (22, 2, 6, '2026-04-04 11:30:00', '2026-04-04 12:15:00', 9, 'COMPLETED'),
 (23, 5, 7, '2026-04-04 12:30:00', '2026-04-04 13:00:00', 5, 'COMPLETED'),
 (24, 1, 9, '2026-04-05 10:00:00', '2026-04-05 11:30:00', 3, 'BOOKED'),
-(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'BOOKED'),
+(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'COMPLETED'),
 (36, 3, 3, '2026-04-07 09:00:00', '2026-04-07 10:00:00', 14, 'COMPLETED'),
 (37, 3, 3, '2026-04-07 10:00:00', '2026-04-07 11:30:00', 3, 'COMPLETED'),
 (38, 2, 3, '2026-04-08 09:00:00', '2026-04-08 09:40:00', 1, 'CANCELLED'),
-(55, 5, 3, '2026-04-21 09:00:00', '2026-04-21 09:25:00', 2, 'BOOKED'),
-(56, 3, 3, '2026-04-26 12:30:00', '2026-04-26 14:00:00', 3, 'BOOKED');
+(55, 5, 3, '2026-04-21 09:00:00', '2026-04-21 09:25:00', 2, 'COMPLETED'),
+(56, 3, 3, '2026-04-26 12:30:00', '2026-04-26 14:00:00', 3, 'BOOKED'),
+(57, 4, 3, '2026-04-25 13:00:00', '2026-04-25 13:25:00', 2, 'BOOKED'),
+(58, 3, 17, '2026-05-01 09:45:00', '2026-05-01 10:30:00', 12, 'BOOKED'),
+(59, 1, 3, '2026-04-24 14:15:00', '2026-04-24 15:45:00', 3, 'COMPLETED');
 
 -- --------------------------------------------------------
 
@@ -174,6 +177,7 @@ INSERT INTO `shift` (`shift_id`, `day`, `start_shift`, `end_shift`) VALUES
 (3, 'WEDNESDAY', '09:00:00', '18:00:00'),
 (4, 'THURSDAY', '09:00:00', '18:00:00'),
 (5, 'FRIDAY', '09:00:00', '18:00:00'),
+(24, 'SATURDAY', '09:00:00', '10:00:00'),
 (6, 'SATURDAY', '09:00:00', '14:00:00'),
 (23, 'SATURDAY', '09:00:00', '18:00:00'),
 (7, 'SUNDAY', '10:00:00', '14:00:00');
@@ -225,7 +229,6 @@ INSERT INTO `staff_service` (`staff_id`, `service_id`) VALUES
 (1, 4),
 (1, 10),
 (1, 11),
-(2, 1),
 (2, 2),
 (2, 3),
 (2, 4),
@@ -236,7 +239,6 @@ INSERT INTO `staff_service` (`staff_id`, `service_id`) VALUES
 (3, 12),
 (3, 13),
 (3, 14),
-(4, 1),
 (4, 2),
 (4, 4),
 (4, 7),
@@ -291,7 +293,7 @@ INSERT INTO `staff_shift` (`staff_id`, `shift_id`) VALUES
 (4, 7),
 (4, 19),
 (4, 21),
-(4, 23),
+(4, 24),
 (5, 1),
 (5, 2),
 (5, 3),
@@ -341,8 +343,8 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `phone_number`, `profile_picture
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD UNIQUE KEY `uq_booking_staff_start_end` (`staff_id`,`start_datetime`,`end_datetime`),
-  ADD KEY `fk_booking_customer` (`customer_id`),
+  ADD UNIQUE KEY `uq_booking_staff_start_end` (`staff_id`,`start_datetime`,`end_datetime`) USING BTREE,
+  ADD KEY `fk_booking_customer` (`user_id`),
   ADD KEY `fk_booking_service` (`service_id`);
 
 --
@@ -410,7 +412,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT a táblához `calendar_block`
@@ -428,13 +430,13 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT a táblához `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `service_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT a táblához `shift`
 --
 ALTER TABLE `shift`
-  MODIFY `shift_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `shift_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT a táblához `staff`
@@ -446,7 +448,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 

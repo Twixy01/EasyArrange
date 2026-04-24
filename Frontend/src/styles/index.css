@@ -342,7 +342,9 @@ textarea {
   padding: 0.4rem 0.65rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: rgba(17, 23, 43, 0.88);
+  color: var(--text);
+  backdrop-filter: blur(16px);
 }
 
 .admin-menu summary::-webkit-details-marker {
@@ -361,7 +363,8 @@ textarea {
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--surface);
+  background: rgba(17, 23, 43, 0.94);
+  backdrop-filter: blur(18px);
 }
 
 .desktop-nav .admin-menu-list {
@@ -375,6 +378,14 @@ textarea {
 .mobile-admin-menu .admin-menu-list {
   position: static;
   box-shadow: none;
+}
+
+[data-theme="light"] .admin-menu summary {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme="light"] .admin-menu-list {
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .hero {
@@ -477,6 +488,121 @@ textarea {
   background: rgba(239, 68, 68, 0.12); /* soft red */
   color: #fecaca;
   border-color: rgba(239, 68, 68, 0.2);
+}
+
+.staff-services-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(245, 158, 11, 0.07)),
+    var(--surface);
+  border: 1px solid var(--border);
+}
+
+.staff-services-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.staff-services-header span {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.staff-services-header strong {
+  min-width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.22);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.staff-service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.staff-service-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: 0.2s ease;
+}
+
+.staff-service-tag::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  flex-shrink: 0;
+}
+
+.staff-service-tag:hover {
+  transform: translateY(-1px);
+  border-color: rgba(124, 58, 237, 0.45);
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.staff-service-empty {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+
+.staff-availability-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.staff-availability-label {
+  display: block;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.staff-availability-date .calendar-block-input {
+  max-width: none;
+}
+
+.staff-availability-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.staff-availability-reason {
+  font-size: 0.82rem;
+  text-align: right;
 }
 
 /* Ensure calendar preview text has good contrast */
@@ -680,6 +806,9 @@ textarea {
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text);
 }
 
 .status-badge.booked {
@@ -1447,5 +1576,293 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     right: 12px;
     min-width: unset;
     max-width: unset;
+  }
+}
+
+/* Navbar grouped menus */
+.desktop-nav .admin-menu,
+.mobile-drawer .admin-menu {
+  transition: transform 0.2s ease;
+}
+
+.desktop-nav .admin-menu[open] summary,
+.mobile-drawer .admin-menu[open] summary {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(124, 58, 237, 0.12));
+}
+
+/* Services page / card spacing */
+.services-search-wrap {
+  margin-bottom: 1.25rem;
+}
+
+.services-search-input {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  outline: none;
+}
+
+.services-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
+}
+
+.service-card-body {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.35rem;
+}
+
+.service-card-description {
+  line-height: 1.5;
+  min-height: 48px;
+}
+
+.service-card-actions {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Staff bookings status selector */
+.booking-status-control {
+  position: relative;
+}
+
+.booking-status-select {
+  appearance: none;
+  min-width: 148px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.55), rgba(31, 41, 55, 0.35));
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.55rem 2rem 0.55rem 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
+.booking-status-control::after {
+  content: "▾";
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.booking-status-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
+}
+
+.booking-status-select:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.booking-status-select option {
+  background: #0b1020;
+  color: #f5f7ff;
+}
+
+[data-theme="light"] .booking-status-select {
+  color-scheme: light;
+}
+
+[data-theme="light"] .booking-status-select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* Change password page */
+.change-password-page .page {
+  display: grid;
+  place-items: center;
+}
+
+.change-password-card {
+  width: min(100%, 640px);
+  border-radius: 24px;
+}
+
+.change-password-header {
+  margin-bottom: 1rem;
+}
+
+.change-password-header h2 {
+  margin: 0.2rem 0 0.55rem;
+}
+
+.change-password-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.change-password-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.change-password-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.change-password-field label {
+  color: var(--text-soft);
+  font-weight: 700;
+}
+
+.change-password-field input {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.85rem 0.95rem;
+  outline: none;
+}
+
+.change-password-field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.change-password-actions {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+/* Manage pages - controls and cards */
+.btn-danger {
+  border: 1px solid rgba(239, 68, 68, 0.42);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.68);
+}
+
+.manage-users-page .card,
+.manage-services-page .card {
+  border-radius: 22px;
+}
+
+.manage-users-page .user-list-form fieldset,
+.manage-services-page .service-list-form fieldset {
+  border-radius: 16px;
+  border: 1px solid var(--border) !important;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1rem !important;
+}
+
+.manage-users-page input,
+.manage-users-page select,
+.manage-users-page textarea,
+.manage-services-page input,
+.manage-services-page select,
+.manage-services-page textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.7rem 0.8rem;
+  outline: none;
+}
+
+.manage-users-page select,
+.manage-services-page select {
+  color-scheme: dark;
+}
+
+.manage-users-page select option,
+.manage-services-page select option {
+  background: #11172b;
+  color: #f5f7ff;
+}
+
+[data-theme="light"] .manage-users-page select,
+[data-theme="light"] .manage-services-page select {
+  color-scheme: light;
+}
+
+[data-theme="light"] .manage-users-page select option,
+[data-theme="light"] .manage-services-page select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.manage-users-page input:focus,
+.manage-users-page select:focus,
+.manage-users-page textarea:focus,
+.manage-services-page input:focus,
+.manage-services-page select:focus,
+.manage-services-page textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.manage-users-page .muted,
+.manage-services-page .muted {
+  font-size: 0.92rem;
+}
+
+.manage-services-page .staff-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 0.45rem 0.4rem 0.7rem;
+}
+
+.manage-services-page .staff-chip.recent {
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.manage-services-page .staff-name {
+  font-weight: 700;
+}
+
+.manage-services-page .staff-select {
+  min-width: 210px;
+}
+
+@media (max-width: 700px) {
+  .service-card-actions {
+    flex-direction: column;
+  }
+
+  .change-password-actions {
+    flex-direction: column;
+  }
+
+  .change-password-actions .btn {
+    width: 100%;
   }
 }

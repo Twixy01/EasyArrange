@@ -38,10 +38,10 @@ export const salonApi = {
         return response.data;
     },
 
-    async createBooking({ staffId, customerId, startDateTime, endDateTime, serviceId }) {
+    async createBooking({ staffId, userId, startDateTime, endDateTime, serviceId }) {
         const bookingData = {
             staffId,
-            customerId,
+            userId,
             startDateTime,
             endDateTime,
             serviceId
@@ -92,8 +92,8 @@ export const salonApi = {
         return response.data;
     },
 
-    async getBookingsByCustomer(customerId) {
-        const response = await Axios.get(`${BASE_URL}/bookings/customer/${customerId}`);
+    async getBookingsByUser(userId) {
+        const response = await Axios.get(`${BASE_URL}/bookings/user/${userId}`);
         return response.data;
     },
 
@@ -107,8 +107,8 @@ export const salonApi = {
         return response.data;
     },
 
-    async updateBookingStatus(bookingId, bookingUpdateBody) {
-        const response = await Axios.put(`${BASE_URL}/bookings/${bookingId}`, bookingUpdateBody);
+    async updateBookingStatus(bookingId, bookingUpdateBody, isStaff) {
+        const response = await Axios.put(`${BASE_URL}/bookings/${bookingId}/${isStaff}`, bookingUpdateBody);
         return response.data;
     },
 

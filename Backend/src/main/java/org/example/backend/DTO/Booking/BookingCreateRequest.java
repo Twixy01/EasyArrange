@@ -9,8 +9,8 @@ public record BookingCreateRequest (
         @NotNull(message = "Staff ID must be specified")
         Long staffId,
 
-        @NotNull(message = "Customer ID must be specified")
-        Long customerId,
+        @NotNull(message = "User ID must be specified")
+        Long userId,
 
         @NotNull(message = "Booking time can't be null")
         LocalDateTime startDateTime,

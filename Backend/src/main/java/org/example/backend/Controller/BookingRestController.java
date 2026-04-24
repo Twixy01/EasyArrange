@@ -44,13 +44,13 @@ public class BookingRestController {
         return bookingService.findBookingsByStaffId(staffId);
     }
 
-    @GetMapping("/customer/{customerId}")
-    public List<BookingResponse> getByCustomer(@PathVariable("customerId") Long customerId) {
+    @GetMapping("/user/{userId}")
+    public List<BookingResponse> getByUser(@PathVariable("userId") Long userId) {
         try {
-            return bookingService.findBookingsByCustomerId(customerId);
+            return bookingService.findBookingsByUserId(userId);
         } catch (Exception ex) {
             // defensive: if something goes wrong while computing/updating bookings, don't fail the GET
-            System.err.println("Error while fetching bookings for customer " + customerId + ": " + ex.getMessage());
+            System.err.println("Error while fetching bookings for user " + userId + ": " + ex.getMessage());
             ex.printStackTrace();
             return Collections.emptyList();
         }
@@ -93,14 +93,14 @@ public class BookingRestController {
         return bookingService.create(request);
     }
 
-    @PutMapping("/{id}")
-    public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request) {
-        return bookingService.update(id, request);
+    @PutMapping("/{id}/{isStaff}")
+    public BookingResponse update(@PathVariable("id") Long id, @Valid @RequestBody BookingUpdateRequest request, @PathVariable("isStaff") Boolean isStaff) {
+        return bookingService.update(id, request, isStaff);
     }
 
     @PostMapping("/cancel/{id}")
-    public void delete(@PathVariable("id") Long id) {
-        bookingService.remove(id);
+    public void cancel(@PathVariable("id") Long id) {
+        bookingService.cancel(id);
     }
 
     @DeleteMapping("/{id}/hard")

@@ -42,12 +42,12 @@ function ServicesPage() {
           center
         />
 
-        <div style={{ marginBottom: 12 }}>
+        <div className="services-search-wrap">
           <input
+            className="services-search-input"
             placeholder="Search services"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
           />
         </div>
 

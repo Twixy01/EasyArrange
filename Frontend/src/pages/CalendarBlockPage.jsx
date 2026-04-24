@@ -271,8 +271,8 @@ export default function CalendarBlockPage() {
                             <div>
                               <strong>{formatDisplayDate(b.startDateTime)}</strong>
                               <div className="muted">Service: {b.service?.name || '—'}</div>
-                              <div className="muted">Customer: {b.customer?.name || '—'}</div>
-                              <div className="muted">Customer phone: {b.customer?.phoneNumber || '—'}</div>
+                              <div className="muted">Customer: {b.user?.name || '—'}</div>
+                              <div className="muted">Customer phone: {b.user?.phoneNumber || '—'}</div>
                             </div>
                             <div style={{
                               alignSelf: 'center',

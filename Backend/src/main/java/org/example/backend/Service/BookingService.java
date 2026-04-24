@@ -68,8 +68,8 @@ public class BookingService {
     }
 
     @Transactional
-    public List<BookingResponse> findBookingsByCustomerId(Long customerId) {
-        List<BookingResponse> bookings = bookingRepository.findAllByCustomerId(customerId).stream()
+    public List<BookingResponse> findBookingsByUserId(Long userId) {
+        List<BookingResponse> bookings = bookingRepository.findAllByUserId(userId).stream()
                 .map(booking -> {
                     BookingStatus currentStatus = booking.getStatus();
                     BookingStatus computedStatus = currentStatus;
@@ -91,7 +91,7 @@ public class BookingService {
                                 booking.getService().getId(),
                                 computedStatus.name()
                         );
-                        return update(booking.getId(), request);
+                        return update(booking.getId(), request, false);
                     }
 
                     // No update required, return mapped response
@@ -220,9 +220,9 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Staff with id " + bookingRequest.staffId() + " not found"));
         booking.setStaff(staff);
 
-        User customer = userRepository.findById(bookingRequest.customerId())
-                .orElseThrow(() -> new IllegalArgumentException("Customer with id " + bookingRequest.customerId() + " not found"));
-        booking.setCustomer(customer);
+        User user = userRepository.findById(bookingRequest.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + bookingRequest.userId() + " not found"));
+        booking.setUser(user);
 
         Service service = serviceRepository.findById(bookingRequest.serviceId())
                 .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));
@@ -236,7 +236,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse update(Long id, BookingUpdateRequest bookingRequest) {
+    public BookingResponse update(Long id, BookingUpdateRequest bookingRequest, Boolean isStaff) {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
@@ -255,7 +255,9 @@ public class BookingService {
             LocalDateTime now = LocalDateTime.now();
             // Block cancellation if the stored start is not after now + 24 hours (i.e. start <= now+24h)
             if (!originalStart.isAfter(now.plusHours(24))) {
-                throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
+                if (!isStaff){
+                    throw new IllegalArgumentException("Cannot cancel booking less than or equal to 24 hours before the start time");
+                }
             }
         }
 
@@ -274,7 +276,7 @@ public class BookingService {
 
 
     @Transactional
-    public void remove(Long id) {
+    public void cancel(Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Booking not found with id: " + id));
 

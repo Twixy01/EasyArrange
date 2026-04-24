@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import Card from '../components/common/Card'
+import Button from '../components/common/Button'
 import { useServices } from '../hooks/queries/useServices'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
@@ -37,8 +38,7 @@ function ManageServices() {
    // ref for create section so the top button can scroll to it
    const createRef = useRef(null)
    const goToCreate = () => {
-     createRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-     setTimeout(() => createRef.current?.querySelector('input')?.focus(), 300)
+     createRef.current?.querySelector('input')?.focus()
    }
 
    const createMutation = useMutation({
@@ -277,25 +277,62 @@ function ManageServices() {
    }
 
    return (
-     <section className="section">
+     <section className="section manage-services-page">
        <div className="container">
          <Card>
            <div className="card-body">
-             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+             <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
                <div>
                  <h2>Manage Services</h2>
-                 <p className="muted" style={{ marginTop: 6 }}>Below is a simple listing of services. You can create, edit and delete services here.</p>
+                 <p className="muted" style={{ marginTop: 6 }}>Create services, update details, and assign staff from one place.</p>
                </div>
-               <div>
+               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                  <Link to="/admin/my-staff" className="btn" style={{ marginRight: 8 }}>MY STAFF</Link>
-                 <button className="btn btn-primary" onClick={goToCreate} aria-label="Create new service" title="Create new service" style={{ padding: '0.6rem 1rem', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                     <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                   </svg>
-                   CREATE NEW SERVICE
-                 </button>
+                  <Button onClick={goToCreate} aria-label="Create new service" title="Create new service" style={{ padding: '0.6rem 1rem', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    CREATE NEW SERVICE
+                  </Button>
                </div>
              </div>
+
+             <fieldset ref={createRef} className="service-create-card" style={{ marginTop: 16, padding: 12, border: '1px solid var(--border)' }}>
+               <legend style={{ fontWeight: 600 }}>Create new service</legend>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                 <div>
+                   <label className="muted">Name</label>
+                   <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
+                   {!editingId && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
+                 </div>
+
+                 <div>
+                   <label className="muted">Duration (minutes)</label>
+                   <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
+                   {!editingId && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
+                 </div>
+
+                 <div style={{ gridColumn: '1 / -1' }}>
+                   <label className="muted">Description</label>
+                   <textarea value={newService.description} onChange={(e) => setNewService(v => ({ ...v, description: e.target.value }))} />
+                 </div>
+
+                 <div>
+                   <label className="muted">Price (numeric)</label>
+                   <input type="number" value={newService.price} onChange={(e) => setNewService(v => ({ ...v, price: e.target.value }))} />
+                 </div>
+
+                 <div>
+                   <label className="muted">Image URL</label>
+                   <input type="text" value={newService.image} onChange={(e) => setNewService(v => ({ ...v, image: e.target.value }))} />
+                 </div>
+
+                 <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <Button onClick={() => createNew()} disabled={createMutation.isLoading}>Create</Button>
+                 </div>
+
+               </div>
+             </fieldset>
 
              {isLoading && <p className="muted">Loading services...</p>}
 
@@ -305,7 +342,7 @@ function ManageServices() {
                    const isEditing = editingId === s.serviceId
                    const displayDuration = s.duration ?? s.durationMinutes ?? 0
                    return (
-                     <fieldset key={s.serviceId} className="service-card" style={{ marginBottom: 12, padding: 8, border: '1px solid #eee' }}>
+                     <fieldset key={s.serviceId} className="service-card service-edit-card" style={{ marginBottom: 12, padding: 8, border: '1px solid #eee' }}>
                        <legend style={{ fontWeight: 600 }}>{s.name || 'Unnamed'}</legend>
 
                        <div className="service-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'start' }}>
@@ -381,13 +418,13 @@ function ManageServices() {
                        <div className="service-actions" style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
                          {isEditing ? (
                            <>
-                             <button className="btn-primary" onClick={() => saveEdit(s.serviceId)} disabled={updateMutation.isLoading}>Save</button>
-                             <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                             <Button onClick={() => saveEdit(s.serviceId)} disabled={updateMutation.isLoading}>Save</Button>
+                             <Button variant="secondary" onClick={cancelEdit}>Cancel</Button>
                            </>
                          ) : (
                            <>
-                             <button className="btn" onClick={() => startEdit(s)}>Edit</button>
-                             <button className="btn-danger" onClick={() => handleDelete(s.serviceId)} disabled={deleteMutation.isLoading}>Delete</button>
+                              <Button variant="secondary" onClick={() => startEdit(s)}>Edit</Button>
+                              <Button variant="danger" onClick={() => handleDelete(s.serviceId)} disabled={deleteMutation.isLoading}>Delete</Button>
                            </>
                          )}
                        </div>
@@ -404,7 +441,7 @@ function ManageServices() {
                                  return (
                                    <div key={st.staffId} className={chipClass}>
                                      <div className="staff-name">{st.user?.name || st.user?.username || `Staff #${st.staffId}`}</div>
-                                     <button className="btn-danger" onClick={() => handleRemoveStaff(s.serviceId, st.staffId)}>Remove</button>
+                                      <Button variant="danger" onClick={() => handleRemoveStaff(s.serviceId, st.staffId)}>Remove</Button>
                                    </div>
                                  )
                                })}
@@ -428,43 +465,6 @@ function ManageServices() {
                      </fieldset>
                    )
                  })}
-
-                <fieldset style={{ marginTop: 16, padding: 8, border: '1px dashed #ddd' }}>
-                  <legend style={{ fontWeight: 600 }}>Create new service</legend>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    <div>
-                      <label className="muted">Name</label>
-                      <input type="text" value={newService.name} onChange={(e) => setNewService(v => ({ ...v, name: e.target.value }))} />
-                      {!editingId && fieldErrors?.name && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.name}</div>}
-                    </div>
-
-                    <div>
-                      <label className="muted">Duration (minutes)</label>
-                      <input type="number" value={newService.duration} onChange={(e) => setNewService(v => ({ ...v, duration: e.target.value }))} />
-                      {!editingId && fieldErrors?.duration && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.duration}</div>}
-                    </div>
-
-                     <div style={{ gridColumn: '1 / -1' }}>
-                       <label className="muted">Description</label>
-                       <textarea value={newService.description} onChange={(e) => setNewService(v => ({ ...v, description: e.target.value }))} />
-                     </div>
-
-                     <div>
-                       <label className="muted">Price (numeric)</label>
-                       <input type="number" value={newService.price} onChange={(e) => setNewService(v => ({ ...v, price: e.target.value }))} />
-                     </div>
-
-                     <div>
-                       <label className="muted">Image URL</label>
-                       <input type="text" value={newService.image} onChange={(e) => setNewService(v => ({ ...v, image: e.target.value }))} />
-                     </div>
-
-                     <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                       <button className="btn-primary" onClick={() => createNew()} disabled={createMutation.isLoading}>Create</button>
-                     </div>
-
-                   </div>
-                 </fieldset>
 
                </div>
              )}

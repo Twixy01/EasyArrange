@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public record BookingResponse (
     Long bookingId,
     StaffResponse staff,
-    UserResponse customer,
+    UserResponse user,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     LocalDateTime startDateTime,
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
