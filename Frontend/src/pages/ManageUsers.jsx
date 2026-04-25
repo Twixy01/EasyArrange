@@ -114,7 +114,7 @@ function ManageUsers() {
 
 
     const updateMutation = useMutation({
-        mutationFn: ({ userId, payload }) => updateUser(userId, payload),
+        mutationFn: ({ payload }) => updateUser(payload),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['users'] })
             showSuccess("User updated successfully.")

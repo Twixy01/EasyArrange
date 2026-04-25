@@ -1,8 +1,6 @@
 package org.example.backend.Controller;
 
 import org.example.backend.DTO.Booking.*;
-import org.example.backend.DTO.TimeSlot.AvailableSlotResponse;
-import org.example.backend.Model.entity.BookingStatus;
 import org.example.backend.Service.BookingService;
 
 import org.junit.jupiter.api.Test;
@@ -13,9 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -89,17 +85,18 @@ class BookingRestControllerTest {
         BookingUpdateRequest request = createUpdateRequest();
 
         BookingResponse response = createResponse();
-        when(bookingService.update(eq(1L), any())).thenReturn(response);
+        when(bookingService.update(eq(1L), any(), eq(false))).thenReturn(response);
 
-        controller.update(1L, request);
+        BookingResponse actual = controller.update(1L, request, false);
 
         ArgumentCaptor<BookingUpdateRequest> captor =
                 ArgumentCaptor.forClass(BookingUpdateRequest.class);
 
-        verify(bookingService).update(eq(1L), captor.capture());
+        verify(bookingService).update(eq(1L), captor.capture(), eq(false));
 
         BookingUpdateRequest captured = captor.getValue();
 
         assertThat(captured).isSameAs(request);
+        assertThat(actual).isSameAs(response);
     }
 }

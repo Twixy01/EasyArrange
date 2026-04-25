@@ -76,6 +76,21 @@ export default function ShiftsPage() {
         setOrderedShifts(newOrderedShifts);
     }, [shifts]);
 
+    if (!user) {
+        return (
+            <section className="section">
+                <div className="container">
+                    <Card>
+                        <div className="card-body">
+                            <h2>Not signed in</h2>
+                            <p className="muted">Please <Link to="/login">log in</Link> to access this page.</p>
+                        </div>
+                    </Card>
+                </div>
+            </section>
+        )
+    }
+
     if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") return (
         <section className="section">
             <div className="container">

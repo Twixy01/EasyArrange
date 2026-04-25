@@ -1,0 +1,97 @@
+.not-found-page {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.not-found-shell {
+	width: min(860px, 100%);
+	margin: 2rem auto;
+	padding: clamp(1.5rem, 4vw, 3rem);
+	border: 1px solid var(--border);
+	border-radius: 24px;
+	background:
+		linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+	box-shadow: var(--shadow);
+	backdrop-filter: blur(10px);
+	text-align: center;
+}
+
+.not-found-code {
+	font-size: clamp(3rem, 11vw, 8rem);
+	line-height: 0.95;
+	font-weight: 900;
+	letter-spacing: 0.04em;
+	margin-bottom: 0.75rem;
+	color: var(--text);
+	text-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+}
+
+.not-found-title {
+	margin: 0;
+	font-size: clamp(1.5rem, 3.6vw, 2.5rem);
+	line-height: 1.15;
+}
+
+.not-found-description {
+	max-width: 62ch;
+	margin: 1rem auto 0;
+	color: var(--text-soft);
+	font-size: clamp(0.98rem, 1.8vw, 1.08rem);
+}
+
+.not-found-url-box {
+	margin: 1.5rem auto 0;
+	width: min(100%, 680px);
+	padding: 0.9rem 1rem;
+	border: 1px solid var(--border);
+	border-radius: 14px;
+	background: var(--surface);
+	text-align: left;
+}
+
+.not-found-label {
+	display: inline-block;
+	margin-bottom: 0.35rem;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-soft);
+}
+
+.not-found-url-box code {
+	display: block;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	overflow-wrap: anywhere;
+	color: var(--text);
+}
+
+.not-found-actions {
+	margin-top: 1.5rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	justify-content: center;
+}
+
+.not-found-actions .btn {
+	min-width: 220px;
+}
+
+@media (max-width: 640px) {
+	.not-found-shell {
+		margin-top: 0.5rem;
+		border-radius: 18px;
+	}
+
+	.not-found-actions {
+		flex-direction: column;
+	}
+
+	.not-found-actions .btn {
+		width: 100%;
+		min-width: 0;
+	}
+}
+

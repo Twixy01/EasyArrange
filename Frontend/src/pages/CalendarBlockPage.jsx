@@ -1,4 +1,5 @@
 import { useMemo, useState, useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import SectionHeader from "../components/common/SectionHeader";
 import Card from "../components/common/Card";
@@ -12,7 +13,9 @@ import { UIStateContext } from "../context/UIStateContext.jsx";
 export default function CalendarBlockPage() {
   const { showSuccess, showError, showLoading, getErrorMessage, hideNotification } = useContext(UIStateContext);
 
-  const { staff } = useAuth();
+  const { user, staff } = useAuth();
+  const roleNameRaw = typeof user?.role === "string" ? user.role : user?.role?.name;
+  const roleNameUpper = roleNameRaw ? String(roleNameRaw).toUpperCase() : null;
   const staffId = useMemo(() => staff?.staffId, [staff]);
 
   const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -153,6 +156,36 @@ export default function CalendarBlockPage() {
     showError,
     getErrorMessage,
   ])
+
+  if (!user) {
+    return (
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Not signed in</h2>
+              <p className="muted">Please <Link to="/login">log in</Link> to access this page.</p>
+            </div>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+
+  if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") {
+    return (
+      <section className="section">
+        <div className="container">
+          <Card>
+            <div className="card-body">
+              <h2>Access denied</h2>
+              <p className="muted">You do not have permission to view this page.</p>
+            </div>
+          </Card>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section calendar-block-page">

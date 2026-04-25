@@ -1,0 +1,421 @@
+EASYARRANGE PROJEKT DOKUMENTACIO (AKTUALIS VERZIO)
+
+Ez a dokumentacio a jelenlegi kodallapot alapjan keszult az EasyArrange mappa tartalma szerint:
+- Frontend (React + Vite)
+- Backend (Spring Boot)
+- Database (MariaDB SQL dump)
+
+
+1. Mi a projekt celja a program alapjan
+Az EasyArrange egy szalon idopontfoglalasi es uzemeltetesi rendszer.
+Celja, hogy egyetlen rendszerben kezelje:
+- szolgaltatasokat,
+- munkatarsakat,
+- ugyfel foglalasokat,
+- muszakbeosztasokat,
+- valamint a staff idokizarasokat (time off / calendar block).
+
+A rendszer tobb szerepkort tamogat:
+- ADMIN
+- STAFF
+- CUSTOMER
+
+
+2. Specifikaciok
+Fobb uzleti kovetelmenyek:
+- Ugyfel regisztracio, bejelentkezes, profilkezeles.
+- Szolgaltatas + munkatars + datum + idosav alapu foglalas.
+- Staff sajat muszakjainak kezelese.
+- Staff sajat time off idoszakainak kezelese.
+- Foglalasi statusz valtoztatas (BOOKED, COMPLETED, NO_SHOW, CANCELLED).
+- Admin oldali user- es service-menedzsment.
+- Staff-service kapcsolatok adminisztralasa.
+- Utkozeskezeles foglalasok, muszakok es calendar blockok kozott.
+
+Nem funkcionalis kovetelmenyek:
+- REST API alapu backend.
+- SPA frontend.
+- Relacios adatbazis perzisztencia.
+- Backend validacio DTO-kon keresztul.
+- Egységes hibavalasz-struktura (ProblemDetail).
+
+
+3. Technologiak es fuggosegek
+Backend:
+- Java 21
+- Spring Boot 4.0.3
+- spring-boot-starter-data-jpa
+- spring-boot-starter-data-rest
+- spring-boot-starter-security
+- spring-boot-starter-thymeleaf
+- spring-boot-starter-webmvc
+- spring-boot-starter-validation
+- MariaDB JDBC driver
+- Jackson databind
+
+Frontend:
+- React 19.2.4
+- Vite 8.0.1
+- React Router DOM 7.14.0
+- Axios 1.14.0
+- @tanstack/react-query 5.96.2
+- Framer Motion 12.38.0
+- ESLint 9.39.4
+
+Adatbazis:
+- MariaDB/MySQL kompatibilis schema (utf8mb4, hungarian collation)
+
+
+4. Megvalositott funkciok
+Felhasznaloi funkciok:
+- Regisztracio es login.
+- Profil megtekintes/szerkesztes.
+- Jelszocsere kulon oldalon.
+- Foglalas letrehozasa.
+- Sajat foglalasok listazasa es lemondasa.
+
+Staff funkciok:
+- Sajat muszakbeosztas kezelese.
+- Sajat foglalasok kezelese.
+- Foglalas statusz frissites.
+- Time off blokk letrehozasa/torlese.
+
+Admin funkciok:
+- Felhasznalok listazasa, szerkesztese, torlese.
+- Szolgaltatasok letrehozasa, szerkesztese, torlese.
+- Staff-service hozzarendelesek kezelese.
+- My Staff nezet.
+
+UI/UX allapot (aktualis frontend):
+- Role-alapu menuk (Staff/Admin) a navbarban.
+- Mobil es desktop navigacio.
+- Globalis felugro notification komponens.
+- Szerkeszto oldalak (Manage Users / Manage Services) stilozott form kontrollokkal.
+
+
+5. Architektura bemutatasa
+A rendszer 3 retegu, kulon projektstrukturaval:
+
+1) Frontend (React SPA)
+- Oldalak route-okon keresztul:
+  /, /staff, /services, /about, /contact, /booking,
+  /login, /register, /profile, /profile/edit,
+  /profile/change-password,
+  /shifts, /time-off,
+  /staff/bookings,
+  /admin/users, /admin/services, /admin/my-staff
+- API kommunikacio Axios klienssel.
+- Server state kezeles React Query-vel.
+- UI allapotkezeles UIStateContext-ben.
+
+2) Backend (Spring Boot REST)
+- Controller reteg: REST vegpontok.
+- Service reteg: uzleti logika (elerheto slotok, utkozesek, statuszfrissites).
+- Repository reteg: JPA adateleres.
+- DTO reteg: keresi/valasz modellek.
+- Exception kezeles: ProblemDetail alapu hibastruktura.
+
+3) Database (MariaDB)
+- Relacios schema FK-kal, egyedi korlatozasokkal.
+- Kapcsolotablak staff-service es staff-shift kapcsolatokhoz.
+
+
+6. Telepitesi kornyezet
+Ajanlott fejlesztoi kornyezet:
+- Windows / Linux / macOS
+- JDK 21
+- Maven (vagy Maven Wrapper)
+- Node.js 20+ es npm
+- MariaDB 10.x vagy kompatibilis MySQL
+
+Alap URL-ek fejlesztesben:
+- Backend: http://localhost:8080
+- Frontend: http://localhost:5173
+- API base: http://localhost:8080/api
+
+
+7. Telepitesi utmutato
+1. Database
+- Importald a Database/easyarrange.sql fajlt.
+- Ellenorizd, hogy az easyarrange adatbazis letrejott.
+
+2. Backend inditasa
+- Lepj a Backend mappaba.
+- Windows: .\mvnw.cmd spring-boot:run
+- Linux/macOS: ./mvnw spring-boot:run
+
+3. Frontend inditasa
+- Lepj a Frontend mappaba.
+- npm install
+- npm run dev
+
+4. Hasznalat
+- Nyisd meg: http://localhost:5173
+
+
+8. Elofeltetelek
+- Mukodo MariaDB szerver.
+- Helyes DB beallitasok a Backend/src/main/resources/application.properties fajlban.
+- Nyitott portok: 8080 (backend), 5173 (frontend).
+- SQL import sikeres lefutasa.
+
+
+9. Fo funkciok hasznalata
+1. Regisztracio
+- /register oldalon uj felhasznalo letrehozasa.
+
+2. Bejelentkezes
+- /login oldalon email + jelszo.
+
+3. Foglalas
+- /booking oldalon szolgaltatas + staff + datum + idosav valasztasa.
+
+4. Profil
+- /profile oldalon sajat adatok es foglalasok.
+- /profile/change-password oldalon jelszocsere.
+
+5. Staff funkciok
+- /shifts oldalon muszakkezeles.
+- /time-off oldalon idokizarasok kezelese.
+- /staff/bookings oldalon statuszkezeles.
+
+6. Admin funkciok
+- /admin/users felhasznalokhoz.
+- /admin/services szolgaltatasokhoz.
+- /admin/my-staff staff kezeleshez.
+
+
+10. API dokumentacio
+API prefix: /api
+Formatum: JSON
+Tartalomtipus: application/json
+
+Fo eroforrasok:
+- users
+- services
+- staff
+- shifts
+- staff-shifts
+- staff-services
+- bookings
+- calendar-blocks
+
+
+11. Végpontok és metódusok
+Itt a "metódus" két dolgot jelent:
+- HTTP metódus (GET, POST, PUT, DELETE),
+- valamint a backend oldali controller-metódus neve.
+
+Users:
+- GET /api/users -> UserRestController.getUsers() -> userService.findAll() (szűréssel)
+- GET /api/users/{userId} -> UserRestController.getUser() -> userService.findUserById()
+- POST /api/users/auth/login -> UserRestController.findUserForLogin() -> userService.findUserForLogin()
+- POST /api/users/register -> UserRestController.addUser() -> userService.create()
+- PUT /api/users/me -> UserRestController.updateUser() -> userService.update()
+- PUT /api/users/admin/{userId} -> UserRestController.updateUserAsAdmin() -> userService.updateAsAdmin()
+- DELETE /api/users/{userId} -> UserRestController.deleteUser() -> userService.remove()
+
+Services:
+- GET /api/services -> ServiceRestController.getServices() -> serviceService.findAll()
+- GET /api/services/ordered -> ServiceRestController.getServicesOrderedByName() -> serviceService.findAllOrderedByName()
+- GET /api/services/{serviceId} -> ServiceRestController.getServiceById() -> serviceService.findById()
+- GET /api/services/name/{serviceName} -> ServiceRestController.getServiceByName() -> serviceService.findByName()
+- POST /api/services/create -> ServiceRestController.createService() -> serviceService.create()
+- PUT /api/services/{serviceId} -> ServiceRestController.updateService() -> serviceService.update()
+- DELETE /api/services/{serviceId} -> ServiceRestController.deleteService() -> serviceService.remove()
+
+Staff:
+- GET /api/staff -> StaffRestController.getStaff() -> staffService.findAll()
+- GET /api/staff/{staffId} -> StaffRestController.getStaffById() -> staffService.findById()
+- GET /api/staff/user/{userId} -> StaffRestController.getStaffByUserId() -> staffService.findStaffByUserId()
+- POST /api/staff/register -> StaffRestController.addStaff() -> staffService.create()
+- DELETE /api/staff/{staffId} -> StaffRestController.deleteStaff() -> staffService.remove()
+
+Shifts:
+- GET /api/shifts -> ShiftRestController.getAll() -> shiftService.findAll()
+- GET /api/shifts/{id} -> ShiftRestController.getById() -> shiftService.findShiftById()
+- GET /api/shifts/start?time=HH:mm -> ShiftRestController.getByStart() -> shiftService.findAllShiftsByStartShift()
+- GET /api/shifts/end?time=HH:mm -> ShiftRestController.getByEnd() -> shiftService.findAllShiftsByEndShift()
+- POST /api/shifts/create -> ShiftRestController.create() -> shiftService.create()
+- PUT /api/shifts/{id} -> ShiftRestController.update() -> shiftService.updateResponse()
+- DELETE /api/shifts/{id} -> ShiftRestController.delete() -> shiftService.remove()
+
+Staff-Shifts:
+- GET /api/staff-shifts -> StaffShiftRestController.getAllStaffShifts() -> staffShiftService.findAll()
+- GET /api/staff-shifts/{staffId}/{shiftId} -> StaffShiftRestController.getStaffShiftById() -> staffShiftService.findById()
+- GET /api/staff-shifts/staff/{staffId} -> StaffShiftRestController.getShiftsByStaffId() -> staffShiftService.findAllShiftsByStaffId()
+- GET /api/staff-shifts/shift/{shiftId} -> StaffShiftRestController.getStaffByShiftId() -> staffShiftService.findAllStaffByShiftId()
+- GET /api/staff-shifts/staff/{staffId}/between?start=HH:mm&end=HH:mm -> StaffShiftRestController.getAllShiftsByStaffIdBetweenShifts() -> staffShiftService.findAllShiftsByStaffIdBetweenShifts()
+- POST /api/staff-shifts/update -> StaffShiftRestController.updateStaffShift() -> staffShiftService.updateShiftForStaffDay()
+- POST /api/staff-shifts/create -> StaffShiftRestController.createStaffShift() -> staffShiftService.create()
+- DELETE /api/staff-shifts/{staffId}/{shiftId} -> StaffShiftRestController.deleteStaffShift() -> staffShiftService.remove()
+
+Staff-Services:
+- GET /api/staff-services -> StaffServiceRestController.getAllStaffServices() -> staffServiceJunctionService.findAll()
+- GET /api/staff-services/{staffId}/{serviceId} -> StaffServiceRestController.getStaffServiceById() -> staffServiceJunctionService.findById()
+- GET /api/staff-services/staff/{staffId} -> StaffServiceRestController.getServicesByStaffId() -> staffServiceJunctionService.findAllServicesByStaffId()
+- GET /api/staff-services/service/{serviceId} -> StaffServiceRestController.getStaffByServiceId() -> staffServiceJunctionService.findAllStaffByServiceId()
+- POST /api/staff-services/create -> StaffServiceRestController.createStaffService() -> staffServiceJunctionService.create()
+- DELETE /api/staff-services/{staffId}/{serviceId} -> StaffServiceRestController.deleteStaffService() -> staffServiceJunctionService.remove()
+
+Bookings:
+- GET /api/bookings -> BookingRestController.getAll() -> bookingService.findAll()
+- GET /api/bookings/{id} -> BookingRestController.getById() -> bookingService.findBookingById()
+- GET /api/bookings/staff/{staffId} -> BookingRestController.getByStaff() -> bookingService.findBookingsByStaffId()
+- GET /api/bookings/user/{userId} -> BookingRestController.getByUser() -> bookingService.findBookingsByUserId()
+- GET /api/bookings/between?start=...&end=... -> BookingRestController.getBetween() -> bookingService.findBookingsBetween()
+- GET /api/bookings/staff/{staffId}/available-slots?selectedDate=YYYY-MM-DD&serviceId={id} -> BookingRestController.getAvailableSlots() -> bookingService.getAvailableSlots()
+- GET /api/bookings/status?status=BOOKED|CANCELLED|COMPLETED|NO_SHOW -> BookingRestController.getByStatus() -> bookingService.findBookingsByStatus()
+- GET /api/bookings/staff/{staffId}/overlaps?start=...&end=... -> BookingRestController.getOverlaps() -> bookingService.findOverlappingBookings()
+- POST /api/bookings/create -> BookingRestController.create() -> bookingService.create()
+- PUT /api/bookings/{id}/{isStaff} -> BookingRestController.update() -> bookingService.update()
+- POST /api/bookings/cancel/{id} -> BookingRestController.cancel() -> bookingService.cancel()
+- DELETE /api/bookings/{id}/hard -> BookingRestController.hardDelete() -> bookingService.hardRemove()
+
+Calendar Blocks:
+- GET /api/calendar-blocks -> CalendarBlockRestController.getCalendarBlocks() -> calendarBlockService.findAllByOrderByStartDateTimeAsc()
+- GET /api/calendar-blocks/{calendarBlockId} -> CalendarBlockRestController.getCalendarBlockById() -> calendarBlockService.findCalendarBlockById()
+- GET /api/calendar-blocks/staff/{staffId} -> CalendarBlockRestController.getCalendarBlocksByStaffId() -> calendarBlockService.findCalendarBlocksByStaffId()
+- GET /api/calendar-blocks/between?start=...&end=... -> CalendarBlockRestController.getCalendarBlocksBetween() -> calendarBlockService.findCalendarBlocksBetween()
+- GET /api/calendar-blocks/staff/{staffId}/between?start=...&end=... -> CalendarBlockRestController.getCalendarBlocksByStaffBetween() -> calendarBlockService.findCalendarBlocksByStaffBetween()
+- POST /api/calendar-blocks/create -> CalendarBlockRestController.createCalendarBlock() -> calendarBlockService.create()
+- PUT /api/calendar-blocks/{calendarBlockId} -> CalendarBlockRestController.updateCalendarBlock() -> calendarBlockService.update()
+- DELETE /api/calendar-blocks/{calendarBlockId} -> CalendarBlockRestController.deleteCalendarBlock() -> calendarBlockService.remove()
+
+Megjegyzés:
+- A User controllerben az update végpont a /api/users/me, nem /api/users/{userId}.
+- A Staff-Services törlésnél a controller annotáció jelenleg @DeleteMapping("{staffId}/{serviceId}") (vezető perjel nélkül), ezért érdemes ott kódszinten egységesíteni a többi végponthoz.
+
+
+12. Keres- es valaszformatumok
+Jellemzo keresmintak:
+
+POST /api/users/register
+{
+  "name": "Teszt Elek",
+  "email": "teszt@example.com",
+  "phoneNumber": "+36301234567",
+  "password": "titok123",
+  "role": { "roleId": 2, "name": "CUSTOMER" }
+}
+
+POST /api/users/auth/login
+{
+  "email": "teszt@example.com",
+  "password": "titok123"
+}
+
+POST /api/bookings/create
+{
+  "staffId": 2,
+  "userId": 5,
+  "startDateTime": "2026-05-10T10:00",
+  "endDateTime": "2026-05-10T10:40",
+  "serviceId": 1
+}
+
+PUT /api/bookings/{id}/{isStaff}
+{
+  "startDateTime": "2026-05-10T10:00",
+  "endDateTime": "2026-05-10T10:40",
+  "serviceId": 1,
+  "status": "COMPLETED"
+}
+
+POST /api/calendar-blocks/create
+{
+  "title": "Time off",
+  "startDateTime": "2026-05-11T00:00",
+  "endDateTime": "2026-05-12T00:00",
+  "staffId": 3
+}
+
+Jellemzo valaszobjektumok:
+- UserResponse: userId, name, email, phoneNumber, profilePicture, role
+- ServiceResponse: serviceId, name, price, duration, description, image
+- StaffResponse: staffId, user, title, bio, services
+- BookingResponse: bookingId, staff, customer, startDateTime, endDateTime, service, status
+- CalendarBlockResponse: calendarBlockId, title, startDateTime, endDateTime, staff
+
+
+13. Hitelesites es hibakezeles
+Hitelesites:
+- Backend oldalon HTTP Basic be van kapcsolva.
+- SecurityConfig jelenleg globalisan permitAll szaballyal fut (/**).
+- Session policy: STATELESS.
+- Frontenden talalhato Bearer token header-kepzes, de backend oldali Bearer validacio nincs teljeskoruen kenyszeritve.
+
+CORS:
+- Engedelyezett originok fejlesztesben:
+  - http://localhost:5173
+  - http://localhost:3000
+
+Hibakezeles:
+- ProblemDetail alapu valaszok.
+- Tipikus HTTP kodok: 400, 403, 404, 409, 415, 500.
+- Validacios hibaknal fieldErrors/parameterErrors is visszaterhet.
+
+
+14. Adatbazis dokumentacio
+Adatbazis neve: easyarrange
+Karakterkeszlet: utf8mb4
+Kollacio: utf8mb4_hungarian_ci
+
+Fo tabl ak:
+- role
+- user
+- staff
+- service
+- shift
+- booking
+- calendar_block
+- staff_service
+- staff_shift
+
+Uzleti szerepek:
+- role: szerepkor torzs
+- user: felhasznalo torzs
+- staff: user-bol staff profil
+- service: szolgaltatasok
+- shift: altalanos muszak idointervallum
+- booking: konkret foglalasok
+- calendar_block: staff idokizarasok
+- staff_service: staff-service kapcsolat
+- staff_shift: staff-shift kapcsolat
+
+
+15. Adatbazis sema es kapcsolatok
+Kapcsolatok:
+- role (1) -> (N) user
+  user.role_id -> role.role_id
+
+- user (1) -> (0..1) staff
+  staff.user_id UNIQUE -> user.user_id
+
+- staff (N) <-> (N) service a staff_service tablan keresztul
+  staff_service.staff_id -> staff.staff_id
+  staff_service.service_id -> service.service_id
+
+- staff (N) <-> (N) shift a staff_shift tablan keresztul
+  staff_shift.staff_id -> staff.staff_id
+  staff_shift.shift_id -> shift.shift_id
+
+- booking kapcsolatok
+  booking.staff_id -> staff.staff_id
+  booking.user_id -> user.user_id
+  booking.service_id -> service.service_id
+
+- calendar_block kapcsolat
+  calendar_block.staff_id -> staff.staff_id
+
+Fontosabb integritasi szabalyok:
+- booking egyedi kulcs: (staff_id, start_datetime, end_datetime)
+- calendar_block egyedi kulcs: (staff_id, start_datetime, end_datetime)
+- shift egyedi kulcs: (day, start_shift, end_shift)
+- role.name egyedi
+- service.name egyedi
+- user.email egyedi
+
+
+Aktualis megjegyzes
+- A Frontend es Backend API wrapperben lathato nehany elt ero endpoint-hasznalat. Uj fejlesztesnel mindig a backend controller vegpontjait tekintsd forrasigazsagnak.

@@ -11,6 +11,9 @@ import { useUpdateBookingStatus } from "../hooks/mutations/useUpdateBookingStatu
 function StaffMyBookingsPage() {
     const { showError, showSuccess } = useContext(UIStateContext);
     const { user } = useAuth();
+    const roleNameRaw = typeof user?.role === 'string' ? user.role : user?.role?.name;
+    const roleNameUpper = roleNameRaw ? String(roleNameRaw).toUpperCase() : null;
+    
     const queryClient = useQueryClient();
     const futureStatuses = ["BOOKED", "NO_SHOW", "CANCELLED"];
     const pastStatuses = ["COMPLETED", "NO_SHOW", "CANCELLED"];
@@ -109,7 +112,7 @@ function StaffMyBookingsPage() {
             await updateBookingStatusMutation.mutateAsync({
                 bookingId,
                 bookingUpdateBody: updateBody, 
-                isStaff: user?.role?.name == "STAFF" || user?.role?.name == "ADMIN" 
+                isStaff: roleNameUpper === "STAFF" || roleNameUpper === "ADMIN"
             });
 
             await queryClient.invalidateQueries({ queryKey: ["staffBookings", staffId] });
@@ -163,7 +166,7 @@ function StaffMyBookingsPage() {
                     await updateBookingStatusMutation.mutateAsync({
                         bookingId,
                         bookingUpdateBody: updateBody,
-                        isStaff: user?.role?.name == "STAFF" || user?.role?.name == "ADMIN"
+                        isStaff: roleNameUpper === "STAFF" || roleNameUpper === "ADMIN"
                     });
                 }
 
@@ -198,7 +201,7 @@ function StaffMyBookingsPage() {
         );
     }
 
-    if (user?.role?.name !== "STAFF" && user?.role?.name !== "ADMIN") {
+    if (roleNameUpper !== "STAFF" && roleNameUpper !== "ADMIN") {
         return (
             <section className="section">
                 <div className="container">

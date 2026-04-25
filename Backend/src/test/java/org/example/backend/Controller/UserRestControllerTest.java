@@ -2,7 +2,6 @@ package org.example.backend.Controller;
 
 import org.example.backend.DTO.Role.RoleResponse;
 import org.example.backend.DTO.User.*;
-import org.example.backend.Model.entity.User;
 import org.example.backend.Service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -27,9 +28,6 @@ class UserRestControllerTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private UserResponseMapper userResponseMapper;
 
     @InjectMocks
     private UserRestController controller;
@@ -120,12 +118,17 @@ class UserRestControllerTest {
     void testUpdateUser_sendsCorrectDto() {
         UserUpdateRequest request = createUserUpdateRequest();
         UserResponse response = createResponse(1L, "updated@example.com");
-        when(userService.update(eq(1L), any())).thenReturn(response);
+        UserDetails principal = User.withUsername("me@example.com")
+                .password("ignored")
+                .authorities("ROLE_CUSTOMER")
+                .build();
 
-        UserResponse actual = controller.updateUser(1L, request);
+        when(userService.update(eq("me@example.com"), any())).thenReturn(response);
+
+        UserResponse actual = controller.updateUser(principal, request);
 
         ArgumentCaptor<UserUpdateRequest> captor = ArgumentCaptor.forClass(UserUpdateRequest.class);
-        verify(userService).update(eq(1L), captor.capture());
+        verify(userService).update(eq("me@example.com"), captor.capture());
 
         assertThat(captor.getValue()).isSameAs(request);
         assertThat(actual).isSameAs(response);
@@ -152,4 +155,3 @@ class UserRestControllerTest {
         verify(userService).remove(1L);
     }
 }
-
