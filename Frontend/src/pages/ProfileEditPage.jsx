@@ -101,7 +101,7 @@ function ProfileEditPage() {
         role: { roleId: roleId, name: roleName }
       }
 
-      const updated = await updateUser(resolvedUserId, payload)
+      const updated = await updateUser(payload)
 
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token: token }

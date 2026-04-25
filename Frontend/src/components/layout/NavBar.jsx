@@ -112,9 +112,9 @@ function NavBar() {
                         <details className="admin-menu" ref={staffMenuDesktopRef} onToggle={handleRoleMenuToggle('staff')}>
                             <summary>Staff</summary>
                             <div className="admin-menu-list">
-                                <NavLink to="/shifts" onClick={closeRoleMenus}>My Shifts</NavLink>
+                                <NavLink to="/staff/shifts" onClick={closeRoleMenus}>My Shifts</NavLink>
                                 <NavLink to="/staff/bookings" onClick={closeRoleMenus}>My Bookings</NavLink>
-                                <NavLink to="/time-off" onClick={closeRoleMenus}>Time Off</NavLink>
+                                <NavLink to="/staff/time-off" onClick={closeRoleMenus}>Time Off</NavLink>
                             </div>
                         </details>
                     ) : null}
@@ -181,9 +181,9 @@ function NavBar() {
                         <details className="admin-menu mobile-admin-menu" ref={staffMenuMobileRef} onToggle={handleRoleMenuToggle('staff')}>
                             <summary>Staff</summary>
                             <div className="admin-menu-list">
-                                <NavLink to="/shifts" onClick={closeAllMenus}>My Shifts</NavLink>
+                                <NavLink to="/staff/shifts" onClick={closeAllMenus}>My Shifts</NavLink>
                                 <NavLink to="/staff/bookings" onClick={closeAllMenus}>My Bookings</NavLink>
-                                <NavLink to="/time-off" onClick={closeAllMenus}>Time Off</NavLink>
+                                <NavLink to="/staff/time-off" onClick={closeAllMenus}>Time Off</NavLink>
                             </div>
                         </details>
                     ) : null}

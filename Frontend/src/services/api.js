@@ -61,7 +61,7 @@ export const api = {
 
     async updateUser(userId, userPayload) {
         return request(() =>
-            Axios.put(`${BASE_URL}/users/${userId}`, userPayload, {
+            Axios.put(`${BASE_URL}/users/me`, userPayload, {
                 headers: getAuthHeaders(true)
             })
         );
@@ -162,7 +162,7 @@ export function resolveMediaUrl(path) {
 }
 
 export const getUser = (userId) => api.getUser(userId);
-export const updateUser = (userId, userPayload) => api.updateUser(userId, userPayload);
+export const updateUser = (userPayload) => api.updateUser(userPayload);
 export const adminUpdateUser = (userId, userPayload) => api.adminUpdateUser(userId, userPayload);
 export const updateBooking = (bookingId, bookingPayload) => api.updateBooking(bookingId, bookingPayload);
 export const cancelBooking = (bookingId) => api.cancelBooking(bookingId);

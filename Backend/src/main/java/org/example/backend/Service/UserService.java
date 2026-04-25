@@ -85,9 +85,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse update(Long userId, UserUpdateRequest userDto) {
+    public UserResponse update(String userEmail, UserUpdateRequest userDto) {
 
-        User existingUser = userRepository.findById(userId)
+        User existingUser = userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found!"));
 
         if (!passwordEncoder.matches(userDto.currentPassword(), existingUser.getPassword())) {

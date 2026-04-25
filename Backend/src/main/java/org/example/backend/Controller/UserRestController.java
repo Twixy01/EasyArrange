@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Positive;
 import org.example.backend.DTO.User.*;
 import org.example.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
@@ -20,12 +22,10 @@ import java.util.stream.Collectors;
 public class UserRestController {
 
     private final UserService userService;
-    private final UserResponseMapper userResponseMapper;
 
     @Autowired
-    public UserRestController(UserService userService, UserResponseMapper userResponseMapper) {
+    public UserRestController(UserService userService) {
         this.userService = userService;
-        this.userResponseMapper = userResponseMapper;
     }
 
     @GetMapping()
@@ -44,23 +44,7 @@ public class UserRestController {
     public UserResponse getUser(@PathVariable("userId") Long userId) {
         return userService.findUserById(userId);
     }
-
-    @GetMapping("/staff")
-    public List<UserResponse> getStaffUsers() {
-        return userService.findAllStaff().stream()
-                .map(userResponseMapper)
-                .collect(Collectors.toList());
-    }
-    @GetMapping("/customers")
-    public List<UserResponse> getCustomerUsers() {
-        return userService.findAllCustomers().stream()
-                .map(userResponseMapper)
-                .collect(Collectors.toList());
-    }
-    /*@GetMapping("/staff/{staffId}")
-    public UserResponse getStaffUserById(@PathVariable("staffId") @Positive Long staffId) {
-        return userService.findUserById(staffService.findById(staffId));
-    }*/
+    
     @PostMapping("/auth/login")
     public UserResponse findUserForLogin(@Valid @RequestBody UserLoginRequest user) {
         return userService.findUserForLogin(user);
@@ -71,9 +55,9 @@ public class UserRestController {
         return userService.create(userDto);
     }
 
-    @PutMapping("/{userId}")
-    public UserResponse updateUser(@Valid @PathVariable("userId") @Positive Long userId, @Valid @RequestBody UserUpdateRequest userDto) {
-        return userService.update(userId, userDto);
+    @PutMapping("/me")
+    public UserResponse updateUser(@AuthenticationPrincipal UserDetails user, @Valid @RequestBody UserUpdateRequest userDto) {
+        return userService.update(user.getUsername(), userDto);
     }
 
     @PutMapping("/admin/{userId}")
