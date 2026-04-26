@@ -6,8 +6,9 @@ import { useUsers } from '../hooks/queries/useUsers'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateUser, deleteUser, adminUpdateUser } from '../services/api'
+import { updateUser, deleteUser, adminUpdateUser, createStaff, deleteStaffByUserId, getStaffByUserId } from '../services/api'
 import { UIStateContext } from '../context/UIStateContext'
+import avatarPlaceholder from '../assets/avatar-placeholder.png'
 
 function ManageUsers() {
     const { showSuccess, showError, getErrorMessage } = useContext(UIStateContext)
@@ -202,14 +203,27 @@ function ManageUsers() {
         )
     }
 
-    const startEdit = (u) => {
+    const startEdit = async (u) => {
         const roleObj = {
             roleId: u.normalizedRole?.roleId ?? null,
             name: u.normalizedRole?.roleName || u.role?.name || (typeof u.role === 'string' ? u.role : '')
         }
         setEditingId(u.userId)
-        setEditValues({ name: u.name || '', email: u.email || '', phoneNumber: u.phoneNumber ?? u.phone ?? '', role: roleObj, currentPassword: '', newPassword: '' })
+        setEditValues({ name: u.name || '', email: u.email || '', phoneNumber: u.phoneNumber ?? u.phone ?? '', role: roleObj, currentPassword: '', newPassword: '', staffTitle: '', staffBio: '' })
         setFieldErrors(null)
+
+        if (String(roleObj?.name || ID_TO_NAME[Number(roleObj?.roleId)] || '').toUpperCase() === 'STAFF') {
+            try {
+                const staff = await getStaffByUserId(u.userId)
+                setEditValues((v) => ({
+                    ...v,
+                    staffTitle: staff?.title || '',
+                    staffBio: staff?.bio || ''
+                }))
+            } catch {
+                // If no staff record is found, keep fields empty and let save flow handle creation.
+            }
+        }
     }
 
     const cancelEdit = () => {
@@ -217,6 +231,10 @@ function ManageUsers() {
         setEditValues({})
         setFieldErrors(null)
     }
+
+    const resolveRoleName = (u) => String(u?.normalizedRole?.roleName || u?.role?.name || u?.role || '').toUpperCase()
+
+    const isSelectedRoleStaff = String(editValues?.role?.name || ID_TO_NAME[Number(editValues?.role?.roleId)] || '').toUpperCase() === 'STAFF'
 
     const saveEdit = async (userId, originalUser) => {
         const name = (editValues.name || '').trim()
@@ -238,13 +256,29 @@ function ManageUsers() {
             return
         }
 
+        const originalRoleName = resolveRoleName(originalUser)
+        const selectedRoleName = String(roleObj?.name || ID_TO_NAME[Number(roleObj?.roleId)] || '').toUpperCase()
+        const becameStaff = selectedRoleName === 'STAFF' && originalRoleName !== 'STAFF'
+        const leftStaff = originalRoleName === 'STAFF' && selectedRoleName !== 'STAFF'
+
+        const staffTitle = (editValues.staffTitle || '').trim()
+        const staffBio = (editValues.staffBio || '').trim()
+        if (becameStaff && (!staffTitle || !staffBio)) {
+            setFieldErrors({
+                ...(fieldErrors || {}),
+                ...(staffTitle ? {} : { staffTitle: 'Title is required when role is STAFF' }),
+                ...(staffBio ? {} : { staffBio: 'Bio is required when role is STAFF' })
+            })
+            return
+        }
+
         const payload = {
             name,
             email: originalUser.email,
             phoneNumber: originalUser.phoneNumber,
             currentPassword: (originalUser.userId === user.userId) ? editValues.currentPassword : undefined,
             newPassword: null,
-            profilePicture: originalUser.profilePicture,
+            profilePicture: originalUser.profilePicture || avatarPlaceholder,
             role: roleObj
         }
 
@@ -255,6 +289,16 @@ function ManageUsers() {
                 await adminUpdateMutation.mutateAsync({ userId, payload })
             } else {
                 await updateMutation.mutateAsync({ userId, payload })
+            }
+
+            if (becameStaff) {
+                await createStaff({ userId, title: staffTitle, bio: staffBio })
+                await queryClient.invalidateQueries({ queryKey: ['staff'] })
+            }
+
+            if (leftStaff) {
+                await deleteStaffByUserId(userId)
+                await queryClient.invalidateQueries({ queryKey: ['staff'] })
             }
         } catch (err) {
             const payloadErr = err?.payload || err?.response?.data
@@ -352,6 +396,21 @@ function ManageUsers() {
                                                             <label className="muted">Phone</label>
                                                             <input type="text" value={isEditing ? (editValues.phoneNumber || '') : (u.phoneNumber ?? '')} readOnly />
                                                         </div>
+
+                                                        {isEditing && isSelectedRoleStaff && (
+                                                            <>
+                                                                <div>
+                                                                    <label className="muted">Staff title</label>
+                                                                    <input type="text" value={editValues.staffTitle || ''} onChange={(e) => setEditValues(v => ({ ...v, staffTitle: e.target.value }))} placeholder="e.g. Senior Stylist" />
+                                                                    {fieldErrors?.staffTitle && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.staffTitle}</div>}
+                                                                </div>
+                                                                <div>
+                                                                    <label className="muted">Staff bio</label>
+                                                                    <input type="text" value={editValues.staffBio || ''} onChange={(e) => setEditValues(v => ({ ...v, staffBio: e.target.value }))} placeholder="Short professional bio" />
+                                                                    {fieldErrors?.staffBio && <div className="form-error" style={{ marginTop: 6 }}>{fieldErrors.staffBio}</div>}
+                                                                </div>
+                                                            </>
+                                                        )}
 
                                                         {/* show currentPassword only when editing your own account */}
                                                         {isEditing && u.userId === user.userId && (

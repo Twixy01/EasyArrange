@@ -131,6 +131,38 @@ export const api = {
         return request(() =>
             Axios.delete(`${BASE_URL}/staff-services/${staffId}/${serviceId}`, { headers: getAuthHeaders() })
         );
+    },
+
+    async createStaff(payload) {
+        // payload: { userId, title, bio }
+        return request(() =>
+            Axios.post(`${BASE_URL}/staff/register`, payload, { headers: getAuthHeaders(true) })
+        );
+    },
+
+    async getStaffByUserId(userId) {
+        return request(() =>
+            Axios.get(`${BASE_URL}/staff/user/${userId}`, { headers: getAuthHeaders() })
+        );
+    },
+
+    async deleteStaff(staffId) {
+        return request(() =>
+            Axios.delete(`${BASE_URL}/staff/${staffId}`, { headers: getAuthHeaders() })
+        );
+    },
+
+    async deleteStaffByUserId(userId) {
+        try {
+            const staff = await api.getStaffByUserId(userId);
+            if (!staff?.staffId) return null;
+            return api.deleteStaff(staff.staffId);
+        } catch (error) {
+            if (error?.status === 404) {
+                return null;
+            }
+            throw error;
+        }
     }
 };
 
@@ -145,7 +177,7 @@ export function resolveMediaUrl(path) {
         // If the path had a protocol (http/https), return as-is
         if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
         // Otherwise fall through and manually prefix BASE_URL
-    } catch (_) {
+    } catch {
         // ignore
     }
     // If path starts with a leading slash, prefix with server origin + '/api' trimmed
@@ -176,3 +208,6 @@ export const deleteService = (serviceId) => api.deleteService(serviceId);
 // staff-service exports
 export const createStaffService = (payload) => api.createStaffService(payload);
 export const deleteStaffService = (staffId, serviceId) => api.deleteStaffService(staffId, serviceId);
+export const createStaff = (payload) => api.createStaff(payload);
+export const getStaffByUserId = (userId) => api.getStaffByUserId(userId);
+export const deleteStaffByUserId = (userId) => api.deleteStaffByUserId(userId);
