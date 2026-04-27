@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Ápr 24. 17:32
+-- Létrehozás ideje: 2026. Ápr 27. 10:19
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -38,7 +38,8 @@ CREATE TABLE `booking` (
   `start_datetime` datetime NOT NULL,
   `end_datetime` datetime NOT NULL,
   `service_id` bigint(20) NOT NULL,
-  `status` enum('BOOKED','CANCELLED','COMPLETED','NO_SHOW') NOT NULL
+  `status` enum('BOOKED','CANCELLED','COMPLETED','NO_SHOW') NOT NULL,
+  `active_booking_key` tinyint(4) GENERATED ALWAYS AS (case when `status` <> 'CANCELLED' then 1 else NULL end) STORED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
@@ -63,10 +64,12 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `user_id`, `start_datetime`, `e
 (37, 3, 3, '2026-04-07 10:00:00', '2026-04-07 11:30:00', 3, 'COMPLETED'),
 (38, 2, 3, '2026-04-08 09:00:00', '2026-04-08 09:40:00', 1, 'CANCELLED'),
 (55, 5, 3, '2026-04-21 09:00:00', '2026-04-21 09:25:00', 2, 'COMPLETED'),
-(56, 3, 3, '2026-04-26 12:30:00', '2026-04-26 14:00:00', 3, 'BOOKED'),
-(57, 4, 3, '2026-04-25 13:00:00', '2026-04-25 13:25:00', 2, 'BOOKED'),
+(56, 3, 3, '2026-04-26 12:30:00', '2026-04-26 14:00:00', 3, 'COMPLETED'),
+(57, 4, 3, '2026-04-25 13:00:00', '2026-04-25 13:25:00', 2, 'COMPLETED'),
 (58, 3, 17, '2026-05-01 09:45:00', '2026-05-01 10:30:00', 12, 'BOOKED'),
-(59, 1, 3, '2026-04-24 14:15:00', '2026-04-24 15:45:00', 3, 'COMPLETED');
+(59, 1, 3, '2026-04-24 14:15:00', '2026-04-24 15:45:00', 3, 'COMPLETED'),
+(60, 4, 18, '2026-05-18 10:00:00', '2026-05-18 10:25:00', 2, 'CANCELLED'),
+(61, 1, 18, '2026-04-25 09:00:00', '2026-04-25 09:40:00', 1, 'BOOKED');
 
 -- --------------------------------------------------------
 
@@ -332,7 +335,8 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `phone_number`, `profile_picture
 (8, 'Kata', 'kata@gmail.com', '+36201231234', 'https://plus.unsplash.com/premium_photo-1688572454849-4348982edf7d?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$6iem3vobGKAV544xacyY0u1yjYMJroz0oJYyB7UrUAa2GMTKTzcm2', 3),
 (9, 'David', 'david@gmail.com', '+36203211234', NULL, '$2a$10$gKDCShf2gjGAgqbzBRowyOVs2LxesOhYA/htp1uQ/zMZuawo/8U4a', 2),
 (10, 'Sofia', 'sofia@gmail.com', '+36301112222', 'https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', '$2a$10$OFCvSwISm1wpKNarsMku1eKM4t/9nDEZbhMMFGw5/liQ0LdYNpN6W', 3),
-(15, 'Dalma12', 'dalma@gmail.com', '+36302221234', 'https://m.media-amazon.com/images/M/MV5BMjM4MzE0MGItY2U4OS00MTU5LTgwNWUtYzMxZjMzMTQ5Yjg1XkEyXkFqcGc@._V1_.jpg', '$2a$10$ExlJpH3oxzZGNrmlEB7jN.YNaslYQQQMx.G9ubVglPb7vIHl5gU66', 2);
+(15, 'Dalma12', 'dalma@gmail.com', '+36302221234', 'https://m.media-amazon.com/images/M/MV5BMjM4MzE0MGItY2U4OS00MTU5LTgwNWUtYzMxZjMzMTQ5Yjg1XkEyXkFqcGc@._V1_.jpg', '$2a$10$ExlJpH3oxzZGNrmlEB7jN.YNaslYQQQMx.G9ubVglPb7vIHl5gU66', 2),
+(18, 'Aladár', 'aladar@gmail.com', '+36301234567', NULL, '$2a$10$gHxw1h8he/AaNTDq46tSD.Zx720ZPSab6vT3S2trhusf.E/3XF8au', 2);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -343,7 +347,7 @@ INSERT INTO `user` (`user_id`, `name`, `email`, `phone_number`, `profile_picture
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD UNIQUE KEY `uq_booking_staff_start_end` (`staff_id`,`start_datetime`,`end_datetime`) USING BTREE,
+  ADD UNIQUE KEY `uq_active_booking_slot` (`staff_id`,`start_datetime`,`end_datetime`,`active_booking_key`),
   ADD KEY `fk_booking_customer` (`user_id`),
   ADD KEY `fk_booking_service` (`service_id`);
 
@@ -412,7 +416,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT a táblához `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `booking_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT a táblához `calendar_block`
@@ -448,7 +452,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT a táblához `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
