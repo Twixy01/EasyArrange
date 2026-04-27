@@ -55,9 +55,9 @@ public class UserRestController {
         return userService.create(userDto);
     }
 
-    @PutMapping("/me")
-    public UserResponse updateUser(@AuthenticationPrincipal UserDetails user, @Valid @RequestBody UserUpdateRequest userDto) {
-        return userService.update(user.getUsername(), userDto);
+    @PutMapping("/{userId}")
+    public UserResponse updateUser(@PathVariable("userId") @Positive Long userId, @Valid @RequestBody UserUpdateRequest userDto) {
+        return userService.update(userId, userDto);
     }
 
     @PutMapping("/admin/{userId}")

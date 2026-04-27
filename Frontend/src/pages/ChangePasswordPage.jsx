@@ -59,7 +59,7 @@ export default function ChangePasswordPage() {
         newPassword: form.newPassword
       }
       console.debug('ChangePassword payload', payload)
-      const updated = await updateUser(payload)
+      const updated = await updateUser(userId, payload)
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token }
       try { login(newUser) } catch { /* ignore */ }

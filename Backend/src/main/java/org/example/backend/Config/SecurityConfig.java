@@ -41,8 +41,7 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(authorize -> authorize
-
-                        .anyRequest().permitAll()
+                    .anyRequest().permitAll()
 //                // CORS preflight
 //                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 

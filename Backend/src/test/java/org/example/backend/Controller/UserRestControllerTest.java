@@ -11,7 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -118,17 +121,12 @@ class UserRestControllerTest {
     void testUpdateUser_sendsCorrectDto() {
         UserUpdateRequest request = createUserUpdateRequest();
         UserResponse response = createResponse(1L, "updated@example.com");
-        UserDetails principal = User.withUsername("me@example.com")
-                .password("ignored")
-                .authorities("ROLE_CUSTOMER")
-                .build();
+        when(userService.update(eq(1L), any())).thenReturn(response);
 
-        when(userService.update(eq("me@example.com"), any())).thenReturn(response);
-
-        UserResponse actual = controller.updateUser(principal, request);
+        UserResponse actual = controller.updateUser(1L, request);
 
         ArgumentCaptor<UserUpdateRequest> captor = ArgumentCaptor.forClass(UserUpdateRequest.class);
-        verify(userService).update(eq("me@example.com"), captor.capture());
+        verify(userService).update(eq(1L), captor.capture());
 
         assertThat(captor.getValue()).isSameAs(request);
         assertThat(actual).isSameAs(response);
