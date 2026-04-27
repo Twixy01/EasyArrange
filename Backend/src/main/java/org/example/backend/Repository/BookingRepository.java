@@ -46,6 +46,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             WHERE b.staff.id = :staffId
             AND :start < b.endDateTime
             AND :end > b.startDateTime
+            AND b.activeBookingKey = 1
     """)
     List<Booking> findAllOverlaps(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
 
@@ -54,6 +55,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         FROM Booking b WHERE b.staff.id = :staffId
                 AND :start < b.endDateTime
                 AND :end > b.startDateTime
+                AND b.activeBookingKey = 1
     """)
     boolean existsOverlapping(@Param("staffId")Long staffId, @Param("start")LocalDateTime start, @Param("end")LocalDateTime end);
 
@@ -62,6 +64,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         FROM Booking b WHERE b.staff.id = :staffId
                 AND b.startDateTime = :start
                 AND b.endDateTime = :end
+                AND b.activeBookingKey = 1
     """)
     boolean existsByStaffIdAndStartDateTimeAndEndDateTime(Long staffId, LocalDateTime start, LocalDateTime end);
 }

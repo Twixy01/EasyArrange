@@ -43,6 +43,9 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private BookingStatus status = BookingStatus.BOOKED;
+    // Computed in DB: 1 for non-cancelled rows, NULL for cancelled rows.
+    @Column(name = "active_booking_key", insertable = false, updatable = false)
+    private Byte activeBookingKey;
 
     public boolean isCancelled() {
         return status.isCancelled();
@@ -119,5 +122,13 @@ public class Booking {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public Byte getActiveBookingKey() {
+        return activeBookingKey;
+    }
+
+    public void setActiveBookingKey(Byte activeBookingKey) {
+        this.activeBookingKey = activeBookingKey;
     }
 }
