@@ -3,11 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Ápr 27. 10:19
+-- Létrehozás ideje: 2026. Ápr 28. 09:56
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -51,7 +50,6 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `user_id`, `start_datetime`, `e
 (14, 5, 6, '2026-04-02 10:00:00', '2026-04-02 10:25:00', 2, 'COMPLETED'),
 (15, 2, 7, '2026-04-02 13:30:00', '2026-04-02 14:00:00', 5, 'COMPLETED'),
 (16, 4, 9, '2026-04-02 14:30:00', '2026-04-02 15:15:00', 9, 'COMPLETED'),
-(17, 3, 5, '2026-04-03 09:00:00', '2026-04-03 10:00:00', 13, 'COMPLETED'),
 (18, 1, 6, '2026-04-03 10:30:00', '2026-04-03 12:00:00', 3, 'COMPLETED'),
 (19, 2, 7, '2026-04-03 14:00:00', '2026-04-03 14:40:00', 1, 'COMPLETED'),
 (20, 5, 9, '2026-04-03 15:00:00', '2026-04-03 15:20:00', 10, 'CANCELLED'),
@@ -59,14 +57,9 @@ INSERT INTO `booking` (`booking_id`, `staff_id`, `user_id`, `start_datetime`, `e
 (22, 2, 6, '2026-04-04 11:30:00', '2026-04-04 12:15:00', 9, 'COMPLETED'),
 (23, 5, 7, '2026-04-04 12:30:00', '2026-04-04 13:00:00', 5, 'COMPLETED'),
 (24, 1, 9, '2026-04-05 10:00:00', '2026-04-05 11:30:00', 3, 'BOOKED'),
-(25, 3, 5, '2026-04-05 12:00:00', '2026-04-05 13:00:00', 14, 'COMPLETED'),
-(36, 3, 3, '2026-04-07 09:00:00', '2026-04-07 10:00:00', 14, 'COMPLETED'),
-(37, 3, 3, '2026-04-07 10:00:00', '2026-04-07 11:30:00', 3, 'COMPLETED'),
 (38, 2, 3, '2026-04-08 09:00:00', '2026-04-08 09:40:00', 1, 'CANCELLED'),
 (55, 5, 3, '2026-04-21 09:00:00', '2026-04-21 09:25:00', 2, 'COMPLETED'),
-(56, 3, 3, '2026-04-26 12:30:00', '2026-04-26 14:00:00', 3, 'COMPLETED'),
 (57, 4, 3, '2026-04-25 13:00:00', '2026-04-25 13:25:00', 2, 'COMPLETED'),
-(58, 3, 17, '2026-05-01 09:45:00', '2026-05-01 10:30:00', 12, 'BOOKED'),
 (59, 1, 3, '2026-04-24 14:15:00', '2026-04-24 15:45:00', 3, 'COMPLETED'),
 (60, 4, 18, '2026-05-18 10:00:00', '2026-05-18 10:25:00', 2, 'CANCELLED'),
 (61, 1, 18, '2026-04-25 09:00:00', '2026-04-25 09:40:00', 1, 'BOOKED');
@@ -453,7 +446,44 @@ ALTER TABLE `staff`
 --
 ALTER TABLE `user`
   MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-SET FOREIGN_KEY_CHECKS=1;
+
+--
+-- Megkötések a kiírt táblákhoz
+--
+
+--
+-- Megkötések a táblához `booking`
+--
+ALTER TABLE `booking`
+  ADD CONSTRAINT `booking_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `booking_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `booking_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `calendar_block`
+--
+ALTER TABLE `calendar_block`
+  ADD CONSTRAINT `calendar_block_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `staff`
+--
+ALTER TABLE `staff`
+  ADD CONSTRAINT `staff_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `staff_service`
+--
+ALTER TABLE `staff_service`
+  ADD CONSTRAINT `staff_service_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `staff_service_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Megkötések a táblához `staff_shift`
+--
+ALTER TABLE `staff_shift`
+  ADD CONSTRAINT `staff_shift_shift` FOREIGN KEY (`shift_id`) REFERENCES `shift` (`shift_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `staff_shift_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

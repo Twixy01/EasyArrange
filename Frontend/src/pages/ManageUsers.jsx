@@ -313,6 +313,10 @@ function ManageUsers() {
 
     const handleDelete = async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return
+        if (users.find(u => u.userId === userId).role?.name === 'STAFF') {
+            showError("Cannot delete a user with STAFF role. Change the role before deleting.")
+            return
+        }
         try {
             await deleteMutation.mutateAsync(userId)
             showSuccess("User deleted successfully.")

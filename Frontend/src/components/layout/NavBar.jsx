@@ -125,6 +125,7 @@ function NavBar() {
                             <div className="admin-menu-list">
                                 <NavLink to="/admin/users" onClick={closeRoleMenus}>Manage Users</NavLink>
                                 <NavLink to="/admin/services" onClick={closeRoleMenus}>Manage Services</NavLink>
+                                <NavLink to="/admin/my-staff" onClick={closeRoleMenus}>My Staff</NavLink>
                             </div>
                         </details>
                     )}
@@ -194,6 +195,7 @@ function NavBar() {
                             <div className="admin-menu-list">
                                 <NavLink to="/admin/users" onClick={closeAllMenus}>Manage Users</NavLink>
                                 <NavLink to="/admin/services" onClick={closeAllMenus}>Manage Services</NavLink>
+                                <NavLink to="/admin/my-staff" onClick={closeAllMenus}>My Staff</NavLink>
                             </div>
                         </details>
                     )}
