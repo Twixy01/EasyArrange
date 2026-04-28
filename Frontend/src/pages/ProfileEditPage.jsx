@@ -1,21 +1,22 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
 import { updateUser } from '../services/api'
+import { UIStateContext } from '../context/UIStateContext'
 
 function ProfileEditPage() {
+  const { showError } = useContext(UIStateContext)
   const { user, login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    phoneNumber: user?.phoneNumber || user?.phone || '',
+    phoneNumber: user?.phoneNumber || '',
     profilePicture: user?.profilePicture || '',
     currentPassword: ''
   })
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(null)
 
   if (!user) {
     return (
@@ -44,17 +45,16 @@ function ProfileEditPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
 
     if (!form.name || !form.email || !form.currentPassword) {
-      setError('Name, email and current password are required')
+      showError('Name, email and current password are required')
       return
     }
 
     // validate phone client-side if provided
     const phoneTrim = form.phoneNumber ? String(form.phoneNumber).trim() : ''
     if (phoneTrim !== '' && !hungarianPhoneRegex.test(phoneTrim)) {
-      setError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
+      showError('Invalid phone number. Use Hungarian format like +36123456789 or 06123456789.')
       return
     }
 
@@ -63,7 +63,7 @@ function ProfileEditPage() {
     try {
       const resolvedUserId = user.userId
       if (!resolvedUserId) {
-        setError('Cannot determine user id for update')
+        showError('Cannot determine user id for update')
         setSaving(false)
         return
       }
@@ -101,7 +101,7 @@ function ProfileEditPage() {
         role: { roleId: roleId, name: roleName }
       }
 
-      const updated = await updateUser(payload)
+      const updated = await updateUser(resolvedUserId, payload)
 
       const token = (() => { try { return localStorage.getItem('token') } catch { return null } })()
       const newUser = { ...(updated || {}), token: token }
@@ -123,7 +123,7 @@ function ProfileEditPage() {
           userMessage = p.message
         }
       }
-      setError(userMessage)
+      showError(userMessage)
     } finally {
       setSaving(false)
     }
@@ -165,8 +165,6 @@ function ProfileEditPage() {
                     <input name="currentPassword" type="password" value={form.currentPassword} onChange={handleChange} required />
                   </div>
                 </div>
-
-                {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
 
                 <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
                   <button type="button" onClick={handleCancel} className="btn btn-secondary">Cancel</button>

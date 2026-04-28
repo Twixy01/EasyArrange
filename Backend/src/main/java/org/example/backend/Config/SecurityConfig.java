@@ -41,8 +41,7 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(authorize -> authorize
-
-                        .anyRequest().permitAll()
+                    .anyRequest().permitAll()
 //                // CORS preflight
 //                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
@@ -141,6 +140,7 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
+                "http://localhost:5174",
                 "http://localhost:3000"
         ));
 

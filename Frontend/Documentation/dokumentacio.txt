@@ -91,6 +91,8 @@ UI/UX allapot (aktualis frontend):
 - Mobil es desktop navigacio.
 - Globalis felugro notification komponens.
 - Szerkeszto oldalak (Manage Users / Manage Services) stilozott form kontrollokkal.
+- Teljeskoru UX korlatozas a vedett oldalakhoz (bejelentkezes + szerepkor ellenorzes oldalszinten).
+- Ervenytelen URL eseten dedikalt 404 Not Found oldal jelenik meg.
 
 
 5. Architektura bemutatasa
@@ -101,9 +103,10 @@ A rendszer 3 retegu, kulon projektstrukturaval:
   /, /staff, /services, /about, /contact, /booking,
   /login, /register, /profile, /profile/edit,
   /profile/change-password,
-  /shifts, /time-off,
+  /staff/shifts, /staff/time-off,
   /staff/bookings,
-  /admin/users, /admin/services, /admin/my-staff
+  /admin/users, /admin/services, /admin/my-staff,
+  valamint wildcard route: * (NotFoundPage)
 - API kommunikacio Axios klienssel.
 - Server state kezeles React Query-vel.
 - UI allapotkezeles UIStateContext-ben.
@@ -175,8 +178,8 @@ Alap URL-ek fejlesztesben:
 - /profile/change-password oldalon jelszocsere.
 
 5. Staff funkciok
-- /shifts oldalon muszakkezeles.
-- /time-off oldalon idokizarasok kezelese.
+- /staff/shifts oldalon muszakkezeles.
+- /staff/time-off oldalon idokizarasok kezelese.
 - /staff/bookings oldalon statuszkezeles.
 
 6. Admin funkciok
@@ -340,10 +343,9 @@ Jellemzo valaszobjektumok:
 
 13. Hitelesites es hibakezeles
 Hitelesites:
-- Backend oldalon HTTP Basic be van kapcsolva.
-- SecurityConfig jelenleg globalisan permitAll szaballyal fut (/**).
-- Session policy: STATELESS.
-- Frontenden talalhato Bearer token header-kepzes, de backend oldali Bearer validacio nincs teljeskoruen kenyszeritve.
+- A backendben a HTTP Basic be van kapcsolva, de a jelenlegi SecurityConfig minden végpontot permitAll-ra állít.
+- Ez azt jelenti, hogy jelen állapotban a jogosultságellenőrzés nagyrészt frontend oldali UX-korlátozásokra épül.
+- A frontend localStorage-ben tárol user- és tokenadatot, de a Bearer token validáció backend oldalon jelenleg nincs teljes körűen kikényszerítve.
 
 CORS:
 - Engedelyezett originok fejlesztesben:

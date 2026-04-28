@@ -240,6 +240,7 @@ public class BookingService {
 
         LocalDateTime start = bookingRequest.startDateTime();
         LocalDateTime end = bookingRequest.endDateTime();
+        BookingStatus requestedStatus = BookingStatus.valueOf(bookingRequest.status());
 
         if (!start.isBefore(end)) {
             throw new IllegalArgumentException("Start datetime must be before end datetime");
@@ -250,7 +251,7 @@ public class BookingService {
 
         // If the client attempts to cancel the booking, enforce the 24-hour rule against
         // the currently stored start datetime to prevent bypassing by changing startDateTime
-        if (BookingStatus.CANCELLED.name().equals(bookingRequest.status())) {
+        if (requestedStatus == BookingStatus.CANCELLED) {
             LocalDateTime originalStart = existing.getStartDateTime();
             LocalDateTime now = LocalDateTime.now();
             // Block cancellation if the stored start is not after now + 24 hours (i.e. start <= now+24h)
@@ -261,6 +262,14 @@ public class BookingService {
             }
         }
 
+        if (Boolean.TRUE.equals(isStaff)
+                && existing.getStatus() == BookingStatus.CANCELLED
+                && requestedStatus == BookingStatus.BOOKED
+                && (calendarBlockRepository.existsOverlapping(existing.getStaff().getId(), start, end)
+                || bookingRepository.existsOverlapping(existing.getStaff().getId(), start, end))) {
+            throw new IllegalArgumentException("The specified time overlaps with a calendar block or booking for staff id " + existing.getStaff().getId());
+        }
+
         // apply updates from request
         bookingUpdateRequestMapper.accept(existing, bookingRequest);
 
@@ -268,7 +277,7 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("Service with id " + bookingRequest.serviceId() + " not found"));
         existing.setService(service);
 
-        existing.setStatus(BookingStatus.valueOf(bookingRequest.status()));
+        existing.setStatus(requestedStatus);
 
         bookingRepository.save(existing);
         return bookingResponseMapper.apply(existing);
