@@ -141,6 +141,10 @@ public class UserService {
 
     @Transactional
     public void remove(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found!"));
+        if (user.getRole().getName().equals("STAFF")){
+            throw new IllegalArgumentException("To delete a staff, change the role to CUSTOMER");
+        }
         userRepository.deleteById(userId);
     }
 

@@ -13,6 +13,12 @@ export default function Home() {
   const { data: services = [], error: servicesError } = useServices();
   const { data: staff = [], error: staffError } = useStaff();
 
+  const safeImgSrc = (value) => {
+    if (typeof value !== 'string') return value ?? null;
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  };
+
   useEffect(() => {
     if (servicesError){
       showError(servicesError?.message ?? "Failed to load services.");
@@ -75,7 +81,7 @@ export default function Home() {
           <div className="grid cards-3">
             {services.map((service) => (
               <Card key={service.serviceId} className="service-card">
-                <img src={service.image} alt={service.name} />
+                <img src={safeImgSrc(service.image)} alt={service.name} />
                 <div className="card-body">
                   <h3>{service.name}</h3>
                   <p>{service.description}</p>
@@ -102,7 +108,7 @@ export default function Home() {
             {staff.map((member) => (
               <Card key={member.staffId} className="staff-card">
                 <img
-                  src={member.user?.profilePicture || avatarPlaceholder}
+                  src={safeImgSrc(member.user?.profilePicture) ?? avatarPlaceholder}
                   alt={member.user?.name}
                 />
                 <div className="card-body">
