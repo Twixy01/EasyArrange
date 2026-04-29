@@ -5,8 +5,9 @@ import { useServices } from '../hooks/queries/useServices'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createService, updateService, deleteService, createStaffService, deleteStaffService } from '../services/api'
-import { salonApi } from '../api/salonApi'
+import { createService, updateService, deleteService } from '../api/serviceApi'
+import { createStaffService, deleteStaffService } from '../api/staffApi'
+import { staffApi } from '../api/staffApi'
 import { UIStateContext } from '../context/UIStateContext'
 
 function ManageServices() {
@@ -137,7 +138,7 @@ function ManageServices() {
 
       ; (async () => {
          try {
-           const assigned = await salonApi.getStaffByService(s.serviceId)
+           const assigned = await staffApi.getStaffByService(s.serviceId)
            setServiceStaffs((m) => ({ ...m, [s.serviceId]: assigned || [] }))
          } catch (err) {
            console.error('Failed to load staff for service', err)
@@ -146,7 +147,7 @@ function ManageServices() {
 
          if (!allStaff) {
            try {
-             const fetchedAll = await salonApi.getStaff()
+             const fetchedAll = await staffApi.getStaff()
              setAllStaff(fetchedAll || [])
            } catch (err) {
              console.error('Failed to load all staff', err)
@@ -238,7 +239,7 @@ function ManageServices() {
        const staffIdNum = Number(staffId)
        const serviceIdNum = Number(serviceId)
        await createStaffService({ staffId: staffIdNum, serviceId: serviceIdNum })
-       const assigned = await salonApi.getStaffByService(serviceIdNum)
+       const assigned = await staffApi.getStaffByService(serviceIdNum)
        setServiceStaffs((m) => ({ ...m, [serviceIdNum]: assigned || [] }))
        await queryClient.invalidateQueries({ queryKey: ['services'] })
        setRecentlyAdded(prev => {
@@ -263,7 +264,7 @@ function ManageServices() {
        const staffIdNum = Number(staffId)
        const serviceIdNum = Number(serviceId)
        await deleteStaffService(staffIdNum, serviceIdNum)
-       const assigned = await salonApi.getStaffByService(serviceIdNum)
+       const assigned = await staffApi.getStaffByService(serviceIdNum)
        setServiceStaffs((m) => ({ ...m, [serviceIdNum]: assigned || [] }))
        await queryClient.invalidateQueries({ queryKey: ['services'] })
        setRecentlyAdded(prev => {

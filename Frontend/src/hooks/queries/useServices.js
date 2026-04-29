@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { serviceApi } from "../../api/serviceApi";
 
 export function useServices() {
   return useQuery({
     queryKey: ["services"],
-    queryFn: salonApi.getServices,
+    queryFn: serviceApi.getServices,
   });
 }

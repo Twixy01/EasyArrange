@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { shiftApi } from "../../api/shiftApi";
 
 export function useShiftsByStaff(staffId) {
   return useQuery({
     queryKey: ["shiftsByStaff", staffId],
-    queryFn: () => salonApi.getShiftsByStaff(staffId),
+    queryFn: () => shiftApi.getShiftsByStaff(staffId),
     enabled: !!staffId,
   });
 }

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { bookingApi } from "../../api/bookingApi";
 
 export function useBookingsByStaff(staffId) {
   return useQuery({
     queryKey: ["bookings", staffId],
-    queryFn: () => salonApi.getBookingsByStaff(staffId),
+    queryFn: () => bookingApi.getBookingsByStaff(staffId),
     enabled: !!staffId,
   });
 }
