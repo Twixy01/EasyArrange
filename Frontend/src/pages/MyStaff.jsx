@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Card from '../components/common/Card'
-import { salonApi } from '../api/salonApi'
+import { staffApi } from '../api/staffApi'
+import { shiftApi } from '../api/shiftApi'
+import { calendarApi } from '../api/calendarApi'
 import { useAuth } from '../hooks/useAuth'
 import { UIStateContext } from '../context/UIStateContext'
 import { Link } from 'react-router-dom'
@@ -36,7 +38,7 @@ export default function MyStaff() {
     let mounted = true
     ;(async () => {
       try {
-        const s = await salonApi.getStaff()
+        const s = await staffApi.getStaff()
         if (mounted) setStaff(s || [])
       } catch (err) {
         showError(getErrorMessage(err, 'Failed to load staff'))
@@ -51,7 +53,7 @@ export default function MyStaff() {
     setLoading(true)
     ;(async () => {
       try {
-        const allShifts = await salonApi.getStaffShifts()
+        const allShifts = await shiftApi.getStaffShifts()
         if (!mounted) return
         const flat = (allShifts || []).map(item => {
           const staffId = item.staff?.staffId ?? item.staffId ?? null
@@ -79,7 +81,7 @@ export default function MyStaff() {
     ;(async () => {
       try {
         const promises = staff.map(s =>
-          salonApi.getCalendarBlocksByStaff(s.staffId)
+          calendarApi.getCalendarBlocksByStaff(s.staffId)
             .then(data => ({ id: s.staffId, data }))
             .catch(() => ({ id: s.staffId, data: [] }))
         )

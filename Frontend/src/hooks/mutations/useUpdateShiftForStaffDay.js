@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { shiftApi } from "../../api/shiftApi";
 
 export function useUpdateShiftForStaffDay() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload) => salonApi.updateShiftForStaffDay(payload),
+        mutationFn: (payload) => shiftApi.updateShiftForStaffDay(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["shiftsByStaff"] });
         }

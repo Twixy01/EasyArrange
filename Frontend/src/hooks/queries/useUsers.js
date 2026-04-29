@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { salonApi } from '../../api/salonApi'
+import { userApi } from '../../api/userApi'
 
 export function useUsers() {
     return useQuery({
         queryKey: ['users'],
-        queryFn: salonApi.getUsers
+        queryFn: userApi.getUsers
     })
 }
 

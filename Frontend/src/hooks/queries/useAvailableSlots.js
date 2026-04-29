@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { bookingApi } from "../../api/bookingApi";
 
 export function useAvailableSlots(staffId, selectedDate, serviceId) {
   return useQuery({
     queryKey: ["availableSlots", staffId, selectedDate, serviceId],
-    queryFn: () => salonApi.getAvailableSlots(staffId, selectedDate, serviceId),
+    queryFn: () => bookingApi.getAvailableSlots(staffId, selectedDate, serviceId),
     enabled: !!staffId && !!selectedDate && !!serviceId,
   });
 }

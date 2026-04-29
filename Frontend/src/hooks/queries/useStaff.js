@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { staffApi } from "../../api/staffApi";
 
 export function useStaff() {
   return useQuery({
     queryKey: ["staff"],
-    queryFn: salonApi.getStaff,
+    queryFn: staffApi.getStaff,
   });
 }

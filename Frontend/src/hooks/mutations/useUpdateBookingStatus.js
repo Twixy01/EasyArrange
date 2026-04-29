@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { bookingApi } from "../../api/bookingApi";
 
 export function useUpdateBookingStatus() {
   return useMutation({
     mutationFn: ({ bookingId, bookingUpdateBody, isStaff }) =>
-      salonApi.updateBookingStatus(bookingId, bookingUpdateBody, isStaff),
+      bookingApi.updateBookingStatus(bookingId, bookingUpdateBody, isStaff),
   });
 }

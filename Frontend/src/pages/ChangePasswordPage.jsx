@@ -2,7 +2,7 @@ import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Card from '../components/common/Card'
 import { useAuth } from '../hooks/useAuth'
-import { updateUser, getUser } from '../services/api'
+import { updateUser, getUser } from '../api/userApi'
 import { UIStateContext } from '../context/UIStateContext'
 
 export default function ChangePasswordPage() {

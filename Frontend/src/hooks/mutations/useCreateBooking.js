@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { bookingApi } from "../../api/bookingApi";
 
 export function useCreateBooking() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: salonApi.createBooking,
+        mutationFn: bookingApi.createBooking,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["availableSlots"] });
         }

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { salonApi } from "../../api/salonApi";
+import { staffApi } from "../../api/staffApi";
 
 export function useStaffByUser(userId) {
     return useQuery({
         queryKey: ["staffByUser", userId],
-        queryFn: () => salonApi.getStaffByUser(userId),
+        queryFn: () => staffApi.getStaffByUser(userId),
         enabled: !!userId,
         retry: false,
         refetchOnWindowFocus: false,

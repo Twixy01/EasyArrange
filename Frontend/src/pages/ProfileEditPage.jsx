@@ -2,7 +2,7 @@ import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import Card from '../components/common/Card'
-import { updateUser } from '../services/api'
+import { updateUser } from '../api/userApi'
 import { UIStateContext } from '../context/UIStateContext'
 
 function ProfileEditPage() {
