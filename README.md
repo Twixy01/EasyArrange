@@ -48,7 +48,7 @@ cd Frontend
 npm install
 npm run dev
 ```
-###📦 Project Structure
+### 📦 Project Structure
 Plaintext
 EasyArrange/
 │
@@ -56,12 +56,12 @@ EasyArrange/
 ├── Database/         # Database dump (easyarrange.sql)
 ├── Frontend/         # React (Vite) application  
 └── README.md         # Documentation
-###🌐 Access Ports
+### 🌐 Access Ports
 Frontend: http://localhost:5173
 
 Backend API: http://localhost:8080
 
-###🛡️ Key Database Features
+### 🛡️ Key Database Features
 Normalized Schema: Efficient storage with 3NF design.
 
 Integrity Constraints: Prevents double-booking via uq_active_booking_slot unique keys.
