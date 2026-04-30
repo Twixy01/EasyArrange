@@ -33,7 +33,17 @@ cd EasyArrange
 2. Create a database named `easyarrange`.
 3. Import the `easyarrange.sql` file located in the `Database/` folder to set up tables and initial data.
 
-> ⚠️ **Note:** Ensure your database credentials in `Backend/src/main/resources/application.properties` match your local MySQL settings.
+> ⚠️ **Note:** Open `Backend/src/main/resources/application.properties` and update the credentials to match your local MySQL/MariaDB settings:
+
+```properties
+spring.application.name=Backend
+
+spring.datasource.url=jdbc:mariadb://localhost:3306/easyarrange
+spring.datasource.username=root
+spring.datasource.password=your_password_here
+```
+
+Replace `your_password_here` with your actual database password (leave it empty if your root user has no password).
 
 ### 2️⃣ Run the Backend
 
