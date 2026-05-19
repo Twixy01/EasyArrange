@@ -61,7 +61,8 @@ function StaffMyBookingsPage() {
                 ? new Date(secondBooking.startDateTime).getTime()
                 : Number.NEGATIVE_INFINITY;
 
-            return secondStart - firstStart;
+            // If both are BOOKED, sort ascending (nearest first). Otherwise keep descending.
+            return firstBooked ? (firstStart - secondStart) : (secondStart - firstStart);
         })
         : [];
 

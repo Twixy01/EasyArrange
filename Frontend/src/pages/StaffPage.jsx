@@ -30,6 +30,12 @@ function StaffCard({ member }) {
   const { data: shifts = [], isLoading: _shiftsLoading } = useShiftsByStaff(member.staffId);
   const { data: calendarBlocks = [], isLoading: _cbLoading } = useCalendarBlocksByStaff(member.staffId);
 
+  const referenceDateTime = useMemo(() => {
+    const now = new Date();
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    return new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  }, [selectedDate]);
+
   const availability = useMemo(() => {
     // if no shift records at all, treat as Off
     if (!shifts || shifts.length === 0) return { label: 'Off', reason: 'No scheduled shift' };
@@ -43,20 +49,16 @@ function StaffCard({ member }) {
       return { label: 'Off', reason: 'No working hours for this day' };
     }
 
-    // check calendar blocks that overlap the selected date (any block whose date range touches the date)
-    const startOfDay = new Date(selectedDate + 'T00:00:00');
-    const endOfDay = new Date(selectedDate + 'T23:59:59');
-
     const hasBlock = (calendarBlocks || []).some(block => {
       const start = new Date(block.startDateTime);
       const end = new Date(block.endDateTime);
-      return !(end < startOfDay || start > endOfDay);
+      return start <= referenceDateTime && referenceDateTime < end;
     });
 
     if (hasBlock) return { label: 'Off', reason: 'Marked time off' };
 
     return { label: 'Available', reason: 'Has shift and not blocked' };
-  }, [selectedDate, shifts, calendarBlocks]);
+  }, [selectedDate, shifts, calendarBlocks, referenceDateTime]);
 
   const memberName = member.user?.name;
   const memberImage = resolveMediaUrl(member.user?.profilePicture) || member.user?.profilePicture;
@@ -119,10 +121,7 @@ function StaffCard({ member }) {
                     try {
                       const st = new Date(b.startDateTime)
                       const ed = new Date(b.endDateTime)
-                      const pad = (n) => String(n).padStart(2, '0')
-                      const startDay = `${st.getFullYear()}-${pad(st.getMonth() + 1)}-${pad(st.getDate())}`
-                      const endDay = `${ed.getFullYear()}-${pad(ed.getMonth() + 1)}-${pad(ed.getDate())}`
-                      return selectedDate >= startDay && selectedDate <= endDay
+                      return st <= referenceDateTime && referenceDateTime < ed
                     } catch {
                       return false
                     }

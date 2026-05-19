@@ -105,7 +105,7 @@ function ProfilePage() {
 
         const ta = a.startDateTime ? new Date(a.startDateTime).getTime() : Number.NEGATIVE_INFINITY
         const tb = b.startDateTime ? new Date(b.startDateTime).getTime() : Number.NEGATIVE_INFINITY
-        return tb - ta
+        return aBooked ? (ta - tb) : (tb - ta)
     }) : []
 
     const formatTimeUntil = (msDiff) => {
@@ -162,11 +162,13 @@ function ProfilePage() {
                                     {user.phoneNumber && <p>📞 {user.phoneNumber}</p>}
                                     {roleLabel && <p className="muted">Role: {roleLabel}</p>}
 
-                                    <div style={{marginTop: 12}}>
-                                        <Button onClick={handleEdit} className="btn-primary">Edit profile</Button>
-                                        <Button onClick={goToChangePassword} className="btn" style={{marginLeft: 8}}>Change password</Button>
-                                        <Button onClick={handleLogout} className="btn-secondary"
-                                                style={{marginLeft: 8}}>Logout
+                                    <div className="profile-summary-actions">
+                                        <Button onClick={handleEdit} className="profile-summary-action">Edit profile</Button>
+                                        <Button onClick={goToChangePassword} className="profile-summary-action" variant="secondary">
+                                            Change password
+                                        </Button>
+                                        <Button onClick={handleLogout} className="profile-summary-action" variant="secondary">
+                                            Logout
                                         </Button>
                                     </div>
                                 </div>
