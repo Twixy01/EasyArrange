@@ -33,17 +33,19 @@ cd EasyArrange
 2. Create a database named `easyarrange`.
 3. Import the `easyarrange.sql` file located in the `Database/` folder to set up tables and initial data.
 
-> ⚠️ **Note:** Open `Backend/src/main/resources/application.properties` and update the credentials to match your local MySQL/MariaDB settings:
+### 1️⃣.5️⃣ Configure Environment Variables
 
-```properties
-spring.application.name=Backend
+Create a `.env` file in the `Backend/` directory to configure your database connection:
 
-spring.datasource.url=jdbc:mariadb://localhost:3306/easyarrange
-spring.datasource.username=root
-spring.datasource.password=your_password_here
+```env
+DB_URL=jdbc:mariadb://localhost:3306/easyarrange
+DB_USERNAME=root
+DB_PASSWORD=your_password_here
 ```
 
-Replace `your_password_here` with your actual database password (leave it empty if your root user has no password).
+> ⚠️ **Important:** Replace `your_password_here` with your actual database password (leave it empty if your root user has no password).
+>
+> **Note:** The `.env` file is used to inject database credentials into the `application.properties` file. Do **NOT** commit the `.env` file to version control, as it contains sensitive information. It's already included in `.gitignore` for this reason.
 
 ### 2️⃣ Run the Backend
 
