@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import SectionHeader from '../components/common/SectionHeader'
 import Button from '../components/common/Button'
 import { UIStateContext } from '../context/UIStateContext'
+import { BASE_URL } from '../api/apiClient'
 
 function LoginPage() {
   const { showError } = useContext(UIStateContext)
@@ -28,7 +29,7 @@ function LoginPage() {
     setIsLoading(true)
 
     try {
-      const res = await fetch('http://localhost:8080/api/users/auth/login', {
+      const res = await fetch(`${BASE_URL}/users/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

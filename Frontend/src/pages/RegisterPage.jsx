@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import SectionHeader from '../components/common/SectionHeader'
 import Button from '../components/common/Button'
 import { UIStateContext } from '../context/UIStateContext'
+import { BASE_URL } from '../api/apiClient'
 
 function RegisterPage() {
   const { showError, showSuccess } = useContext(UIStateContext)
@@ -55,7 +56,7 @@ function RegisterPage() {
         role: { roleId: defaultRoleId, name: defaultRoleName }
       }
 
-      const res = await fetch('http://localhost:8080/api/users/register', {
+      const res = await fetch(`${BASE_URL}/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
