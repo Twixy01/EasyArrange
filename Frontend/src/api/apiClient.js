@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-export const BASE_URL = `${import.meta.env.BACKEND_API_URL}/api`;
+export const BASE_URL = `${import.meta.env.VITE_BACKEND_API_URL}/api`;
 
 export function getToken() {
     try {
