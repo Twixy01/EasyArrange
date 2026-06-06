@@ -25,8 +25,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -142,17 +146,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(Collections.singletonList(frontendUrl));
-
-        config.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"
-        ));
-
-        config.setAllowedHeaders(Arrays.asList(
-                "Authorization", "Content-Type", "Accept"
-        ));
+        config.setAllowedOriginPatterns(resolveAllowedOriginPatterns());
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setExposedHeaders(Arrays.asList("Authorization", "Location"));
 
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
@@ -160,6 +160,57 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    private List<String> resolveAllowedOriginPatterns() {
+        if (frontendUrl == null || frontendUrl.isBlank()) {
+            return Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173");
+        }
+
+        List<String> patterns = new ArrayList<>();
+        for (String candidate : frontendUrl.split(",")) {
+            String pattern = normalizeOriginOrPattern(candidate);
+            if (pattern != null) {
+                patterns.add(pattern);
+            }
+        }
+
+        if (patterns.isEmpty()) {
+            return Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173");
+        }
+        return patterns;
+    }
+
+    private String normalizeOriginOrPattern(String rawValue) {
+        if (rawValue == null) {
+            return null;
+        }
+
+        String value = rawValue.trim();
+        if (value.isEmpty()) {
+            return null;
+        }
+
+        // Keep explicit wildcard patterns (e.g. https://*.pages.dev) as-is.
+        if (value.contains("*")) {
+            return value;
+        }
+
+        try {
+            URI uri = new URI(value);
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+
+            // If parsing fails into a standard URI host, keep original for visibility.
+            if (scheme == null || host == null) {
+                return value;
+            }
+
+            int port = uri.getPort();
+            return port == -1 ? scheme + "://" + host : scheme + "://" + host + ":" + port;
+        } catch (URISyntaxException ex) {
+            return value;
+        }
     }
 
     @Bean
